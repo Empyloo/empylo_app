@@ -19,6 +19,8 @@ class ColorTokens {
   static const onSecondary = Color(0xFFFFFFFF); // white
   static const success = Color(0xFF34A853); // green
   static const error = Color(0xFFEA4335); // red
+  static const warning = Color(0xFFFFA000); // orange
+  static const info = Color(0xFF4285F4); // blue
 
   static const elegantGradient = LinearGradient(
     begin: Alignment.topLeft,
@@ -43,4 +45,14 @@ class ColorTokens {
     colors: [secondary, secondaryLight],
   );
 
+  // Opacity
+  static const xs = 0.1;
+  static const s = 0.2;
+  static const sm = 0.3;
+  static const m = 0.4;
+  static const ml = 0.5;
+  static const l = 0.6;
+  static const xl = 0.7;
+  static const xxl = 0.8;
+  static const max = 0.9;
 }

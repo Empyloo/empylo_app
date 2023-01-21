@@ -54,4 +54,15 @@ class EmpyloButtonStyles {
     padding: EmpyloEdgeInsertsSymmetric.m,
     shape: const RoundedRectangleBorder(borderRadius: EmpyloBorderRadius.l),
   );
+
+  // hover and focus styles
+  static final hover = ButtonStyle(
+    foregroundColor:
+        MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+      if (states.contains(MaterialState.hovered)) {
+        return ColorTokens.error.withOpacity(ColorTokens.xs);
+      }
+      return ColorTokens.secondaryDark;
+    }),
+  );
 }
