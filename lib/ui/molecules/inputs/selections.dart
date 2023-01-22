@@ -1,17 +1,14 @@
-/*
-This file defines all the radio buttons used in the app. Import the colors.dart
-file to get the colors, sizes.dart file to get the sizes, border_radius.dart
-file to get the border radius and typography.dart to get the text styles.
+/*  This file defines a selection widget which is basically a
+combination of a checkbox and another widget, could be text or an icon.
 */
 
-// Path: lib/ui/molecules/inputs/radios.dart
+// Path: lib/ui/molecules/inputs/selections.dart
 import 'package:empylo_app/tokens/edge_inserts.dart';
 import 'package:empylo_app/tokens/sizes.dart';
 import 'package:flutter/material.dart';
 
-class RadioInput extends StatelessWidget {
-  final String label;
-  final TextStyle? textStyle;
+class Selection extends StatelessWidget {
+  final Widget child;
   final bool value;
   final void Function(bool?)? onChanged;
   final Color? backgroundColor;
@@ -21,12 +18,11 @@ class RadioInput extends StatelessWidget {
   final double width;
   final double height;
 
-  const RadioInput({
+  const Selection({
     super.key,
-    required this.label,
+    required this.child,
     required this.value,
     required this.onChanged,
-    this.textStyle,
     this.width = Sizes.huge,
     this.height = Sizes.xxl,
     this.containerDecoration,
@@ -41,11 +37,10 @@ class RadioInput extends StatelessWidget {
       height: height,
       margin: margin,
       decoration: containerDecoration,
-      child: RadioListTile(
+      child: CheckboxListTile(
         value: value,
-        groupValue: value,
         onChanged: onChanged,
-        title: Text(label, style: textStyle),
+        title: child,
       ),
     );
   }
