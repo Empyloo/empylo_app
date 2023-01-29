@@ -22,41 +22,12 @@ curl 'https://banckend.com/rest/v1/users?select=id' \
 
 */
 
-// Path: lib/services/base_service.dart
+// Path: lib/services/bases.dart
 
-abstract class BaseService {
-  final String baseUrl;
-  final Map<String, String> headers;
-
-  BaseService({
-    required this.headers,
-    this.baseUrl = '',
-  });
-
-  Future<Map<String, dynamic>> get(
-    String path, {
-    Map<String, dynamic>? body,
-  });
-
-  Future<Map<String, dynamic>> post(
-    String path, {
-    Map<String, dynamic>? body,
-  });
-
-  Future<Map<String, dynamic>> put(
-    String path, {
-    Map<String, dynamic>? body,
-  });
-
-  Future<Map<String, dynamic>> delete(
-    String path, {
-    Map<String, dynamic>? body,
-  });
+abstract class BaseClient {
+  Future<dynamic> get(String path, {int? retry, String? apiKey});
+  Future<dynamic> post(String path, dynamic data, {int? retry, String? apiKey});
+  Future<dynamic> put(String path, dynamic data, {int? retry, String? apiKey});
+  Future<dynamic> delete(String path, {int? retry, String? apiKey});
 }
 
-/*
-This file defines the DB service class that extends the base service class and
-is used to make requests to the database. It uses the dio package to make the
-requests, flutter_riverpod 2.0 to manage state.
-  
-  */

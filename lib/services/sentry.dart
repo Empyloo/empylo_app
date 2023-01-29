@@ -31,7 +31,6 @@ class SentryService {
         options: Options(headers: headers),
       );
     } catch (e) {
-      print(e);
       return Response(
         statusCode: 500,
         requestOptions: RequestOptions(
