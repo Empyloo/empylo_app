@@ -1,70 +1,42 @@
 class User {
-  final String accessToken;
-  final String tokenType;
-  final int expiresIn;
-  final String refreshToken;
-  final UserData userData;
+  String? id;
+  String? aud;
+  String? role;
+  String? email;
+  String? emailConfirmedAt;
+  String? phone;
+  String? confirmationSentAt;
+  String? confirmedAt;
+  String? lastSignInAt;
+  Map<String, dynamic>? appMetadata;
+  Map<String, dynamic>? userMetadata;
+  List<Identity>? identities;
+  String? createdAt;
+  String? updatedAt;
 
   User({
-    required this.accessToken,
-    required this.tokenType,
-    required this.expiresIn,
-    required this.refreshToken,
-    required this.userData,
+    this.id,
+    this.aud,
+    this.role,
+    this.email,
+    this.emailConfirmedAt,
+    this.phone,
+    this.confirmationSentAt,
+    this.confirmedAt,
+    this.lastSignInAt,
+    this.appMetadata,
+    this.userMetadata,
+    this.identities,
+    this.createdAt,
+    this.updatedAt,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      accessToken: json['access_token'],
-      tokenType: json['token_type'],
-      expiresIn: json['expires_in'],
-      refreshToken: json['refresh_token'],
-      userData: UserData.fromJson(json['user']),
-    );
-  }
-}
-
-
-
-class UserData {
-  String id;
-  String aud;
-  String role;
-  String email;
-  String emailConfirmedAt;
-  String phone;
-  String? confirmationSentAt;
-  String confirmedAt;
-  String lastSignInAt;
-  Map<String, dynamic> appMetadata;
-  Map<String, dynamic> userMetadata;
-  List<Identity> identities;
-  String createdAt;
-  String updatedAt;
-
-  UserData({
-    required this.id,
-    required this.aud,
-    required this.role,
-    required this.email,
-    required this.emailConfirmedAt,
-    required this.phone,
-    required this.confirmationSentAt,
-    required this.confirmedAt,
-    required this.lastSignInAt,
-    required this.appMetadata,
-    required this.userMetadata,
-    required this.identities,
-    required this.createdAt,
-    required this.updatedAt,
-  });
-
-  factory UserData.fromJson(Map<String, dynamic> json) {
     var list = json['identities'] as List;
     List<Identity> identitiesList =
         list.map((i) => Identity.fromJson(i)).toList();
 
-    return UserData(
+    return User(
       id: json['id'],
       aud: json['aud'],
       role: json['role'],
@@ -81,25 +53,44 @@ class UserData {
       updatedAt: json['updated_at'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'aud': aud,
+      'role': role,
+      'email': email,
+      'email_confirmed_at': emailConfirmedAt,
+      'phone': phone,
+      'confirmation_sent_at': confirmationSentAt,
+      'confirmed_at': confirmedAt,
+      'last_sign_in_at': lastSignInAt,
+      'app_metadata': appMetadata,
+      'user_metadata': userMetadata,
+      'identities': identities,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+    };
+  }
 }
 
 class Identity {
-  String id;
-  String userId;
-  Map<String, dynamic> identityData;
-  String provider;
-  String lastSignInAt;
-  String createdAt;
-  String updatedAt;
+  String? id;
+  String? userId;
+  Map<String, dynamic>? identityData;
+  String? provider;
+  String? lastSignInAt;
+  String? createdAt;
+  String? updatedAt;
 
   Identity({
-    required this.id,
-    required this.userId,
-    required this.identityData,
-    required this.provider,
-    required this.lastSignInAt,
-    required this.createdAt,
-    required this.updatedAt,
+    this.id,
+    this.userId,
+    this.identityData,
+    this.provider,
+    this.lastSignInAt,
+    this.createdAt,
+    this.updatedAt,
   });
 
   factory Identity.fromJson(Map<String, dynamic> json) {
@@ -112,5 +103,17 @@ class Identity {
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'user_id': userId,
+      'identity_data': identityData,
+      'provider': provider,
+      'last_sign_in_at': lastSignInAt,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+    };
   }
 }

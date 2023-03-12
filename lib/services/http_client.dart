@@ -11,7 +11,7 @@ curl 'https://banckend.com/rest/v1/users?select=id' \
 import 'package:dio/dio.dart';
 import 'package:empylo_app/models/sentry.dart';
 import 'package:empylo_app/models/user_data.dart';
-import 'package:empylo_app/services/sentry.dart';
+import 'package:empylo_app/services/sentry_service.dart';
 
 class HttpClient {
   final Dio _dio;
@@ -35,6 +35,9 @@ class HttpClient {
   }) async {
     int retries = 0;
     int delay = initialDelay;
+    print('POST: $url');
+    print('HEADERS: $headers');
+    print('DATA: $data');
     while (retries < maxRetries) {
       try {
         return await _dio.post(

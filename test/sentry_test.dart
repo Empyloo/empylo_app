@@ -1,7 +1,7 @@
 // Path: test/sentry_test.dart
 import 'package:dio/dio.dart';
 import 'package:empylo_app/models/sentry.dart';
-import 'package:empylo_app/services/sentry.dart';
+import 'package:empylo_app/services/sentry_service.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
