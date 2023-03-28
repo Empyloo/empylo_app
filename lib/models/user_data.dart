@@ -1,3 +1,4 @@
+// Path: lib/models/user_data.dart
 class User {
   String? id;
   String? aud;
@@ -13,6 +14,7 @@ class User {
   List<Identity>? identities;
   String? createdAt;
   String? updatedAt;
+  List<Factor>? factors;
 
   User({
     this.id,
@@ -29,13 +31,14 @@ class User {
     this.identities,
     this.createdAt,
     this.updatedAt,
+    this.factors,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     var list = json['identities'] as List;
     List<Identity> identitiesList =
         list.map((i) => Identity.fromJson(i)).toList();
-
+    List<Factor> factorsList = json['factors'];
     return User(
       id: json['id'],
       aud: json['aud'],
@@ -51,6 +54,7 @@ class User {
       identities: identitiesList,
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
+      factors: factorsList,
     );
   }
 
@@ -70,6 +74,7 @@ class User {
       'identities': identities,
       'created_at': createdAt,
       'updated_at': updatedAt,
+      'factors': factors,
     };
   }
 }
@@ -114,6 +119,42 @@ class Identity {
       'last_sign_in_at': lastSignInAt,
       'created_at': createdAt,
       'updated_at': updatedAt,
+    };
+  }
+}
+
+class Factor {
+  String id;
+  String createdAt;
+  String updatedAt;
+  String status;
+  String factorType;
+
+  Factor({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.status,
+    required this.factorType,
+  });
+
+  factory Factor.fromJson(Map<String, dynamic> json) {
+    return Factor(
+      id: json['id'],
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
+      status: json['status'],
+      factorType: json['factor_type'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+      'status': status,
+      'factor_type': factorType,
     };
   }
 }

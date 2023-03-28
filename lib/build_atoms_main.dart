@@ -1,25 +1,7 @@
-import 'dart:html';
 
-import 'package:empylo_app/models/sentry.dart';
-import 'package:empylo_app/services/sentry_service.dart';
-import 'package:empylo_app/tokens/border_radius.dart';
-import 'package:empylo_app/tokens/box_shadows.dart';
-import 'package:empylo_app/tokens/decorations.dart';
-import 'package:empylo_app/ui/molecules/inputs/checkboxes.dart';
-import 'package:empylo_app/ui/molecules/inputs/date_time_pickers.dart';
-import 'package:empylo_app/ui/molecules/inputs/file_uploaders.dart';
-import 'package:empylo_app/ui/molecules/inputs/radios.dart';
-import 'package:empylo_app/ui/molecules/inputs/selections.dart';
-import 'package:empylo_app/ui/molecules/inputs/sliders.dart';
-import 'package:empylo_app/ui/molecules/inputs/switchs.dart';
-import 'package:empylo_app/ui/molecules/inputs/text_fields.dart';
-import 'package:empylo_app/ui/molecules/text/text.dart';
-import 'package:empylo_app/utils/impl/text_form_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:empylo_app/tokens/colors.dart';
-import 'package:empylo_app/tokens/edge_inserts.dart';
 import 'package:empylo_app/tokens/typography.dart';
-import 'package:empylo_app/tokens/sizes.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {

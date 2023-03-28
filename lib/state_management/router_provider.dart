@@ -1,9 +1,10 @@
 // Path: lib/services/router_provider.dart
 import 'package:empylo_app/state_management/auth_state_notifier.dart';
+import 'package:empylo_app/ui/pages/dashboard/dash.dart';
 import 'package:empylo_app/ui/pages/error/erro_page.dart';
 import 'package:empylo_app/ui/pages/home/home.dart';
+import 'package:empylo_app/ui/pages/login/factors_page.dart';
 import 'package:empylo_app/ui/pages/login/pass_reset_page.dart';
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,13 +22,43 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'login',
         path: '/',
         builder: (context, state) => LoginPage(),
-        routes: [
-          GoRoute(
-            name: 'home',
-            path: 'home',
-            builder: (context, state) => HomePage(),
-          ),
-        ],
+      ),
+      GoRoute(
+        name: 'home',
+        path: '/home',
+        builder: (context, state) {
+          if (authState.isAuthenticated) {
+            return const HomePage();
+          } else {
+            return LoginPage();
+          }
+        },
+      ),
+      GoRoute(
+        name: 'factors',
+        path: '/factors',
+        builder: (context, state) {
+          if (authState.isAuthenticated) {
+            return const FactorsPage();
+          } else {
+            return LoginPage();
+          }
+        },
+      ),
+      GoRoute(
+        name: 'dashboard',
+        path: '/dashboard',
+        builder: (context, state) {
+          if ((authState.isAuthenticated) &&
+              (authState.role == UserRole.admin ||
+                  authState.role == UserRole.superAdmin)) {
+            return const DashboardPage();
+          } else {
+            return const ErrorPage(
+              'You do not have permission to access this page.',
+            );
+          }
+        },
       ),
       GoRoute(
         name: 'password',
@@ -37,10 +68,11 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
     redirect: (context, state) {
       if (!state.subloc.startsWith('/password') &&
-          !authState &&
+          !authState.isAuthenticated &&
           !state.subloc.startsWith('/')) {
         return '/';
       }
+      return null;
     },
   );
 });

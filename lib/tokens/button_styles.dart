@@ -10,7 +10,6 @@ import 'colors.dart';
 import 'edge_inserts.dart';
 import 'typography.dart';
 import 'border_radius.dart';
-import 'sizes.dart';
 
 class EmpyloButtonStyles {
   static final outlinedPrimary = OutlinedButton.styleFrom(

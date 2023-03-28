@@ -5,7 +5,6 @@ import 'package:empylo_app/state_management/sentry_service_provider.dart';
 import 'package:empylo_app/state_management/user_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/user_data.dart';
 
 final userProvider =
     StateNotifierProvider<UserNotifier, AsyncValue<UserState>>((ref) {

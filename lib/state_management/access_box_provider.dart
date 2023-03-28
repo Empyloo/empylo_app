@@ -4,6 +4,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 // Define a provider for Hive box that stores access tokens
 final accessBoxProvider =
-    FutureProvider<Box<Map<String, dynamic>>>((ref) async {
-  return Hive.box<Map<String, dynamic>>('session');
+    FutureProvider<dynamic>((ref) async {
+  return Hive.box<dynamic>('session');
 });

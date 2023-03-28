@@ -7,10 +7,10 @@ class PasswordResetPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _formKey = GlobalKey<FormState>();
-    final TextEditingController _textController = TextEditingController();
-    const double _textBoxWidth = 300;
-    const double _textBoxHeight = 50;
+    final formKey = GlobalKey<FormState>();
+    final TextEditingController textController = TextEditingController();
+    const double textBoxWidth = 300;
+    const double textBoxHeight = 50;
 
     return Scaffold(
       body: Container(
@@ -35,14 +35,14 @@ class PasswordResetPage extends ConsumerWidget {
                       blurRadius: 7)
                 ]),
             child: Form(
-              key: _formKey,
+              key: formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   SizedBox(
-                      width: _textBoxWidth,
+                      width: textBoxWidth,
                       child: TextFormField(
-                          controller: _textController,
+                          controller: textController,
                           decoration: const InputDecoration(
                               hintText: 'Enter your email'),
                           validator: (value) {
@@ -53,12 +53,12 @@ class PasswordResetPage extends ConsumerWidget {
                           })),
                   ElevatedButton(
                       onPressed: () {
-                        if (_formKey.currentState!.validate()) {
+                        if (formKey.currentState!.validate()) {
                           // Submit form
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                          fixedSize: const Size(_textBoxWidth, _textBoxHeight)),
+                          fixedSize: const Size(textBoxWidth, textBoxHeight)),
                       child: const Text('Submit'))
                 ],
               ),

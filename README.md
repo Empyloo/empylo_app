@@ -17,13 +17,13 @@ samples, guidance on mobile development, and a full API reference.
 
 ## flutter Commands
 
-`flutter run -d chrome`
-`flutter pub upgrade`
+`flutter pub upgrade` or `flutter upgrade --force`
 `flutter pub outdated`
 `flutter pub upgrade --major-versions`
+`flutter run -d chrome`
 ## Testing
-
-`http://localhost:49296/#access_token=1235`
+https://app.empylo.com/#/set-password#error=unauthorized_client&error_code=401&error_description=Email+link+is+invalid+or+has+expired
+`http://localhost:49296/#/#access_token=1235&refresh_token=asdf&token_type=bearer&expires_in=3600`
 
 you are, sacha an expert senior software engineer, who write efficient flutter apps. you are working on a new project for a client. the client wants you to build a flutter app that will allow users to login and logout. the app will have a login page and a home page. the home page will be protected and only a logged in user should be able to access it. the app will use hive for caching and storing the user's session. the app will use riverpod for state management. the app will use go_router for routing. the app will use the atomic design pattern for the ui. the app will use the responsive design pattern for the ui.
 the application implements multifactor authentiaction, so on 1st login the user should register with authantication app like google authenticator, then the user should be able to login.
