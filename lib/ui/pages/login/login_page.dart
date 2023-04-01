@@ -1,14 +1,14 @@
 // Path: lib/ui/pages/login/login_page.dart
 import 'package:empylo_app/state_management/login_state_provider.dart';
 import 'package:empylo_app/state_management/router_provider.dart';
-import 'package:empylo_app/ui/molecules/dialogues/remove_factor_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../state_management/user_provider.dart';
 
 class LoginPage extends ConsumerWidget {
-  LoginPage({Key? key}) : super(key: key);
+  const LoginPage({Key? key}) : super(key: key);
 
   void onLoginButtonPressed(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider.notifier);
@@ -112,6 +112,27 @@ class LoginPage extends ConsumerWidget {
                         ),
                       ),
                       child: const Text('Login'),
+                    ),
+                    const SizedBox(height: 16), // Add space between the buttons
+                    TextButton(
+                      onPressed: () {
+                        // Navigate to the password reset page with go router
+                        context.go('/password-reset');
+                      },
+                      child: Text(
+                        'Forgot password?',
+                        style: TextStyle(
+                          color: Colors.blue.shade200,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextButton(
+                      onPressed: () {
+                        // Navigate to the set-password page
+                        ref.read(routerProvider).go('/set-password');
+                      },
+                      child: const Text('Set New Password'),
                     ),
                   ],
                 ),

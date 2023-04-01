@@ -1,9 +1,10 @@
 // Path: lib/ui/pages/login/pass_reset_page.dart
+import 'package:empylo_app/state_management/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PasswordResetPage extends ConsumerWidget {
-  const PasswordResetPage({Key? key}) : super(key: key);
+class PasswordResetPages extends ConsumerWidget {
+  const PasswordResetPages({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -11,6 +12,18 @@ class PasswordResetPage extends ConsumerWidget {
     final TextEditingController textController = TextEditingController();
     const double textBoxWidth = 300;
     const double textBoxHeight = 50;
+    final user = ref.watch(userProvider.notifier);
+
+    void showSnackBarCallback(
+        BuildContext context, String message, Color backgroundColor) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: backgroundColor,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
 
     return Scaffold(
       body: Container(
@@ -52,9 +65,16 @@ class PasswordResetPage extends ConsumerWidget {
                             return null;
                           })),
                   ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (formKey.currentState!.validate()) {
                           // Submit form
+                          await user.passwordReset(
+                            email: textController.text,
+                            context: context,
+                            showSnackBarCallback: (String message,
+                                    Color color) =>
+                                showSnackBarCallback(context, message, color),
+                          );
                         }
                       },
                       style: ElevatedButton.styleFrom(

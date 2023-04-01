@@ -18,7 +18,7 @@ class FactorsDialog extends ConsumerWidget {
 
     return AlertDialog(
       title: const Text('Factors'),
-      content: Container(
+      content: SizedBox(
         width: double.maxFinite,
         child: ListView.builder(
           itemCount: factors.length,

@@ -131,9 +131,13 @@ class HttpClient {
 
     if (e.response != null && e.response!.data['error'] == 'invalid_grant') {
       throw e;
+    } else if (e.response!.statusCode == 400) {
+      throw e;
     } else if (e.response!.statusCode == 401) {
       throw e;
     } else if (e.response!.statusCode == 403) {
+      throw e;
+    } else if (e.response!.statusCode == 404) {
       throw e;
     } else {
       throw e;

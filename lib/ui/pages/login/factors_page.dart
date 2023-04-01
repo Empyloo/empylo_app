@@ -17,7 +17,10 @@ class FactorsPage extends ConsumerWidget {
 
     void showSnackBar(String message) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
+        SnackBar(
+          content: Text(message),
+          behavior: SnackBarBehavior.floating,
+        ),
       );
     }
 

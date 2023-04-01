@@ -9,8 +9,10 @@ class MFADialog extends ConsumerWidget {
   const MFADialog({Key? key}) : super(key: key);
 
   void _showCopiedSnackbar(BuildContext context) {
-    const snackBar =
-        SnackBar(content: Text('Secret code copied to clipboard.'));
+    const snackBar = SnackBar(
+      content: Text('Secret code copied to clipboard.'),
+      behavior: SnackBarBehavior.floating,
+    );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
