@@ -14,7 +14,8 @@ steps:
         flutter upgrade
         flutter --version
         ls -al
-        sh server/server.sh
+        flutter pub get
+        flutter build web --release
         echo "******************* Stop *******************"
         ls -al
     entrypoint: bash
@@ -27,14 +28,10 @@ steps:
       - |
         echo "******************* ls -al *******************"
         ls -al
-        echo "******************* assets ls -al *******************"
-        cd assets && ls -al && cd ..
-        cp dart_Dockerfile build/web/Dockerfile
         cd build/web
         echo "******************* build/web ls -al *******************"
         ls -al
-        echo "******************* build assets ls -al *******************"
-        ls -al assets
+
         echo "******************* Copying Web to Cloud Storage *******************"
         gsutil -m rsync -r -d . gs://empylo-front-end-versions/$TAG_NAME
         gsutil lifecycle set lifecycle.json gs://empylo-front-end-versions/$TAG_NAME
