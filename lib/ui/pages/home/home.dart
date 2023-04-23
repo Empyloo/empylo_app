@@ -29,6 +29,13 @@ class HomePage extends ConsumerWidget {
             const Text('Welcome user'),
             ElevatedButton(
               onPressed: () {
+                // navigate to profile page
+                router.go('/profile');
+              },
+              child: const Text('Go to Profile'),
+            ),
+            ElevatedButton(
+              onPressed: () {
                 // remove session from Hive box
                 box.asData!.value.delete('session');
                 // navigate to login page

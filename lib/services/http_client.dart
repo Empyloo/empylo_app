@@ -12,7 +12,7 @@ import 'package:dio/dio.dart';
 import 'package:empylo_app/models/sentry.dart';
 import 'package:empylo_app/services/sentry_service.dart';
 
-enum HttpMethod { GET, POST, PUT, DELETE }
+enum HttpMethod { GET, POST, PUT, DELETE, PATCH }
 
 class HttpClient {
   final Dio _dio;
@@ -57,6 +57,28 @@ class HttpClient {
         options: Options(headers: headers),
       ),
       HttpMethod.GET,
+      maxRetries: maxRetries,
+      initialDelay: initialDelay,
+    );
+  }
+
+  Future<Response> patch({
+    required String url,
+    Map<String, dynamic>? headers,
+    dynamic data,
+    int maxRetries = 3,
+    int initialDelay = 1000,
+  }) async {
+    print('patch: $url');
+    print('patch headeara: $headers');
+    print('patch data: $data');
+    return _retryOnError(
+      () => _dio.patch(
+        url,
+        data: data,
+        options: Options(headers: headers),
+      ),
+      HttpMethod.PATCH,
       maxRetries: maxRetries,
       initialDelay: initialDelay,
     );

@@ -3,7 +3,7 @@
 import 'package:empylo_app/state_management/auth_state_notifier.dart';
 
 UserRole getUserRoleFromResponse(Map<String, dynamic> response) {
-  String role = response['user']['user_metadata']['role'];
+  String role = response['user']['app_metadata']['role'];
 
   switch (role) {
     case 'admin':

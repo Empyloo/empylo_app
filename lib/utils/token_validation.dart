@@ -2,23 +2,27 @@
 import 'package:empylo_app/state_management/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-Future<void> handleTokenValidation({
+Future<bool?> handleTokenValidation({
   required String? accessToken,
   required String? refreshToken,
-  required ProviderRef<GoRouter> ref,
+  required WidgetRef ref,
   required BuildContext context,
 }) async {
   if (accessToken != null && refreshToken != null) {
     print('Tokens found: validating...');
-    await ref.read(userProvider.notifier).validateToken(
+    final response = await ref.read(userProvider.notifier).validateToken(
         accessToken: accessToken,
         refreshToken: refreshToken,
         ref: ref,
         context: context);
-    print('Token validation completed.');
+    return response;
   } else {
     print('No tokens found.');
+    showDialog(
+      context: context,
+      builder: (context) => const SnackBar(content: Text('No tokens found')),
+    );
+    return null;
   }
 }

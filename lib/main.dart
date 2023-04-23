@@ -11,10 +11,7 @@ void main() async {
   setPathUrlStrategy();
   runApp(
     const ProviderScope(
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: MyApp(),
-      ),
+      child: MyApp(),
     ),
   );
 }

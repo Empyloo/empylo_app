@@ -143,32 +143,40 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
           return null;
         });
         ref.read(loginStateProvider.notifier).toggleDialogState(true);
+        final accessBox = await ref.read(accessBoxProvider.future);
+        accessBox.put('session', sessionData);
       } else {
         print('MFA not required');
       }
       state = const AsyncValue.data(UserState.loggedIn);
       ref.read(authStateProvider.notifier).login(userRole);
-      final accessBox = await ref.read(accessBoxProvider.future);
-      accessBox.put('session', sessionData);
+
       // Fetch the user profile
       final userProfileNotifier =
           ref.read(userProfileNotifierProvider.notifier);
       await userProfileNotifier.getUserProfile(
           response.data['user']['id'], response.data['access_token']);
+        
 
       // Check if the user has accepted the terms
       final UserProfile? userProfile = ref.read(userProfileNotifierProvider);
+      print('User profile: $userProfile');
+      print('User profile accepted terms: ${userProfile?.acceptedTerms}');
+
       if (userProfile?.acceptedTerms == true) {
-        ref.watch(routerProvider).go('/home');
+        print('User has accepted terms, redirecting to home page...');
+        ref.read(routerProvider).go('/home');
       } else {
-        ref.watch(routerProvider).go('/profile');
+        print('User has not accepted terms, redirecting to profile page...');
+        ref.read(routerProvider).go('/profile');
+        // context.go('/profile');
       }
     } catch (e) {
       ref.read(loginStateProvider.notifier).toggleLoading();
       print('Error logging in: $e');
       showErrorSnackBar(context,
           'Error logging in, please check you credentials and try again.');
-      ref.watch(routerProvider).go('/login');
+      ref.read(routerProvider).go('/');
     }
   }
 
@@ -247,7 +255,8 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
           Colors.green.shade200,
         );
       } else {
-        showErrorSnackBar(context, 'Error setting password, please try again.');
+        throw Exception(
+            'Error setting password, status code: ${response.statusCode}');
       }
     } catch (e) {
       print('Error setting password: $e');
@@ -259,7 +268,7 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
   Future<void> refreshToken({
     required String accessToken,
     required String token,
-    required ProviderRef<GoRouter> ref,
+    required WidgetRef ref,
   }) async {
     try {
       final response = await _httpClient.post(
@@ -296,7 +305,7 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
   Future<bool> validateToken({
     required String accessToken,
     required String refreshToken,
-    required ProviderRef<GoRouter> ref,
+    required WidgetRef ref,
     required BuildContext context,
   }) async {
     try {

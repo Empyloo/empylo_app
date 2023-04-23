@@ -1,5 +1,6 @@
 // Path: lib/ui/pages/error/erro_page.dart
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class ErrorPage extends StatelessWidget {
   const ErrorPage(this.error, {Key? key}) : super(key: key);
@@ -14,8 +15,13 @@ class ErrorPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Something went wrong'),
+            const SelectableText('Something went wrong'),
             SelectableText(error.toString()),
+            const SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () => context.go('/'),
+              child: const Text('Go to Login'),
+            ),
           ],
         ),
       ),
@@ -60,7 +66,7 @@ class ErrorPage extends StatelessWidget {
 //                   style: TextStyle(fontSize: 18.0, color: Colors.white)),
 //               SizedBox(height: 16.0),
 //               ElevatedButton(
-//                 onPressed: () => Navigator.of(context).pushNamed('/login'),
+//                 onPressed: () => Navigator.of(context).pushNamed('/'),
 //                 child: Text('Go to Login', style: TextStyle(fontSize: 18.0)),
 //                 style: ElevatedButton.styleFrom(primary: Colors.white),
 //               ),

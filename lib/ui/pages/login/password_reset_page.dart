@@ -3,6 +3,7 @@ import 'package:empylo_app/state_management/router_provider.dart';
 import 'package:empylo_app/state_management/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 final passwordResetEmailControllerProvider =
     Provider((ref) => TextEditingController());
@@ -79,8 +80,9 @@ class PasswordResetPage extends ConsumerWidget {
                         const SizedBox(height: 16),
                         TextButton(
                           onPressed: () {
+                            print('Back to Login');
                             // Navigate to the login page
-                            ref.read(routerProvider).go('/');
+                            GoRouter.of(context).go('/');
                           },
                           child: const Text('Back to Login'),
                         ),

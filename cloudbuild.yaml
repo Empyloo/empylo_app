@@ -1,0 +1,49 @@
+steps:
+  - name: 'gcr.io/$PROJECT_ID/flutter:stable'
+    env:
+      - 'SUPABASE_ANON_KEY=${_SUPABASE_ANON_KEY}'
+      - 'SUPABASE_URL=${_SUPABASE_URL}'
+      - 'SENTRY_DSN=${_SENTRY_DSN}'
+      - 'REDIRECT_TO=${_REDIRECT_TO}'
+      - 'GATE_KEEPER=${_GATE_KEEPER}'
+    args:
+      - '-c'
+      - |
+        echo "******************* Start *******************"
+        flutter upgrade
+        flutter --version
+        ls -al
+        sh server/server.sh
+        echo "******************* Stop *******************"
+        ls -al
+    entrypoint: bash
+    
+  - name: 'gcr.io/cloud-builders/gsutil'
+    env:
+      - 'TAG_NAME=${TAG_NAME}'
+    args:
+      - '-c'
+      - |
+        echo "******************* ls -al *******************"
+        ls -al
+        echo "******************* assets ls -al *******************"
+        cd assets && ls -al && cd ..
+        cp dart_Dockerfile build/web/Dockerfile
+        cd build/web
+        echo "******************* build/web ls -al *******************"
+        ls -al
+        echo "******************* build assets ls -al *******************"
+        ls -al assets
+        echo "******************* Copying Web to Cloud Storage *******************"
+        gsutil -m rsync -r -d . gs://empylo-front-end-versions/$TAG_NAME
+        gsutil lifecycle set lifecycle.json gs://empylo-front-end-versions/$TAG_NAME
+        gsutil -m rsync -r -d . gs://empylo-current-front-end
+        echo "******************* Stored Web to Cloud Storage *******************"
+    entrypoint: bash
+
+substitutions:
+  _SUPABASE_ANON_KEY: '$SUPABASE_ANON_KEY'
+  _SUPABASE_URL: '$SUPABASE_URL'
+  _SENTRY_DSN: '$SENTRY_DSN'
+  _REDIRECT_TO: '$REDIRECT_TO'
+  _GATE_KEEPER: '$GATE_KEEPER'

@@ -1,8 +1,8 @@
 // Path: lib/models/user_profile.dart
 class UserProfile {
   final String id;
-  final String firstName;
-  final String lastName;
+  final String? firstName;
+  final String? lastName;
   final String email;
   final String? phone;
   final Map<String, dynamic>? data;
@@ -21,8 +21,8 @@ class UserProfile {
 
   UserProfile({
     required this.id,
-    required this.firstName,
-    required this.lastName,
+    this.firstName,
+    this.lastName,
     required this.email,
     this.phone,
     this.data,
@@ -84,6 +84,24 @@ class UserProfile {
       acceptedTerms: updates['accepted_terms'] ?? acceptedTerms,
       profileType: updates['profile_type'] ?? profileType,
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'first_name': firstName,
+      'last_name': lastName,
+      'email': email,
+      'phone': phone,
+      'job_title': jobTitle,
+      'age_range': ageRange,
+      'ethnicity': ethnicity,
+      'sexuality': sexuality,
+      'disability': disability,
+      'married': married,
+      'is_parent': isParent,
+      'team_selected': teamSelected,
+      'accepted_terms': acceptedTerms,
+    };
   }
 
   UserProfile copyWith({
