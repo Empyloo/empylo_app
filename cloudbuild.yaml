@@ -1,5 +1,5 @@
 steps:
-  - name: 'gcr.io/$PROJECT_ID/flutter:stable'
+  - name: 'gcr.io/$PROJECT_ID/flutter:master'
     env:
       - 'SUPABASE_ANON_KEY=${_SUPABASE_ANON_KEY}'
       - 'SUPABASE_URL=${_SUPABASE_URL}'
@@ -10,6 +10,7 @@ steps:
       - '-c'
       - |
         echo "******************* Start *******************"
+        flutter channel stable
         flutter upgrade
         flutter --version
         ls -al
