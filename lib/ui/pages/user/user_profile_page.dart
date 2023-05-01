@@ -1,7 +1,9 @@
 // Path: lib/ui/pages/user/user_profile_page.dartimport 'package:empylo_app/models/user_profile.dart';
 import 'package:empylo_app/state_management/access_box_provider.dart';
+import 'package:empylo_app/state_management/router_provider.dart';
 import 'package:empylo_app/state_management/user_profile_provider.dart';
 import 'package:empylo_app/ui/molecules/inputs/text_form_fields.dart';
+import 'package:empylo_app/ui/molecules/widgets/teams_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -176,12 +178,22 @@ class ProfilePage extends ConsumerWidget {
                       _updateField(context, ref, 'is_parent', newValue);
                     },
                   ),
+                  // const TeamList(),
                   CheckboxListTile(
                     title: const Text('Accept Terms'),
                     value: userProfile?.acceptedTerms ?? false,
                     onChanged: (bool? newValue) {
                       _updateField(context, ref, 'accepted_terms', newValue);
                     },
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      ref.read(routerProvider).go('/');
+                    },
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.blue.withOpacity(0.7),
+                    ),
+                    child: const Text('Go to Login Page'),
                   ),
                 ],
               ),

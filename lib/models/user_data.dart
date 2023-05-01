@@ -38,7 +38,8 @@ class User {
     var list = json['identities'] as List;
     List<Identity> identitiesList =
         list.map((i) => Identity.fromJson(i)).toList();
-    List<Factor> factorsList = json['factors'];
+    var factorsList = json['factors'] as List;
+    List<Factor> factors = factorsList.map((f) => Factor.fromJson(f)).toList();
     return User(
       id: json['id'],
       aud: json['aud'],
@@ -54,7 +55,7 @@ class User {
       identities: identitiesList,
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
-      factors: factorsList,
+      factors: factors,
     );
   }
 

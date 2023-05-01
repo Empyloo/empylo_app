@@ -128,7 +128,11 @@ class HttpClient {
       try {
         return await request();
       } on DioError catch (e) {
-        _handleError(e, method);
+        bool shouldRetry = await _handleError(e, method);
+
+        if (!shouldRetry) {
+          rethrow;
+        }
 
         retries++;
         await Future.delayed(Duration(milliseconds: delay));
@@ -142,7 +146,7 @@ class HttpClient {
     throw Exception('Could not connect to server.');
   }
 
-  void _handleError(DioError e, HttpMethod method) async {
+  Future<bool> _handleError(DioError e, HttpMethod method) async {
     await _sentry.sendErrorEvent(
       ErrorEvent(
         message: e.toString(),
@@ -151,18 +155,21 @@ class HttpClient {
       ),
     );
 
-    if (e.response != null && e.response!.data['error'] == 'invalid_grant') {
-      throw e;
+    if (e.response != null &&
+        e.response!.data is Map<String, dynamic> &&
+        (e.response!.data as Map<String, dynamic>)['error'] ==
+            'invalid_grant') {
+      return false;
     } else if (e.response!.statusCode == 400) {
-      throw e;
+      return false;
     } else if (e.response!.statusCode == 401) {
-      throw e;
+      return false;
     } else if (e.response!.statusCode == 403) {
-      throw e;
+      return false;
     } else if (e.response!.statusCode == 404) {
-      throw e;
+      return false;
     } else {
-      throw e;
+      return true;
     }
   }
 }

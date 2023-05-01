@@ -1,5 +1,6 @@
 // Path: lib/state_management/user_notifier.dart
 import 'dart:async';
+import 'package:dio/dio.dart';
 import 'package:empylo_app/models/sentry.dart';
 import 'package:empylo_app/models/user_profile.dart';
 import 'package:empylo_app/services/http_client.dart';
@@ -156,7 +157,6 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
           ref.read(userProfileNotifierProvider.notifier);
       await userProfileNotifier.getUserProfile(
           response.data['user']['id'], response.data['access_token']);
-        
 
       // Check if the user has accepted the terms
       final UserProfile? userProfile = ref.read(userProfileNotifierProvider);
@@ -266,17 +266,17 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
 
   // Implement refresh token
   Future<void> refreshToken({
-    required String accessToken,
     required String token,
     required WidgetRef ref,
   }) async {
     try {
+      print('Refreshing token...');
       final response = await _httpClient.post(
         url: '$_baseUrl/auth/v1/token?grant_type=refresh_token',
         headers: {
           'Content-Type': 'application/json',
           'apikey': _anonKey,
-          'Authorization': 'Bearer $accessToken',
+          // 'Authorization': 'Bearer $accessToken',
         },
         data: {
           'refresh_token': token,
@@ -291,6 +291,7 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
         throw Exception('Token refresh failed');
       }
     } catch (e) {
+      print('Error refreshing token: $e');
       await _sentry.sendErrorEvent(
         ErrorEvent(
           message: 'Error refreshing token: $e',
@@ -321,9 +322,12 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
       if (response.data['id'] != null) {
         state = const AsyncValue.data(UserState.loggedIn);
         return true;
-      } else if (response.data['error'] == 'invalid_token') {
+      }
+      return false;
+    } on DioError catch (e) {
+      if (e.response?.statusCode == 401) {
+        print('Token validation failed, trying to refresh token...');
         await this.refreshToken(
-          accessToken: accessToken,
           token: refreshToken,
           ref: ref,
         );
@@ -331,10 +335,10 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
       } else {
         await _sentry.sendErrorEvent(
           ErrorEvent(
-            message: 'Token validation failed',
+            message: 'Token validation and refresh failed.',
             level: 'error',
             extra: {
-              'session': response.data,
+              'session': e.response?.data,
               'url': '$_baseUrl/auth/v1/user',
             },
           ),

@@ -34,6 +34,7 @@ class UserService {
     required List<String> emails,
     String? organizationId,
     String? organizationName,
+    String? role,
     String? accessToken,
   }) async {
     try {
@@ -47,6 +48,7 @@ class UserService {
           'emails': emails,
           'organizationId': organizationId,
           'organizationName': organizationName,
+          'role': role,
         },
       );
     } catch (e) {

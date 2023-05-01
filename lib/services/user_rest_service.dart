@@ -172,4 +172,27 @@ class UserRestService {
       rethrow;
     }
   }
+
+  Future<void> removeUserFromTeam(
+      String userId, String teamId, String accessToken) async {
+    try {
+      await _client.delete(
+        url:
+            '$remoteBaseUrl/rest/v1/user_team_mapping?user_id=eq.$userId&team_id=eq.$teamId',
+        headers: {
+          'apikey': remoteAnonKey,
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+    } catch (e) {
+      await _sentry.sendErrorEvent(
+        ErrorEvent(
+          message: 'Error removing user from team',
+          level: 'error',
+          extra: {'context': 'UserRestService.removeUserFromTeam', 'error': e},
+        ),
+      );
+      rethrow;
+    }
+  }
 }

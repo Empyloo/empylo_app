@@ -1,4 +1,5 @@
 // Path: lib/services/router_provider.dart
+import 'package:empylo_app/models/redirect_params.dart';
 import 'package:empylo_app/state_management/auth_state_notifier.dart';
 import 'package:empylo_app/ui/pages/dashboard/dash.dart';
 import 'package:empylo_app/ui/pages/error/erro_page.dart';
@@ -89,14 +90,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'set-password',
         path: '/set-password',
         builder: (context, state) {
-          final Map<String, String> tokens = extractTokensFromUrl();
-          print('Tokens: $tokens');
-          if (tokens.containsKey('access_token') &&
-              tokens.containsKey('refresh_token')) {
-            return SetPasswordPage(
-              accessToken: tokens['access_token']!,
-              refreshToken: tokens['refresh_token']!,
-            );
+          RedirectParams? params = getQueryParams(Uri.base);
+          if (params != null) {
+            return SetPasswordPage(redirectParams: params);
           } else {
             return const ErrorPage(
               'You do not have permission to access this page.',
@@ -107,14 +103,3 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
-
-String _getInitialLocation() {
-  final baseUri = Uri.base;
-  final path = baseUri.path;
-  final queryParameters = baseUri.queryParameters;
-  final queryString = queryParameters.entries
-      .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
-      .join('&');
-  final newPath = path + (queryString.isNotEmpty ? '?$queryString' : '');
-  return newPath;
-}

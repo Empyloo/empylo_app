@@ -1,3 +1,4 @@
+// Path: lib/models/session.dart
 import 'package:empylo_app/models/user_data.dart';
 
 class Session {

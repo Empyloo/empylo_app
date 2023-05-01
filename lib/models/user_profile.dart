@@ -7,6 +7,7 @@ class UserProfile {
   final String? phone;
   final Map<String, dynamic>? data;
   final String? jobTitle;
+  final String companyID; 
   final String? gender;
   final bool? married;
   final String? ethnicity;
@@ -27,6 +28,7 @@ class UserProfile {
     this.phone,
     this.data,
     this.jobTitle,
+    required this.companyID,
     this.gender,
     this.married,
     this.ethnicity,
@@ -49,6 +51,7 @@ class UserProfile {
       phone: json['phone'],
       data: json['data'],
       jobTitle: json['job_title'],
+      companyID: json['company_id'],
       gender: json['gender'],
       married: json['married'],
       ethnicity: json['ethnicity'],
@@ -72,6 +75,7 @@ class UserProfile {
       phone: updates['phone'] ?? phone,
       data: updates['data'] ?? data,
       jobTitle: updates['job_title'] ?? jobTitle,
+      companyID: updates['company_id'] ?? companyID,
       gender: updates['gender'] ?? gender,
       married: updates['married'] ?? married,
       ethnicity: updates['ethnicity'] ?? ethnicity,
@@ -93,6 +97,7 @@ class UserProfile {
       'email': email,
       'phone': phone,
       'job_title': jobTitle,
+      'compoany_id': companyID,
       'age_range': ageRange,
       'ethnicity': ethnicity,
       'sexuality': sexuality,
@@ -112,6 +117,7 @@ class UserProfile {
     String? phone,
     Map<String, dynamic>? data,
     String? jobTitle,
+    String? companyID,
     String? gender,
     bool? married,
     String? ethnicity,
@@ -132,6 +138,7 @@ class UserProfile {
       phone: phone ?? this.phone,
       data: data ?? this.data,
       jobTitle: jobTitle ?? this.jobTitle,
+      companyID: companyID ?? this.companyID,
       gender: gender ?? this.gender,
       married: married ?? this.married,
       ethnicity: ethnicity ?? this.ethnicity,

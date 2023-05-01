@@ -10,7 +10,6 @@ Future<bool?> handleTokenValidation({
   required BuildContext context,
 }) async {
   if (accessToken != null && refreshToken != null) {
-    print('Tokens found: validating...');
     final response = await ref.read(userProvider.notifier).validateToken(
         accessToken: accessToken,
         refreshToken: refreshToken,

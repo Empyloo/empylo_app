@@ -1,19 +1,11 @@
 // Path: lib/utils/get_query_params.dart
-Map<String, String> extractTokensFromUrl() {
-  final queryParams = Uri.base.queryParameters;
-  final accessToken = queryParams['access_token'];
-  final refreshToken = queryParams['refresh_token'];
+import 'package:empylo_app/models/redirect_params.dart';
 
-  Map<String, String> tokens = {};
-
-  if (accessToken != null) {
-    tokens['access_token'] = accessToken;
+RedirectParams? getQueryParams(Uri uri) {
+  final decodedFragment = Uri.decodeFull(uri.fragment).replaceAll('#', '?');
+  final uriObject = Uri.parse(decodedFragment);
+  if (uriObject.queryParameters['access_token'] == null) {
+    return null;
   }
-
-  if (refreshToken != null) {
-    tokens['refresh_token'] = refreshToken;
-  }
-
-  return tokens;
+  return RedirectParams.fromJson(uriObject.queryParameters);
 }
-
