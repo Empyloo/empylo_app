@@ -5,6 +5,7 @@ import 'package:empylo_app/constants/api_constants.dart';
 import 'package:empylo_app/models/sentry.dart';
 import 'package:empylo_app/models/team.dart';
 import 'package:empylo_app/models/user_profile.dart';
+import 'package:empylo_app/models/user_team_mapping.dart';
 import 'package:empylo_app/services/http_client.dart';
 import 'package:empylo_app/services/sentry_service.dart';
 
@@ -16,20 +17,23 @@ class UserRestService {
       : _client = client,
         _sentry = sentry;
 
-  Future<List<Team>> getUserTeams(String userId, String accessToken) async {
+  Future<List<UserTeamMapping>> getUserTeams(
+      String userId, String accessToken) async {
     try {
       final response = await _client.get(
         url:
-            '$remoteBaseUrl/rest/v1/user_team_mapping?user_id=eq.$userId&select=team_id!team(*,company(*))',
+            '$remoteBaseUrl/rest/v1/user_team_mapping?user_id=eq.$userId', //&select=team_id!team(*,company(*))',
         headers: {
           'apikey': remoteAnonKey,
           'Authorization': 'Bearer $accessToken',
         },
       );
       print('getUserTeams response: ${response.data}');
-      return List<Team>.from(
-          response.data.map((teamData) => Team.fromJson(teamData['team'])));
+      return response.data
+          .map<UserTeamMapping>((mapping) => UserTeamMapping.fromJson(mapping))
+          .toList();
     } catch (e) {
+      print('getUserTeams error: ${e.toString()}');
       await _sentry.sendErrorEvent(
         ErrorEvent(
           message: 'Error fetching user teams',
@@ -104,7 +108,8 @@ class UserRestService {
         },
       );
       print('getCompanyTeams response: ${response.data}');
-      return response.data;
+      return List<Team>.from(
+          response.data.map((teamData) => Team.fromJson(teamData)));
     } catch (e) {
       await _sentry.sendErrorEvent(
         ErrorEvent(

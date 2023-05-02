@@ -24,6 +24,11 @@ class LoginStateNotifier extends StateNotifier<LoginState> {
     state = state.copyWith(loading: !state.loading);
   }
 
+  void clearTextFields() {
+    state.email.clear();
+    state.password.clear();
+  }
+
   void disposeControllers() {
     state.email.dispose();
     state.password.dispose();

@@ -17,6 +17,7 @@ class ProfilePage extends ConsumerWidget {
     final userProfile = ref.watch(userProfileNotifierProvider);
     final userProfileNotifier = ref.read(userProfileNotifierProvider.notifier);
     final hasChanges = ref.watch(hasChangesProvider);
+    final box = ref.watch(accessBoxProvider);
 
     void _updateField(
         BuildContext context, WidgetRef ref, String field, dynamic value) {
@@ -178,7 +179,7 @@ class ProfilePage extends ConsumerWidget {
                       _updateField(context, ref, 'is_parent', newValue);
                     },
                   ),
-                  // const TeamList(),
+                  const TeamList(),
                   CheckboxListTile(
                     title: const Text('Accept Terms'),
                     value: userProfile?.acceptedTerms ?? false,
@@ -188,12 +189,21 @@ class ProfilePage extends ConsumerWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      ref.read(routerProvider).go('/');
+                      ref.read(routerProvider).go('/home');
                     },
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.blue.withOpacity(0.7),
                     ),
-                    child: const Text('Go to Login Page'),
+                    child: const Text('Go to Home Page'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      // remove session from Hive box
+                      box.asData!.value.delete('session');
+                      // navigate to login page
+                      ref.read(routerProvider).go('/');
+                    },
+                    child: const Text('Logout'),
                   ),
                 ],
               ),

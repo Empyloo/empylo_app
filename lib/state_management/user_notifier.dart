@@ -151,7 +151,6 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
       }
       state = const AsyncValue.data(UserState.loggedIn);
       ref.read(authStateProvider.notifier).login(userRole);
-
       // Fetch the user profile
       final userProfileNotifier =
           ref.read(userProfileNotifierProvider.notifier);
@@ -162,7 +161,7 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
       final UserProfile? userProfile = ref.read(userProfileNotifierProvider);
       print('User profile: $userProfile');
       print('User profile accepted terms: ${userProfile?.acceptedTerms}');
-
+      ref.read(loginStateProvider.notifier).clearTextFields();
       if (userProfile?.acceptedTerms == true) {
         print('User has accepted terms, redirecting to home page...');
         ref.read(routerProvider).go('/home');

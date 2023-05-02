@@ -9,30 +9,32 @@ class Team {
   final int level;
   final String? levelName;
   final String companyId;
+  bool selected;
 
-  Team({
-    required this.id,
-    required this.name,
-    this.description,
-    this.logo,
-    this.data,
-    this.parentId,
-    required this.level,
-    this.levelName,
-    required this.companyId
-  });
+  Team(
+      {required this.id,
+      required this.name,
+      this.description,
+      this.logo,
+      this.data,
+      this.parentId,
+      required this.level,
+      this.levelName,
+      required this.companyId,
+      this.selected = false});
 
   factory Team.fromJson(Map<String, dynamic> json) {
     return Team(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-      logo: json['logo'],
-      data: json['data'],
-      parentId: json['parent_id'],
-      level: json['level'],
-      levelName: json['level_name'],
-      companyId: json['company_id']
+        id: json['id'],
+        name: json['name'],
+        description: json['description'],
+        logo: json['logo'],
+        data: json['data'],
+        parentId: json['parent_id'],
+        level: json['level'],
+        levelName: json['level_name'],
+        companyId: json['company_id'],
+        selected: false,
     );
   }
 

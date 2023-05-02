@@ -1,10 +1,8 @@
 // Path: lib/ui/molecules/widgets/teams_list.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:empylo_app/state_management/selected_teams_notifier.dart';
-import 'package:empylo_app/state_management/company_teams_notifier.dart';
 import 'package:empylo_app/state_management/user_profile_provider.dart';
-import 'package:empylo_app/state_management/access_box_provider.dart';
+import 'package:empylo_app/state_management/team_data_notifier.dart';
 
 class TeamList extends ConsumerWidget {
   const TeamList({Key? key}) : super(key: key);
@@ -15,59 +13,93 @@ class TeamList extends ConsumerWidget {
     final String userId = userProfile?.id ?? '';
     final String companyID = userProfile?.companyID ?? '';
 
+    onError(e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
     return FutureBuilder(
-      future: ref.read(accessBoxProvider.future),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          final accessBox = snapshot.data;
-          final session = accessBox.get('session');
-          final String accessToken = session['access_token'];
-
-          ref
-              .read(companyTeamsNotifierProvider.notifier)
-              .fetchCompanyTeams(userId, accessToken);
-          ref
-              .read(selectedTeamsNotifierProvider.notifier)
-              .fetchUserTeams(userId, accessToken);
-
-          final companyTeams = ref.watch(companyTeamsNotifierProvider);
-          final selectedTeams = ref.watch(selectedTeamsNotifierProvider);
-
-          return ListView.builder(
-            itemCount: companyTeams.length,
-            itemBuilder: (context, index) {
-              final team = companyTeams[index];
-              bool isSelected = selectedTeams
-                  .any((selectedTeam) => selectedTeam.id == team.id);
-
-              return ListTile(
-                title: Text(team.name),
-                subtitle: Text(team.description ?? 'No description'),
-                trailing: isSelected
-                    ? IconButton(
-                        icon:
-                            const Icon(Icons.check_circle, color: Colors.green),
-                        onPressed: () {
-                          ref
-                              .read(selectedTeamsNotifierProvider.notifier)
-                              .removeUserFromTeam(userId, team.id, accessToken);
-                        },
-                      )
-                    : IconButton(
-                        icon: const Icon(Icons.add_circle_outline,
-                            color: Colors.grey),
-                        onPressed: () {
-                          ref
-                              .read(selectedTeamsNotifierProvider.notifier)
-                              .addUserToTeam(
-                                  userId, team.id, companyID, accessToken);
-                        },
-                      ),
-              );
-            },
-          );
+      future: ref
+          .watch(teamDataNotifierProvider.notifier)
+          .fetchAllData(userId, companyID, onError: onError),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return const Text('Error: Unable to fetch team data');
         } else {
-          return const CircularProgressIndicator();
+          final teamData = ref.watch(teamDataNotifierProvider);
+          final companyTeams = teamData.companyTeams;
+
+          List<Widget> teamWidgets = companyTeams
+              .map((team) => ListTile(
+                    tileColor: team.selected ? Colors.grey[200] : Colors.white,
+                    title: Text(
+                      team.name,
+                      style: TextStyle(
+                        fontWeight:
+                            team.selected ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                    trailing: IconButton(
+                      icon: team.selected
+                          ? const Icon(Icons.check_circle, color: Colors.green)
+                          : const Icon(Icons.add_circle_outline,
+                              color: Colors.grey),
+                      onPressed: () async {
+                        final teamDataNotifier =
+                            ref.read(teamDataNotifierProvider.notifier);
+                        if (team.selected) {
+                          await teamDataNotifier.removeUserFromTeam(
+                              userId, team.id, teamData,
+                              onError: onError);
+                        } else {
+                          await teamDataNotifier.addUserToTeam(
+                              userId, team.id, companyID, teamData,
+                              onError: onError);
+                        }
+                      },
+                    ),
+                  ))
+              .toList();
+
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.grey),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    'Select a team/s',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Flexible(
+                  fit: FlexFit.loose,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: teamWidgets,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
         }
       },
     );
