@@ -21,6 +21,11 @@ samples, guidance on mobile development, and a full API reference.
 `flutter pub outdated`
 `flutter pub upgrade --major-versions`
 `flutter run -d chrome`
+
+### Target a start File
+
+`flutter run -d chrome -t lib/build_atoms_main.dart`
+
 ## Testing
 https://app.empylo.com/#/set-password#error=unauthorized_client&error_code=401&error_description=Email+link+is+invalid+or+has+expired
 `http://localhost:49296/#/#access_token=1235&refresh_token=asdf&token_type=bearer&expires_in=3600`

@@ -2,6 +2,7 @@
 import 'package:empylo_app/state_management/access_box_provider.dart';
 import 'package:empylo_app/state_management/router_provider.dart';
 import 'package:empylo_app/state_management/user_profile_provider.dart';
+import 'package:empylo_app/tokens/sizes.dart';
 import 'package:empylo_app/ui/molecules/inputs/text_form_fields.dart';
 import 'package:empylo_app/ui/molecules/widgets/teams_list.dart';
 import 'package:flutter/material.dart';
@@ -86,124 +87,168 @@ class ProfilePage extends ConsumerWidget {
                     onSubmitted: (value) =>
                         _updateField(context, ref, 'job_title', value),
                   ),
-                  DropdownButtonFormField<String>(
-                    value: userProfile?.ageRange,
-                    decoration: InputDecoration(
-                      labelText: 'Age Range',
-                      border: const OutlineInputBorder(
-                        borderRadius: borderRadius,
-                        borderSide: BorderSide.none,
+                  SizedBox(
+                    width: Sizes.massive,
+                    height: Sizes.xxl,
+                    child: DropdownButtonFormField<String>(
+                      value: userProfile?.ageRange,
+                      decoration: InputDecoration(
+                        labelText: 'Age Range',
+                        border: const OutlineInputBorder(
+                          borderRadius: borderRadius,
+                          borderSide: BorderSide.none,
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 10.0, vertical: 10.0),
                       ),
-                      filled: true,
-                      fillColor: Colors.grey.shade100,
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 10.0, vertical: 10.0),
+                      items: <String>[
+                        '16-25',
+                        '26-35',
+                        '36-45',
+                        '46-55',
+                        '56-65',
+                        '66+'
+                      ].map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        _updateField(context, ref, 'age_range', newValue);
+                      },
                     ),
-                    items: <String>[
-                      '16-25',
-                      '26-35',
-                      '36-45',
-                      '46-55',
-                      '56-65',
-                      '66+'
-                    ].map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      _updateField(context, ref, 'age_range', newValue);
-                    },
                   ),
-                  DropdownButtonFormField<String>(
-                    value: userProfile?.ethnicity,
-                    decoration: const InputDecoration(
-                      labelText: 'Ethnicity',
-                      border: OutlineInputBorder(
-                        borderRadius: borderRadius,
-                        borderSide: BorderSide.none,
+                  SizedBox(
+                    width: Sizes.massive,
+                    height: Sizes.xxl,
+                    child: DropdownButtonFormField<String>(
+                      value: userProfile?.ethnicity,
+                      decoration: InputDecoration(
+                        labelText: 'Ethnicity',
+                        border: const OutlineInputBorder(
+                          borderRadius: borderRadius,
+                          borderSide: BorderSide.none,
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
                       ),
+                      items: <String>[
+                        'Ethnicity 1',
+                        'Ethnicity 2',
+                        'Ethnicity 3'
+                      ].map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        _updateField(context, ref, 'ethnicity', newValue);
+                      },
                     ),
-                    items: <String>['Ethnicity 1', 'Ethnicity 2', 'Ethnicity 3']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      _updateField(context, ref, 'ethnicity', newValue);
-                    },
                   ),
-                  DropdownButtonFormField<String>(
-                    value: userProfile?.sexuality,
-                    decoration: InputDecoration(
-                      labelText: 'Sexuality',
-                      border: const OutlineInputBorder(
-                        borderRadius: borderRadius,
-                        borderSide: BorderSide.none,
+                  SizedBox(
+                    width: Sizes.massive,
+                    height: Sizes.xxl,
+                    child: DropdownButtonFormField<String>(
+                      value: userProfile?.sexuality,
+                      decoration: InputDecoration(
+                        labelText: 'Sexuality',
+                        border: const OutlineInputBorder(
+                          borderRadius: borderRadius,
+                          borderSide: BorderSide.none,
+                        ),
+                        filled: true,
+                        fillColor:  Colors.grey.shade100,
                       ),
-                      filled: true,
-                      fillColor: Colors.grey.shade100,
+                      items: <String>[
+                        'Sexuality 1',
+                        'Sexuality 2',
+                        'Sexuality 3'
+                      ].map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        _updateField(context, ref, 'sexuality', newValue);
+                      },
                     ),
-                    items: <String>['Sexuality 1', 'Sexuality 2', 'Sexuality 3']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      _updateField(context, ref, 'sexuality', newValue);
-                    },
                   ),
-                  CheckboxListTile(
-                    title: const Text('Disability'),
-                    value: userProfile?.disability ?? false,
-                    onChanged: (bool? newValue) {
-                      _updateField(context, ref, 'disability', newValue);
-                    },
+                  SizedBox(
+                    width: Sizes.massive,
+                    height: Sizes.xxl,
+                    child: CheckboxListTile(
+                      title: const Text('Disability'),
+                      value: userProfile?.disability ?? false,
+                      onChanged: (bool? newValue) {
+                        _updateField(context, ref, 'disability', newValue);
+                      },
+                    ),
                   ),
-                  CheckboxListTile(
-                    title: const Text('Married'),
-                    value: userProfile?.married ?? false,
-                    onChanged: (bool? newValue) {
-                      _updateField(context, ref, 'married', newValue);
-                    },
+                  SizedBox(
+                    width: Sizes.massive,
+                    height: Sizes.xxl,
+                    child: CheckboxListTile(
+                      title: const Text('Married'),
+                      value: userProfile?.married ?? false,
+                      onChanged: (bool? newValue) {
+                        _updateField(context, ref, 'married', newValue);
+                      },
+                    ),
                   ),
-                  CheckboxListTile(
-                    title: const Text('Is Parent'),
-                    value: userProfile?.isParent ?? false,
-                    onChanged: (bool? newValue) {
-                      _updateField(context, ref, 'is_parent', newValue);
-                    },
+                  SizedBox(
+                    width: Sizes.massive,
+                    height: Sizes.xxl,
+                    child: CheckboxListTile(
+                      title: const Text('Is Parent'),
+                      value: userProfile?.isParent ?? false,
+                      onChanged: (bool? newValue) {
+                        _updateField(context, ref, 'is_parent', newValue);
+                      },
+                    ),
                   ),
                   const TeamList(),
-                  CheckboxListTile(
-                    title: const Text('Accept Terms'),
-                    value: userProfile?.acceptedTerms ?? false,
-                    onChanged: (bool? newValue) {
-                      _updateField(context, ref, 'accepted_terms', newValue);
-                    },
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      ref.read(routerProvider).go('/home');
-                    },
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.blue.withOpacity(0.7),
+                  SizedBox(
+                    width: Sizes.massive,
+                    height: Sizes.xxl,
+                    child: CheckboxListTile(
+                      title: const Text('Accept Terms'),
+                      value: userProfile?.acceptedTerms ?? false,
+                      onChanged: (bool? newValue) {
+                        _updateField(context, ref, 'accepted_terms', newValue);
+                      },
                     ),
-                    child: const Text('Go to Home Page'),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      // remove session from Hive box
-                      box.asData!.value.delete('session');
-                      // navigate to login page
-                      ref.read(routerProvider).go('/');
-                    },
-                    child: const Text('Logout'),
+                  SizedBox(
+                    width: Sizes.massive,
+                    height: Sizes.xxl,
+                    child: TextButton(
+                      onPressed: () {
+                        ref.read(routerProvider).go('/home');
+                      },
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.blue.withOpacity(0.7),
+                      ),
+                      child: const Text('Go to Home Page'),
+                    ),
+                  ),
+                  SizedBox(
+                    width: Sizes.massive,
+                    height: Sizes.xxl,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // remove session from Hive box
+                        box.asData!.value.delete('session');
+                        // navigate to login page
+                        ref.read(routerProvider).go('/');
+                      },
+                      child: const Text('Logout'),
+                    ),
                   ),
                 ],
               ),

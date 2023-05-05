@@ -31,6 +31,7 @@ class TeamList extends ConsumerWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.grey),
               ),
               child: const CircularProgressIndicator());
         } else if (snapshot.hasError) {

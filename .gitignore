@@ -48,6 +48,7 @@ lib/utils/impl/*
 
 # Experimental
 experiment*
+lib/example_credentials.dart
 
 # Scripts
 dcript*
