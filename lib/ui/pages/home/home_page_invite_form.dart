@@ -1,8 +1,10 @@
 // lib/ui/pages/home/home_page_invite_form.dart
 import 'package:dio/dio.dart';
+import 'package:empylo_app/models/company.dart';
 import 'package:empylo_app/state_management/auth_state_notifier.dart';
 import 'package:empylo_app/state_management/company_list_provider.dart';
 import 'package:empylo_app/state_management/selected_company_state.dart';
+import 'package:empylo_app/tokens/border_radius.dart';
 import 'package:empylo_app/tokens/decorations.dart';
 import 'package:empylo_app/tokens/edge_inserts.dart';
 import 'package:empylo_app/tokens/sizes.dart';
@@ -32,42 +34,33 @@ class HomePageInviteForm extends ConsumerWidget {
       );
     }
 
-    void onCompanySelected(String companyId, WidgetRef ref) {
-      final companyList = ref.watch(companyListNotifierProvider);
-
-      companyList.when(
-        data: (companyList) {
-          final selectedCompany =
-              companyList.firstWhere((company) => company.id == companyId);
-          // Update the selected company's id and name using providers
-          ref.read(selectedCompanyIdProvider.notifier).state =
-              selectedCompany.id;
-          ref.read(selectedCompanyNameProvider.notifier).state =
-              selectedCompany.name;
-        },
-        loading: () => {
-          // Handle loading state
-          const CircularProgressIndicator(),
-        },
-        error: (error, stackTrace) {
-          // Handle error state
-          showSnackBar('Error fetching companies: $error');
-        },
-      );
+    void onCompanySelected(Company? company, WidgetRef ref) {
+      if (company != null) {
+        ref.read(selectedCompanyIdProvider.notifier).state = company.id;
+        ref.read(selectedCompanyNameProvider.notifier).state = company.name;
+        organizationIdController.text = company.id ?? '';
+        organizationNameController.text = company.name;
+      }
     }
 
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          CustomContainer(
-            decoration: EmpyloBoxDecorations.lightOutlined,
-            margin: EmpyloEdgeInserts.s,
-            child: TextFormField(
+    return SizedBox(
+      width: Sizes.gigantic,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            TextFormField(
               controller: emailsController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Emails (comma separated)',
-                border: InputBorder.none,
+                border: const OutlineInputBorder(
+                  borderRadius: EmpyloBorderRadius.s,
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.grey.shade100,
+                contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 10.0, vertical: 10.0),
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -76,19 +69,15 @@ class HomePageInviteForm extends ConsumerWidget {
                 return null;
               },
             ),
-          ),
-          CustomContainer(
-            decoration: EmpyloBoxDecorations.lightOutlined,
-            margin: EmpyloEdgeInserts.s,
-            child: DropdownButtonFormField(
+            VerticalSpacing.s,
+            DropdownButtonFormField(
               value: ref.read(selectedRoleProvider),
               items: [
                 const DropdownMenuItem(value: 'user', child: Text('User')),
                 const DropdownMenuItem(value: 'admin', child: Text('Admin')),
                 DropdownMenuItem(
                     value: 'super_admin',
-                    enabled: authState.role == UserRole.admin ||
-                        authState.role == UserRole.superAdmin,
+                    enabled: authState.role == UserRole.superAdmin,
                     child: const Text('Super Admin')),
               ],
               onChanged: (value) {
@@ -98,76 +87,88 @@ class HomePageInviteForm extends ConsumerWidget {
                   ref.read(selectedRoleProvider.notifier).state = 'user';
                 }
               },
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Role',
-                border: InputBorder.none, // to remove the underline
-              ),
-            ),
-          ),
-          CustomContainer(
-            decoration: EmpyloBoxDecorations.lightOutlined,
-            margin: EmpyloEdgeInserts.s,
-            child: CompaniesDropDown(
-              onCompanySelected: (String? companyId) {
-                if (companyId != null) {
-                  onCompanySelected(companyId, ref);
-                  // change the value of the organizationIdController
-                  organizationIdController.text = companyId;
-                }
-              },
-            ),
-          ),
-          Container(
-            decoration: EmpyloBoxDecorations.lightOutlined,
-            margin: EmpyloEdgeInserts.s,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(Sizes.m),
+                border: const OutlineInputBorder(
+                  borderRadius: EmpyloBorderRadius.s,
+                  borderSide: BorderSide.none,
                 ),
-                minimumSize: const Size.fromHeight(Sizes.mega),
+                filled: true,
+                fillColor: Colors.grey.shade100,
+                contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 10.0, vertical: 10.0),
               ),
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  final userInviteService = ref.read(userInviteServiceProvider);
-                  final accessToken = ref
-                      .read(accessBoxProvider)
-                      .asData!
-                      .value
-                      .get('session')['access_token'];
-                  final emails = emailsController.text.split(',');
-                  final organizationId = organizationIdController.text;
-                  final organizationName = organizationNameController.text;
-                  final role = ref.read(selectedRoleProvider);
-
-                  print('Sending invites...');
-                  print("emails: $emails");
-                  print("organizationId: $organizationId");
-                  print("organizationName: $organizationName");
-                  print("role: $role");
-
-                  try {
-                    await userInviteService.invites(
-                      emails: emails,
-                      organizationId: organizationId.isNotEmpty
-                          ? organizationId
-                          : null, // check if the id is not null and not empty
-                      organizationName:
-                          organizationName.isNotEmpty ? organizationName : null,
-                      accessToken: accessToken,
-                      role: role,
-                    );
-                    showSnackBar('Invtes sent successfully');
-                  } catch (e) {
-                    print('Error sending invites: $e');
-                    showSnackBar('Error sending invites');
-                  }
-                }
-              },
-              child: const Text('Send Invites'),
             ),
-          ),
-        ],
+            VerticalSpacing.s,
+            // show the company dropdown only if the user is a super admin
+            if (authState.role == UserRole.superAdmin)
+              CompaniesDropDown(
+                onCompanySelected: (Company? company) {
+                  if (company != null) {
+                    onCompanySelected(company, ref);
+                    // change the value of the organizationIdController
+                    organizationIdController.text = company.id ?? '';
+                  }
+                },
+              ),
+            Container(
+              decoration: EmpyloBoxDecorations.lightOutlined,
+              margin: EmpyloEdgeInserts.s,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(Sizes.m),
+                  ),
+                  minimumSize: const Size.fromHeight(Sizes.mega),
+                ),
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    final userInviteService =
+                        ref.read(userInviteServiceProvider);
+                    final accessToken = ref
+                        .read(accessBoxProvider)
+                        .asData!
+                        .value
+                        .get('session')['access_token'];
+                    final emails = emailsController.text.split(',');
+                    final organizationId = organizationIdController.text;
+                    final organizationName = organizationNameController.text;
+                    final role = ref.read(selectedRoleProvider);
+
+                    print('Sending invites...');
+                    print("emails: $emails");
+                    print("organizationId: $organizationId");
+                    print("organizationName: $organizationName");
+                    print("role: $role");
+
+                    try {
+                      await userInviteService.invites(
+                        emails: emails,
+                        organizationId: organizationId.isNotEmpty
+                            ? organizationId
+                            : null, // check if the id is not null and not empty
+                        organizationName:
+                            organizationName.isNotEmpty ? organizationName : null,
+                        accessToken: accessToken,
+                        role: role,
+                      );
+                      showSnackBar('Invtes sent successfully');
+                    } catch (e) {
+                      print('Error sending invites: $e');
+                      showSnackBar('Error sending invites');
+                    }
+
+                    // clear the form
+                    emailsController.clear();
+                    organizationIdController.clear();
+                    organizationNameController.clear();
+                  }
+                },
+                child: const Text('Send Invites'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

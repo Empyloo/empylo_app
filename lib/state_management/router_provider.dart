@@ -1,6 +1,8 @@
 // Path: lib/services/router_provider.dart
+import 'package:empylo_app/build_atoms_main.dart';
 import 'package:empylo_app/models/redirect_params.dart';
 import 'package:empylo_app/state_management/auth_state_notifier.dart';
+import 'package:empylo_app/ui/molecules/widgets/companies/company_profile_page.dart';
 import 'package:empylo_app/ui/pages/dashboard/dash.dart';
 import 'package:empylo_app/ui/pages/error/erro_page.dart';
 import 'package:empylo_app/ui/pages/home/home.dart';
@@ -20,10 +22,10 @@ final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     routes: [
       GoRoute(
-        name: 'login',
-        path: '/',
-        builder: (context, state) => const LoginPage(),
-      ),
+          name: 'login',
+          path: '/',
+          builder: (context, state) => const ShowPage() // const LoginPage(),
+          ),
       GoRoute(
         name: 'profile',
         path: '/profile',
@@ -74,6 +76,23 @@ final routerProvider = Provider<GoRouter>((ref) {
               (authState.role == UserRole.admin ||
                   authState.role == UserRole.superAdmin)) {
             return const DashboardPage();
+          } else {
+            return const ErrorPage(
+              'You do not have permission to access this page.',
+            );
+          }
+        },
+      ),
+      GoRoute(
+        name: 'company-profile',
+        path: '/company-profile',
+        builder: (context, state) {
+          final authState = ref.watch(authStateProvider);
+          final companyId = state.queryParams['id']!;
+          if (authState.isAuthenticated &&
+              (authState.role == UserRole.admin ||
+                  authState.role == UserRole.superAdmin)) {
+            return CompanyProfilePage(companyId: companyId);
           } else {
             return const ErrorPage(
               'You do not have permission to access this page.',

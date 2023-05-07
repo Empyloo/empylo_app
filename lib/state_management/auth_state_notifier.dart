@@ -11,7 +11,8 @@ class AuthState {
 }
 
 class AuthStateNotifier extends StateNotifier<AuthState> {
-  AuthStateNotifier() : super(AuthState(isAuthenticated: false, role: UserRole.user));
+  AuthStateNotifier()
+      : super(AuthState(isAuthenticated: false, role: UserRole.user));
 
   void login(UserRole role) {
     state = AuthState(isAuthenticated: true, role: role);
@@ -23,6 +24,7 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
 }
 
 // Create a provider for the AuthStateNotifier
-final authStateProvider = StateNotifierProvider<AuthStateNotifier, AuthState>((ref) {
+final authStateProvider =
+    StateNotifierProvider<AuthStateNotifier, AuthState>((ref) {
   return AuthStateNotifier();
 });

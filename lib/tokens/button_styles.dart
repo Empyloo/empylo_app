@@ -41,7 +41,7 @@ class EmpyloButtonStyles {
   );
 
   static final textPrimary = TextButton.styleFrom(
-    foregroundColor: ColorTokens.primary,
+    foregroundColor: ColorTokens.text,
     textStyle: EmpyloTypography.body.copyWith(color: ColorTokens.primary),
     padding: EmpyloEdgeInsertsSymmetric.m,
     shape: const RoundedRectangleBorder(borderRadius: EmpyloBorderRadius.l),

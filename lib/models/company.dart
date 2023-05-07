@@ -1,19 +1,27 @@
 // Path: lib/models/company.dart
 
 class Company {
-  final String id;
+  final String? id;
   final String name;
   final String email;
   final int size;
-  final bool subscribed;
+  final bool? subscribed;
+  final String? logo;
+  final String? phone;
+  final String? description;
+  final Map<String, dynamic>? data;
   bool selected;
 
   Company({
-    required this.id,
+    this.id,
     required this.name,
     required this.email,
     required this.size,
-    required this.subscribed,
+    this.subscribed,
+    this.logo,
+    this.phone,
+    this.description,
+    this.data,
     this.selected = false,
   });
 
@@ -24,6 +32,23 @@ class Company {
       email: json['email'],
       size: json['size'],
       subscribed: json['subscribed'],
+      logo: json['logo'],
+      phone: json['phone'],
+      description: json['description'],
+      data: json['data'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'email': email,
+      'size': size,
+      'subscribed': subscribed,
+      'logo': logo,
+      'phone': phone,
+      'description': description,
+      'data': data,
+    };
   }
 }
