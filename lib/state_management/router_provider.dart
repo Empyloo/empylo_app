@@ -25,10 +25,10 @@ final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     routes: [
       GoRoute(
-          name: 'login',
-          path: '/',
-          builder: (context, state) => const ShowPage() // const LoginPage(),
-          ),
+        name: 'login',
+        path: '/',
+        builder: (context, state) => const LoginPage(), //const ShowPage()
+      ),
       GoRoute(
         name: 'user-profile',
         path: '/user-profile',
