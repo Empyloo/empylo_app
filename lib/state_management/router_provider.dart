@@ -1,7 +1,10 @@
 // Path: lib/services/router_provider.dart
 import 'package:empylo_app/build_atoms_main.dart';
 import 'package:empylo_app/models/redirect_params.dart';
+import 'package:empylo_app/models/user_profile.dart';
 import 'package:empylo_app/state_management/auth_state_notifier.dart';
+import 'package:empylo_app/state_management/user_profile_provider.dart';
+import 'package:empylo_app/state_management/users/user_profiles_list.dart';
 import 'package:empylo_app/ui/molecules/widgets/companies/company_profile_page.dart';
 import 'package:empylo_app/ui/pages/dashboard/dash.dart';
 import 'package:empylo_app/ui/pages/error/erro_page.dart';
@@ -27,14 +30,27 @@ final routerProvider = Provider<GoRouter>((ref) {
           builder: (context, state) => const ShowPage() // const LoginPage(),
           ),
       GoRoute(
-        name: 'profile',
-        path: '/profile',
+        name: 'user-profile',
+        path: '/user-profile',
         builder: (context, state) {
           final authState = ref.watch(authStateProvider);
-          print('Going to profile page');
-          print('Auth State: ${authState.isAuthenticated}');
-          if (authState.isAuthenticated) {
-            return const ProfilePage();
+          final userId = state.queryParams['id']!;
+          final userProfilesList = ref.watch(userProfilesListProvider);
+          final userProfileNotifier = ref.watch(userProfileNotifierProvider);
+          UserProfile? userProfile;
+          try {
+            userProfile = userProfilesList.firstWhere(
+              (userProfile) => userProfile.id == userId,
+            );
+          } catch (_) {
+            userProfile = null;
+          }
+
+          userProfile ??=
+              (userProfileNotifier?.id == userId ? userProfileNotifier : null);
+
+          if (authState.isAuthenticated && userProfile != null) {
+            return UserProfilePage(userProfile: userProfile);
           } else {
             return const ErrorPage(
                 'You do not have permission to access this page.');

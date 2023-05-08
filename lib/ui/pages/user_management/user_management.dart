@@ -1,42 +1,36 @@
-// Path: lib/ui/pages/company_management/super_admin_company_list.dart
-import 'package:empylo_app/models/company.dart';
-import 'package:empylo_app/state_management/auth_state_notifier.dart';
-import 'package:empylo_app/state_management/company_list_provider.dart';
+// Path: lib/ui/pages/user_management/user_management.dart
+import 'package:empylo_app/models/user_profile.dart';
+import 'package:empylo_app/state_management/users/user_profiles_list.dart';
 import 'package:empylo_app/tokens/colors.dart';
-import 'package:empylo_app/tokens/sizes.dart';
 import 'package:empylo_app/tokens/spacing.dart';
 import 'package:empylo_app/tokens/typography.dart';
-import 'package:empylo_app/ui/pages/company_management/layouts/desktop.dart';
-import 'package:empylo_app/ui/pages/company_management/layouts/mobile.dart';
-import 'package:empylo_app/ui/pages/company_management/layouts/tablet.dart';
+import 'package:empylo_app/ui/pages/user_management/layouts/layouts.dart';
+import 'package:empylo_app/tokens/sizes.dart';
+import 'package:empylo_app/utils/get_access_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SuperAdminCompanyList extends ConsumerWidget {
-  const SuperAdminCompanyList({Key? key}) : super(key: key);
+class UserManagement extends ConsumerWidget {
+  const UserManagement({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authStateProvider);
-    final companyList = ref.watch(companyListNotifierProvider);
+    final userProfiles = ref.watch(userProfilesListProvider);
 
-    if (companyList.isEmpty) {
+    if (userProfiles.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
+        final accessToken = await getAccessToken(ref);
         await ref
-            .read(companyListNotifierProvider.notifier)
-            .fetchCompanies(ref);
+            .read(userProfilesListProvider.notifier)
+            .getUserProfiles(accessToken);
       });
       return const Center(child: CircularProgressIndicator());
-    }
-
-    if (authState.role != UserRole.superAdmin) {
-      return const Text('You do not have permission to view this page.');
     }
 
     return Column(
       children: [
         Text(
-          "Company List",
+          "User List",
           style:
               EmpyloTypography.caption.copyWith(color: ColorTokens.textLight),
         ),
@@ -50,9 +44,9 @@ class SuperAdminCompanyList extends ConsumerWidget {
 
             return Column(
               children: List.generate(
-                companyList.length,
+                userProfiles.length,
                 (index) {
-                  Company company = companyList[index];
+                  UserProfile userProfile = userProfiles[index];
 
                   return Container(
                     width: double.infinity,
@@ -64,22 +58,19 @@ class SuperAdminCompanyList extends ConsumerWidget {
                           : Colors.blue.shade50,
                     ),
                     child: ListTile(
-                      title: Text(company.name),
+                      // title: Text(userProfile.name),
                       subtitle: isDesktopLayout
                           ? DesktopLayout(
-                              id: company.id!,
-                              email: company.email,
+                              userProfile: userProfile,
                               ref: ref,
                             )
                           : isTabletLayout
                               ? TabletLayout(
-                                  id: company.id!,
-                                  email: company.email,
+                                  userProfile: userProfile,
                                   ref: ref,
                                 )
                               : MobileLayout(
-                                  id: company.id!,
-                                  email: company.email,
+                                  userProfile: userProfile,
                                   ref: ref,
                                 ),
                     ),

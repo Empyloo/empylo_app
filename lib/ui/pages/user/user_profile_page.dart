@@ -1,26 +1,37 @@
-// Path: lib/ui/pages/user/user_profile_page.dartimport 'package:empylo_app/models/user_profile.dart';
+// Path: lib/ui/pages/user/user_profile_page.dart
+import 'package:empylo_app/models/user_profile.dart';
 import 'package:empylo_app/state_management/access_box_provider.dart';
+import 'package:empylo_app/state_management/company_access_checker_provider.dart';
 import 'package:empylo_app/state_management/router_provider.dart';
+import 'package:empylo_app/state_management/user_access_checker_provider.dart';
 import 'package:empylo_app/state_management/user_profile_provider.dart';
 import 'package:empylo_app/tokens/sizes.dart';
 import 'package:empylo_app/ui/molecules/inputs/text_form_fields.dart';
 import 'package:empylo_app/ui/molecules/widgets/teams_list.dart';
+import 'package:empylo_app/ui/pages/error/erro_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final hasChangesProvider = StateProvider<bool>((ref) => false);
 
-class ProfilePage extends ConsumerWidget {
-  const ProfilePage({super.key});
+class UserProfilePage extends ConsumerWidget {
+  final UserProfile userProfile;
+
+  const UserProfilePage({super.key, required this.userProfile});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userProfile = ref.watch(userProfileNotifierProvider);
-    final userProfileNotifier = ref.read(userProfileNotifierProvider.notifier);
+    // check viewer is
+    final isUserAuthorized = ref.watch(userAccessCheckerProvider(userProfile));
+
+    if (!isUserAuthorized) {
+      return const ErrorPage('You do not have permission to access this page.');
+    }
+
     final hasChanges = ref.watch(hasChangesProvider);
     final box = ref.watch(accessBoxProvider);
 
-    void _updateField(
+    void updateField(
         BuildContext context, WidgetRef ref, String field, dynamic value) {
       ref.read(userProfileNotifierProvider.notifier).updateField(field, value);
       ref.read(hasChangesProvider.notifier).state = true;
@@ -51,7 +62,7 @@ class ProfilePage extends ConsumerWidget {
               child: Column(
                 children: [
                   TextFormFieldInput(
-                    controller: TextEditingController(text: userProfile?.email),
+                    controller: TextEditingController(text: userProfile.email),
                     keyboardType: TextInputType.emailAddress,
                     edgeInsetsGeo: const EdgeInsets.symmetric(vertical: 1.0),
                     decoration: InputDecoration(
@@ -66,11 +77,11 @@ class ProfilePage extends ConsumerWidget {
                           horizontal: 10.0, vertical: 10.0),
                     ),
                     onSubmitted: (value) =>
-                        _updateField(context, ref, 'email', value),
+                        updateField(context, ref, 'email', value),
                   ),
                   TextFormFieldInput(
                     controller:
-                        TextEditingController(text: userProfile?.jobTitle),
+                        TextEditingController(text: userProfile.jobTitle),
                     keyboardType: TextInputType.text,
                     edgeInsetsGeo: const EdgeInsets.symmetric(vertical: 8.0),
                     decoration: InputDecoration(
@@ -85,13 +96,13 @@ class ProfilePage extends ConsumerWidget {
                           horizontal: 10.0, vertical: 10.0),
                     ),
                     onSubmitted: (value) =>
-                        _updateField(context, ref, 'job_title', value),
+                        updateField(context, ref, 'job_title', value),
                   ),
                   SizedBox(
                     width: Sizes.massive,
                     height: Sizes.xxl,
                     child: DropdownButtonFormField<String>(
-                      value: userProfile?.ageRange,
+                      value: userProfile.ageRange,
                       decoration: InputDecoration(
                         labelText: 'Age Range',
                         border: const OutlineInputBorder(
@@ -117,7 +128,7 @@ class ProfilePage extends ConsumerWidget {
                         );
                       }).toList(),
                       onChanged: (String? newValue) {
-                        _updateField(context, ref, 'age_range', newValue);
+                        updateField(context, ref, 'age_range', newValue);
                       },
                     ),
                   ),
@@ -125,7 +136,7 @@ class ProfilePage extends ConsumerWidget {
                     width: Sizes.massive,
                     height: Sizes.xxl,
                     child: DropdownButtonFormField<String>(
-                      value: userProfile?.ethnicity,
+                      value: userProfile.ethnicity,
                       decoration: InputDecoration(
                         labelText: 'Ethnicity',
                         border: const OutlineInputBorder(
@@ -146,7 +157,7 @@ class ProfilePage extends ConsumerWidget {
                         );
                       }).toList(),
                       onChanged: (String? newValue) {
-                        _updateField(context, ref, 'ethnicity', newValue);
+                        updateField(context, ref, 'ethnicity', newValue);
                       },
                     ),
                   ),
@@ -154,7 +165,7 @@ class ProfilePage extends ConsumerWidget {
                     width: Sizes.massive,
                     height: Sizes.xxl,
                     child: DropdownButtonFormField<String>(
-                      value: userProfile?.sexuality,
+                      value: userProfile.sexuality,
                       decoration: InputDecoration(
                         labelText: 'Sexuality',
                         border: const OutlineInputBorder(
@@ -162,7 +173,7 @@ class ProfilePage extends ConsumerWidget {
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor:  Colors.grey.shade100,
+                        fillColor: Colors.grey.shade100,
                       ),
                       items: <String>[
                         'Sexuality 1',
@@ -175,7 +186,7 @@ class ProfilePage extends ConsumerWidget {
                         );
                       }).toList(),
                       onChanged: (String? newValue) {
-                        _updateField(context, ref, 'sexuality', newValue);
+                        updateField(context, ref, 'sexuality', newValue);
                       },
                     ),
                   ),
@@ -184,9 +195,9 @@ class ProfilePage extends ConsumerWidget {
                     height: Sizes.xxl,
                     child: CheckboxListTile(
                       title: const Text('Disability'),
-                      value: userProfile?.disability ?? false,
+                      value: userProfile.disability ?? false,
                       onChanged: (bool? newValue) {
-                        _updateField(context, ref, 'disability', newValue);
+                        updateField(context, ref, 'disability', newValue);
                       },
                     ),
                   ),
@@ -195,9 +206,9 @@ class ProfilePage extends ConsumerWidget {
                     height: Sizes.xxl,
                     child: CheckboxListTile(
                       title: const Text('Married'),
-                      value: userProfile?.married ?? false,
+                      value: userProfile.married ?? false,
                       onChanged: (bool? newValue) {
-                        _updateField(context, ref, 'married', newValue);
+                        updateField(context, ref, 'married', newValue);
                       },
                     ),
                   ),
@@ -206,9 +217,9 @@ class ProfilePage extends ConsumerWidget {
                     height: Sizes.xxl,
                     child: CheckboxListTile(
                       title: const Text('Is Parent'),
-                      value: userProfile?.isParent ?? false,
+                      value: userProfile.isParent ?? false,
                       onChanged: (bool? newValue) {
-                        _updateField(context, ref, 'is_parent', newValue);
+                        updateField(context, ref, 'is_parent', newValue);
                       },
                     ),
                   ),
@@ -218,9 +229,9 @@ class ProfilePage extends ConsumerWidget {
                     height: Sizes.xxl,
                     child: CheckboxListTile(
                       title: const Text('Accept Terms'),
-                      value: userProfile?.acceptedTerms ?? false,
+                      value: userProfile.acceptedTerms ?? false,
                       onChanged: (bool? newValue) {
-                        _updateField(context, ref, 'accepted_terms', newValue);
+                        updateField(context, ref, 'accepted_terms', newValue);
                       },
                     ),
                   ),
@@ -268,13 +279,13 @@ class ProfilePage extends ConsumerWidget {
                     ),
                   );
                   // Assuming you have userProfile?.id and an accessToken variable
-                  String id = userProfile?.id ?? '';
+                  String id = userProfile.id;
                   final accessBox = await ref.read(accessBoxProvider.future);
                   final session = accessBox.get('session');
                   print('session: $session');
                   String accessToken = session['access_token'];
                   print('access_token: $accessToken');
-                  Map<String, dynamic> updates = userProfile?.toMap() ?? {};
+                  Map<String, dynamic> updates = userProfile.toMap();
                   print('updates: $updates');
                   ref
                       .read(userProfileNotifierProvider.notifier)

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:empylo_app/constants/api_constants.dart';
 import 'package:empylo_app/models/sentry.dart';
 import 'package:empylo_app/models/team.dart';
+import 'package:empylo_app/models/user_data.dart';
 import 'package:empylo_app/models/user_profile.dart';
 import 'package:empylo_app/models/user_team_mapping.dart';
 import 'package:empylo_app/services/http_client.dart';
@@ -91,6 +92,53 @@ class UserRestService {
           message: 'Error updating user profile',
           level: 'error',
           extra: {'context': 'UserRestService.updateUserProfile', 'error': e},
+        ),
+      );
+      rethrow;
+    }
+  }
+
+  Future<void> deleteUserProfile(String id, String accessToken) async {
+    try {
+      final response = await _client.delete(
+        url: '$remoteBaseUrl/rest/v1/users?id=eq.$id',
+        headers: {
+          'apikey': remoteAnonKey,
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+      print('deleteUserAccount status code: ${response.statusCode}');
+    } catch (e) {
+      await _sentry.sendErrorEvent(
+        ErrorEvent(
+          message: 'Error deleting user account',
+          level: 'error',
+          extra: {'context': 'UserRestService.deleteUserAccount', 'error': e},
+        ),
+      );
+      rethrow;
+    }
+  }
+
+  Future<List<UserProfile>> getUserProfiles(String accessToken) async {
+    try {
+      final response = await _client.get(
+        url: '$remoteBaseUrl/rest/v1/users?select=*',
+        headers: {
+          'apikey': remoteAnonKey,
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json'
+        },
+      );
+      print('getUserProfiles response: ${response.data}');
+      return List<UserProfile>.from(
+          response.data.map((userData) => UserProfile.fromJson(userData)));
+    } catch (e) {
+      await _sentry.sendErrorEvent(
+        ErrorEvent(
+          message: 'Error fetching user profiles',
+          level: 'error',
+          extra: {'context': 'UserRestService.getUserProfiles', 'error': e},
         ),
       );
       rethrow;

@@ -10,7 +10,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
   UserProfileNotifier({required UserRestService userService})
       : _userService = userService,
         super(null);
-
+  
   Future<void> getUserProfile(String id, String accessToken) async {
     try {
       final userProfile = await _userService.getUserProfile(id, accessToken);
@@ -34,8 +34,14 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
     }
   }
 
-  void removeUserProfile() {
-    state = null;
+  void removeUserProfile(String id, String accessToken) {
+    try {
+      _userService.deleteUserProfile(id, accessToken);
+      state = null;
+    } catch (e) {
+      state = null;
+      rethrow;
+    }
   }
 
   void updateField(String field, dynamic value) {

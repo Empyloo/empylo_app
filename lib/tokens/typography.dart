@@ -38,9 +38,9 @@ class EmpyloTypography {
 
   static final body = GoogleFonts.roboto(
     textStyle: const TextStyle(
-      fontSize: Sizes.m,
+      fontSize: Sizes.sm,
       color: ColorTokens.textDark,
-      fontWeight: FontWeight.w400,
+      fontWeight: FontWeight.w300,
     ),
   );
 }

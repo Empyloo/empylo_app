@@ -4,12 +4,15 @@ import 'package:empylo_app/state_management/access_box_provider.dart';
 import 'package:empylo_app/state_management/auth_state_notifier.dart';
 import 'package:empylo_app/state_management/http_client_provider.dart';
 import 'package:empylo_app/state_management/router_provider.dart';
+import 'package:empylo_app/state_management/user_profile_provider.dart';
 import 'package:empylo_app/tokens/decorations.dart';
 import 'package:empylo_app/tokens/edge_inserts.dart';
 import 'package:empylo_app/tokens/sizes.dart';
 import 'package:empylo_app/ui/molecules/inputs/text_form_fields.dart';
 import 'package:empylo_app/ui/molecules/widgets/companies_drop_down.dart';
+import 'package:empylo_app/ui/pages/home/home.dart';
 import 'package:empylo_app/ui/pages/home/home_page_invite_form.dart';
+import 'package:empylo_app/ui/pages/user_management/user_management.dart';
 import 'package:empylo_app/utils/get_user_role.dart';
 import 'package:flutter/material.dart';
 import 'package:empylo_app/tokens/colors.dart';
@@ -63,6 +66,12 @@ Future<bool> login({
     UserRole userRole = getUserRoleFromResponse(response.data);
     ref.read(authStateProvider.notifier).login(userRole);
     // print("response.data: ${response.data}");
+
+    // Fetch the user profile
+    final userProfileNotifier = ref.read(userProfileNotifierProvider.notifier);
+    await userProfileNotifier.getUserProfile(
+        response.data['user']['id'], response.data['access_token']);
+
     return true;
   } catch (e) {
     print("Error during login!: $e");
@@ -93,7 +102,7 @@ class ShowPage extends ConsumerWidget {
                 if (snapshot.hasData && snapshot.data == true) {
                   return const Padding(
                     padding: EmpyloEdgeInserts.s,
-                    child: SuperAdminCompanyList(),
+                    child: HomePage(),
                   );
                 } else {
                   return const Text('Login failed');
