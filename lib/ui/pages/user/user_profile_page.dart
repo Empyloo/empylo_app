@@ -6,6 +6,7 @@ import 'package:empylo_app/state_management/router_provider.dart';
 import 'package:empylo_app/state_management/user_access_checker_provider.dart';
 import 'package:empylo_app/state_management/user_profile_provider.dart';
 import 'package:empylo_app/tokens/sizes.dart';
+import 'package:empylo_app/tokens/spacing.dart';
 import 'package:empylo_app/ui/molecules/inputs/text_form_fields.dart';
 import 'package:empylo_app/ui/molecules/widgets/teams_list.dart';
 import 'package:empylo_app/ui/pages/error/erro_page.dart';
@@ -98,6 +99,7 @@ class UserProfilePage extends ConsumerWidget {
                     onSubmitted: (value) =>
                         updateField(context, ref, 'job_title', value),
                   ),
+                  VerticalSpacing.s,
                   SizedBox(
                     width: Sizes.massive,
                     height: Sizes.xxl,
@@ -132,6 +134,7 @@ class UserProfilePage extends ConsumerWidget {
                       },
                     ),
                   ),
+                  VerticalSpacing.s,
                   SizedBox(
                     width: Sizes.massive,
                     height: Sizes.xxl,
@@ -161,6 +164,7 @@ class UserProfilePage extends ConsumerWidget {
                       },
                     ),
                   ),
+                  VerticalSpacing.s,
                   SizedBox(
                     width: Sizes.massive,
                     height: Sizes.xxl,
@@ -190,6 +194,7 @@ class UserProfilePage extends ConsumerWidget {
                       },
                     ),
                   ),
+                  VerticalSpacing.s,
                   SizedBox(
                     width: Sizes.massive,
                     height: Sizes.xxl,
@@ -201,6 +206,7 @@ class UserProfilePage extends ConsumerWidget {
                       },
                     ),
                   ),
+                  VerticalSpacing.s,
                   SizedBox(
                     width: Sizes.massive,
                     height: Sizes.xxl,
@@ -212,6 +218,7 @@ class UserProfilePage extends ConsumerWidget {
                       },
                     ),
                   ),
+                  VerticalSpacing.s,
                   SizedBox(
                     width: Sizes.massive,
                     height: Sizes.xxl,
@@ -223,7 +230,9 @@ class UserProfilePage extends ConsumerWidget {
                       },
                     ),
                   ),
+                  VerticalSpacing.s,
                   const TeamList(),
+                  VerticalSpacing.s,
                   SizedBox(
                     width: Sizes.massive,
                     height: Sizes.xxl,
@@ -235,6 +244,7 @@ class UserProfilePage extends ConsumerWidget {
                       },
                     ),
                   ),
+                  VerticalSpacing.s,
                   SizedBox(
                     width: Sizes.massive,
                     height: Sizes.xxl,
@@ -248,6 +258,7 @@ class UserProfilePage extends ConsumerWidget {
                       child: const Text('Go to Home Page'),
                     ),
                   ),
+                  VerticalSpacing.s,
                   SizedBox(
                     width: Sizes.massive,
                     height: Sizes.xxl,
