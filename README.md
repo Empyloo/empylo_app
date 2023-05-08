@@ -22,6 +22,8 @@ samples, guidance on mobile development, and a full API reference.
 `flutter pub upgrade --major-versions`
 `flutter run -d chrome`
 
+Build for web
+`flutter build web`
 ### Target a start File
 
 `flutter run -d chrome -t lib/build_atoms_main.dart`
