@@ -49,6 +49,7 @@ lib/utils/impl/*
 # Experimental
 experiment*
 lib/example_credentials.dart
+lib/build_atoms_main.dart
 
 # Scripts
 dcript*
