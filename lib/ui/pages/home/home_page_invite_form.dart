@@ -168,7 +168,7 @@ class HomePageInviteForm extends ConsumerWidget {
                             accessToken: accessToken,
                             role: role,
                           );
-                          showSnackBar('Invtes sent successfully');
+                          showSnackBar('Invites sent successfully');
                         } catch (e) {
                           print('Error sending invites: $e');
                           showSnackBar('Error sending invites');

@@ -167,7 +167,7 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
         ref.read(routerProvider).go('/home');
       } else {
         print('User has not accepted terms, redirecting to profile page...');
-        ref.read(routerProvider).go('/profile');
+        ref.read(routerProvider).go('/user-profile?id=${userProfile?.id}');
         // context.go('/profile');
       }
     } catch (e) {
