@@ -15,6 +15,7 @@ import 'package:empylo_app/ui/molecules/widgets/companies_drop_down.dart';
 import 'package:empylo_app/state_management/access_box_provider.dart';
 import 'package:empylo_app/state_management/user_invite_service_provider.dart';
 import 'package:empylo_app/ui/molecules/widgets/custom_containers.dart';
+import 'package:empylo_app/utils/request_processing_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -51,7 +52,8 @@ class HomePageInviteForm extends ConsumerWidget {
         children: [
           Text(
             "Invite Users",
-            style: EmpyloTypography.caption.copyWith(color: ColorTokens.textLight),
+            style:
+                EmpyloTypography.caption.copyWith(color: ColorTokens.textLight),
           ),
           VerticalSpacing.m,
           Form(
@@ -153,6 +155,8 @@ class HomePageInviteForm extends ConsumerWidget {
                         print("role: $role");
 
                         try {
+                          ref.read(requestProcessingProvider.notifier).start();
+
                           await userInviteService.invites(
                             emails: emails,
                             organizationId: organizationId.isNotEmpty
@@ -168,6 +172,8 @@ class HomePageInviteForm extends ConsumerWidget {
                         } catch (e) {
                           print('Error sending invites: $e');
                           showSnackBar('Error sending invites');
+                        } finally {
+                          ref.read(requestProcessingProvider.notifier).end();
                         }
 
                         // clear the form
@@ -176,7 +182,9 @@ class HomePageInviteForm extends ConsumerWidget {
                         organizationNameController.clear();
                       }
                     },
-                    child: const Text('Send Invites'),
+                    child: ref.watch(requestProcessingProvider)
+                        ? const CircularProgressIndicator()
+                        : const Text('Send Invites'),
                   ),
                 ),
               ],
