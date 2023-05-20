@@ -69,9 +69,6 @@ class HttpClient {
     int maxRetries = 3,
     int initialDelay = 1000,
   }) async {
-    print('patch: $url');
-    print('patch headeara: $headers');
-    print('patch data: $data');
     return _retryOnError(
       () => _dio.patch(
         url,

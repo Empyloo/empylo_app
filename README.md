@@ -17,21 +17,34 @@ samples, guidance on mobile development, and a full API reference.
 
 ## flutter Commands
 
-`flutter pub upgrade` or `flutter upgrade --force`
-`flutter pub outdated`
-`flutter pub upgrade --major-versions`
-`flutter run -d chrome`
+- `flutter pub upgrade` or `flutter upgrade --force`
+- `flutter pub outdated`
+- `flutter pub upgrade --major-versions`
+- `flutter run -d chrome`
 
-Build for web
+### Build for web
 `flutter build web`
-### Target a start File
 
-`flutter run -d chrome -t lib/build_atoms_main.dart`
+### Target a start File
+- Go to the [router_provider](ib/services/router_provider.dart) file and uncomment the line that has the `dev_main.dart` file.
+- In that same file `builder: (context, state) => const ShowPage(), //const LoginPage(),` swap the `ShowPage()` with `LoginPage()`
+- Run the command
+`flutter run -d chrome -t lib/dev_main.dart`
+
+<br>
+
+**When finished, comment out the line again.**
 
 ## Testing
 https://app.empylo.com/#/set-password#error=unauthorized_client&error_code=401&error_description=Email+link+is+invalid+or+has+expired
 `http://localhost:49296/#/#access_token=1235&refresh_token=asdf&token_type=bearer&expires_in=3600`
 
 
-### Dart
+### Dart experiments
+
+Use this to experiment with dart code, services, etc.
 `dart experiments_cred.dart`
+
+### Debugging Flutter Errors
+
+`rm -rf /Users/brianmusonza/development/flutter/bin/cache`

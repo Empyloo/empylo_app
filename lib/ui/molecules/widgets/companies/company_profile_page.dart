@@ -1,7 +1,6 @@
 // Path: lib/ui/molecules/widgets/companies/company_profile_page.dart
 import 'package:empylo_app/models/company.dart';
 import 'package:empylo_app/state_management/company_access_checker_provider.dart';
-import 'package:empylo_app/state_management/company_form_notifier.dart';
 import 'package:empylo_app/state_management/company_list_provider.dart';
 import 'package:empylo_app/tokens/border_radius.dart';
 import 'package:empylo_app/tokens/sizes.dart';
@@ -10,12 +9,6 @@ import 'package:empylo_app/ui/pages/company_management/utils/on_delete_company.d
 import 'package:empylo_app/ui/pages/error/erro_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-// In the providers.dart file
-final companyProvider = Provider.family<Company, String>((ref, companyId) {
-  final companyList = ref.watch(companyListNotifierProvider);
-  return companyList.firstWhere((company) => company.id == companyId);
-});
 
 class CompanyProfilePage extends ConsumerWidget {
   final String companyId;
@@ -143,6 +136,7 @@ class CompanyProfilePage extends ConsumerWidget {
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 10.0, vertical: 10.0),
                   ),
+                  maxLines: 5,
                   onChanged: (value) {
                     formHasChangesNotifier.value = true;
                     ;
@@ -177,18 +171,18 @@ class CompanyProfilePage extends ConsumerWidget {
                             subscribed: subscribed,
                           );
                           final result = await ref
-                              .read(companyFormNotifierProvider.notifier)
-                              .saveCompany(company, ref);
+                              .read(companyListNotifierProvider.notifier)
+                              .updateCompany(companyId, company.toJson(), ref);
                           if (result) {
                             scaff.showSnackBar(
                               const SnackBar(
-                                content: Text('Company saved successfully.'),
+                                content: Text('Saved successfully.'),
                               ),
                             );
                           } else {
                             scaff.showSnackBar(
                               const SnackBar(
-                                content: Text('Error saving company.'),
+                                content: Text('Error saving edit.'),
                               ),
                             );
                           }

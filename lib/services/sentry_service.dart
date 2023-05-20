@@ -54,5 +54,4 @@ void main() async {
     extra: {'context': 'dart test'},
   );
   final response = await sentry.sendErrorEvent(event);
-  print(response.statusCode);
 }

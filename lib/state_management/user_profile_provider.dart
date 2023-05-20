@@ -10,7 +10,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
   UserProfileNotifier({required UserRestService userService})
       : _userService = userService,
         super(null);
-  
+
   Future<void> getUserProfile(String id, String accessToken) async {
     try {
       final userProfile = await _userService.getUserProfile(id, accessToken);
@@ -24,7 +24,6 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
   Future<void> updateUserProfile(
       String id, Map<String, dynamic> updates, String accessToken) async {
     try {
-      print('Updating user provider profile: $updates');
       await _userService.updateUserProfile(id, updates, accessToken);
       final updatedUserProfile = state?.fromMap(updates);
       state = updatedUserProfile;

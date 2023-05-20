@@ -52,11 +52,9 @@ class FactorsDialog extends ConsumerWidget {
                                 )
                                 .then((_) => completer.complete())
                                 .catchError((error) {
-                              print('Error unenrolling: $error');
                               completer.completeError(error);
                             });
                           } catch (e) {
-                            print('Error unenrolling: $e');
                             completer.completeError(e);
                           }
                         },

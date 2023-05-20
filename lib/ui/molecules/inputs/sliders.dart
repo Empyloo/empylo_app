@@ -11,7 +11,9 @@ Slider(
   divisions: 2,
   label: '$question',
   onChanged: (double newValue) {
-    print(newValue);
+    setState(() {
+      _duelCommandment = newValue.round();
+    });
   },
 )
 ```

@@ -40,9 +40,8 @@ class HomePage extends ConsumerWidget {
               VerticalSpacing.s,
               ElevatedButton(
                 onPressed: () {
-                  final String userId = userProfile!.id;
                   // navigate to profile page
-                  router.go('/user-profile?id=$userId');
+                  router.go('/user-profile');
                 },
                 child: const Text('Go to Profile'),
               ),

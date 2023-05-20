@@ -7,7 +7,7 @@ class UserProfile {
   final String? phone;
   final Map<String, dynamic>? data;
   final String? jobTitle;
-  final String companyID; 
+  final String companyID;
   final String? gender;
   final bool? married;
   final String? ethnicity;
@@ -97,7 +97,7 @@ class UserProfile {
       'email': email,
       'phone': phone,
       'job_title': jobTitle,
-      'compoany_id': companyID,
+      'company_id': companyID,
       'age_range': ageRange,
       'ethnicity': ethnicity,
       'sexuality': sexuality,

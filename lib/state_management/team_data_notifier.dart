@@ -48,7 +48,7 @@ class TeamDataNotifier extends StateNotifier<TeamData> {
       return state;
     } catch (e) {
       onError(e);
-      throw e;
+      rethrow;
     }
   }
 

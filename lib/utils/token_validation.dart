@@ -17,7 +17,6 @@ Future<bool?> handleTokenValidation({
         context: context);
     return response;
   } else {
-    print('No tokens found.');
     showDialog(
       context: context,
       builder: (context) => const SnackBar(content: Text('No tokens found')),

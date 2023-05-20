@@ -148,11 +148,6 @@ class HomePageInviteForm extends ConsumerWidget {
                             organizationNameController.text;
                         final role = ref.read(selectedRoleProvider);
 
-                        print('Sending invites...');
-                        print("emails: $emails");
-                        print("organizationId: $organizationId");
-                        print("organizationName: $organizationName");
-                        print("role: $role");
 
                         try {
                           ref.read(requestProcessingProvider.notifier).start();
@@ -170,7 +165,6 @@ class HomePageInviteForm extends ConsumerWidget {
                           );
                           showSnackBar('Invites sent successfully');
                         } catch (e) {
-                          print('Error sending invites: $e');
                           showSnackBar('Error sending invites');
                         } finally {
                           ref.read(requestProcessingProvider.notifier).end();

@@ -30,6 +30,7 @@ class TextFormFieldInput extends StatelessWidget {
   final TextInputType keyboardType;
   final InputDecoration? decoration;
   final Function(String)? onSubmitted;
+  final Function(String)? onChanged;
   final EdgeInsetsGeometry edgeInsetsGeo;
   final BoxDecoration? containerDecoration;
   final int maxLines;
@@ -44,6 +45,7 @@ class TextFormFieldInput extends StatelessWidget {
     required this.edgeInsetsGeo,
     this.decoration,
     this.onSubmitted,
+    this.onChanged,
     this.containerDecoration,
     this.maxLines = 1,
     this.height = Sizes.xxl,
@@ -63,6 +65,7 @@ class TextFormFieldInput extends StatelessWidget {
         keyboardType: keyboardType,
         decoration: decoration,
         onFieldSubmitted: onSubmitted,
+        onChanged: onChanged,
         maxLines: maxLines,
         style: style,
       ),

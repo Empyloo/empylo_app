@@ -29,12 +29,10 @@ class UserRestService {
           'Authorization': 'Bearer $accessToken',
         },
       );
-      print('getUserTeams response: ${response.data}');
       return response.data
           .map<UserTeamMapping>((mapping) => UserTeamMapping.fromJson(mapping))
           .toList();
     } catch (e) {
-      print('getUserTeams error: ${e.toString()}');
       await _sentry.sendErrorEvent(
         ErrorEvent(
           message: 'Error fetching user teams',
@@ -55,8 +53,6 @@ class UserRestService {
           'Authorization': 'Bearer $accessToken',
         },
       );
-      print('getUserProfile response: ${response.data}');
-      print('getUserProfile response [0]: ${response.data[0]}');
       return UserProfile.fromJson(response.data[0]);
     } catch (e) {
       await _sentry.sendErrorEvent(
@@ -72,7 +68,6 @@ class UserRestService {
 
   Future<UserProfile> updateUserProfile(
       String id, Map<String, dynamic> updates, String accessToken) async {
-    print('updateUserProfile service: $updates');
     try {
       final response = await _client.patch(
         url: '$remoteBaseUrl/rest/v1/users?id=eq.$id',
@@ -84,7 +79,6 @@ class UserRestService {
         },
         data: updates,
       );
-      print('updateUserProfile: ${response.data}');
       return UserProfile.fromJson(response.data[0]);
     } catch (e) {
       await _sentry.sendErrorEvent(
@@ -107,7 +101,6 @@ class UserRestService {
           'Authorization': 'Bearer $accessToken',
         },
       );
-      print('deleteUserAccount status code: ${response.statusCode}');
     } catch (e) {
       await _sentry.sendErrorEvent(
         ErrorEvent(
@@ -130,7 +123,6 @@ class UserRestService {
           'Content-Type': 'application/json'
         },
       );
-      print('getUserProfiles response: ${response.data}');
       return List<UserProfile>.from(
           response.data.map((userData) => UserProfile.fromJson(userData)));
     } catch (e) {
@@ -155,7 +147,6 @@ class UserRestService {
           'Authorization': 'Bearer $accessToken',
         },
       );
-      print('getCompanyTeams response: ${response.data}');
       return List<Team>.from(
           response.data.map((teamData) => Team.fromJson(teamData)));
     } catch (e) {
@@ -212,7 +203,6 @@ class UserRestService {
         },
         data: json.encode(teamData),
       );
-      print('createTeam response: ${response.data}');
       return Team.fromJson(response.data[0]);
     } catch (e) {
       await _sentry.sendErrorEvent(

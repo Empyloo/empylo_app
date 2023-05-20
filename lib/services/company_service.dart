@@ -22,7 +22,6 @@ class CompanyService {
           'Authorization': 'Bearer $accessToken',
         },
       );
-      print("Comp Service response: ${response.data}");
       return response.data
           .map<Company>((company) => Company.fromJson(company))
           .toList();

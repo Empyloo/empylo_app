@@ -24,7 +24,6 @@ class UserProfilesList extends StateNotifier<List<UserProfile>> {
   Future<void> updateUserProfile(
       String id, Map<String, dynamic> updates, String accessToken) async {
     try {
-      print('Updating user provider profile: $updates');
       await _userService.updateUserProfile(id, updates, accessToken);
       final updatedUserProfile = state
           .firstWhere((userProfile) => userProfile.id == id)

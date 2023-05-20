@@ -26,7 +26,6 @@ class MFAService {
     String? friendlyName,
   }) async {
     try {
-      print('Enrolling user...');
       final response = await httpClient.post(
         url: '$baseUrl/auth/v1/factors',
         headers: {
@@ -40,12 +39,9 @@ class MFAService {
           'issuer': issuer,
         }),
       );
-      // print('Enrolled user: ${response.data}');
       if (response.statusCode == 200) {
         return response.data;
       } else {
-        print('Error enrolling user: ${response.data}'
-            'url: $baseUrl/auth/v1/factors');
         await sentry.sendErrorEvent(
           ErrorEvent(
             message: "Error enrolling user.",
@@ -59,9 +55,6 @@ class MFAService {
         throw Exception('Enroll failed');
       }
     } catch (e) {
-      print('Error enrolling user: $baseUrl/auth/v1/factors');
-      print('Error enrolling user: ${e.toString()}');
-      print('Error enrolling user: $e');
       await sentry.sendErrorEvent(
         ErrorEvent(
           message: "Error enrolling user.",
@@ -79,7 +72,6 @@ class MFAService {
     required String challengeId,
     required String code,
   }) async {
-    print('Verifying user...');
     final response = await httpClient.post(
       url: '$baseUrl/auth/v1/factors/$factorId/verify',
       headers: {
@@ -92,8 +84,6 @@ class MFAService {
         'challenge_id': challengeId,
       }),
     );
-    print('Verified user: ${response.statusCode}');
-    print('Verified user: ${response.toString()}');
     if (response.statusCode == 200) {
       return response.data;
     } else {
@@ -241,7 +231,6 @@ class MFAService {
   }) async {
     String? factorId;
     try {
-      print('Enrolling MFA');
       // Enroll the user
       final enrollmentResponse = await enroll(accessToken: accessToken);
       factorId = enrollmentResponse['id'];
@@ -253,7 +242,6 @@ class MFAService {
           enrollmentResponse['totp']['secret'];
       // Show the MFA dialog
       final String? mfaCode = await showDialogFn();
-      print('mfaCode: $mfaCode');
       if (mfaCode != null && mfaCode.isNotEmpty && factorId != null) {
         final verificationResponse = await challengeAndVerify(
           accessToken: accessToken,

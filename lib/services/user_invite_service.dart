@@ -47,7 +47,6 @@ class UserInviteService {
         },
       );
     } catch (e) {
-      print('Error: $e');
       await _sentry.sendErrorEvent(ErrorEvent(
         message: e.toString(),
         level: 'error',
@@ -86,7 +85,6 @@ class UserInviteService {
         },
       );
     } catch (e) {
-      print('Error deleting user: $e');
       await _sentry.sendErrorEvent(ErrorEvent(
         message: e.toString(),
         level: 'error',

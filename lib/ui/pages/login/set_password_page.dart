@@ -87,13 +87,10 @@ class SetPasswordPage extends ConsumerWidget {
                                     .read(setPasswordLoadingStateProvider
                                         .notifier)
                                     .state = true;
-                                print('Set New Password');
                                 final setPassAccessToken = accessBox.value
                                         ?.get('session')
                                         ?.get('access_token') ??
                                     redirectParams.accessToken;
-                                print(
-                                    'setPassAccessToken: $setPassAccessToken');
                                 try {
                                   await user.setPassword(
                                     password: passwordController.text,

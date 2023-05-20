@@ -13,7 +13,7 @@ import 'package:empylo_app/state_management/auth_state_notifier.dart';
 import 'package:empylo_app/state_management/user_profile_provider.dart';
 import 'package:empylo_app/ui/molecules/dialogues/code_dialog.dart';
 import 'package:empylo_app/ui/molecules/dialogues/mfa_dialog.dart';
-import 'package:empylo_app/utils/get_user_role.dart';
+import 'package:empylo_app/utils/user_utils/get_user_role.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -74,7 +74,6 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
   }) async {
     try {
       Map<String, dynamic>? sessionData;
-      print('Logging in...');
       ref.read(loginStateProvider.notifier).toggleLoading();
       final response = await _httpClient.post(
         url: '$_baseUrl/auth/v1/token?grant_type=password',
@@ -87,22 +86,17 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
           'password': password,
         },
       );
-      print('Login response: ${response.data}');
       UserRole userRole = getUserRoleFromResponse(response.data);
       final bool mfaRequired =
           userRole == UserRole.admin || userRole == UserRole.superAdmin;
       final bool isEnrolled = isUserEnrolled(response.data);
-      print('User enrolled: $isEnrolled');
       final bool isVerified = isFactorVerified(response.data);
       // if the user is enrolled and factor is verified, then we can challengeAndVerifyMFA
       // if the user is enrolled and factor is not verified, then we can enrollAndVerifyMFA
-      print('MFA required: $mfaRequired');
       ref.read(loginStateProvider.notifier).toggleLoading();
       if (getFactorsLength(response.data) >= 9) {
-        print('User has 9 or more factors. Removing factor...');
         ref.watch(routerProvider).go('/factors');
       } else if ((!isEnrolled && mfaRequired) || (isEnrolled && !isVerified)) {
-        print('Setting up MFA...');
         final sessionData = await ref
             .read(mfaServiceProvider)
             .enrollAndVerifyMFA(
@@ -122,7 +116,6 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
           return null;
         });
       } else if (isEnrolled) {
-        print('Is enrolled, verifying MFA...');
         ref.read(loginStateProvider.notifier).toggleDialogState(true);
         final sessionData = await ref
             .read(mfaServiceProvider)
@@ -147,7 +140,6 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
         final accessBox = await ref.read(accessBoxProvider.future);
         accessBox.put('session', sessionData);
       } else {
-        print('MFA not required');
       }
       state = const AsyncValue.data(UserState.loggedIn);
       ref.read(authStateProvider.notifier).login(userRole);
@@ -159,20 +151,15 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
 
       // Check if the user has accepted the terms
       final UserProfile? userProfile = ref.read(userProfileNotifierProvider);
-      print('User profile: $userProfile');
-      print('User profile accepted terms: ${userProfile?.acceptedTerms}');
       ref.read(loginStateProvider.notifier).clearTextFields();
       if (userProfile?.acceptedTerms == true) {
-        print('User has accepted terms, redirecting to home page...');
         ref.read(routerProvider).go('/home');
       } else {
-        print('User has not accepted terms, redirecting to profile page...');
         ref.read(routerProvider).go('/user-profile?id=${userProfile?.id}');
         // context.go('/profile');
       }
     } catch (e) {
       ref.read(loginStateProvider.notifier).toggleLoading();
-      print('Error logging in: $e');
       showErrorSnackBar(context,
           'Error logging in, please check you credentials and try again.');
       ref.read(routerProvider).go('/');
@@ -224,7 +211,6 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
         );
       }
     } catch (e) {
-      print('Error resetting password: $e');
       showErrorSnackBar(context, 'Error resetting password, please try again.');
     }
   }
@@ -258,7 +244,6 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
             'Error setting password, status code: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error setting password: $e');
       showErrorSnackBar(context, 'Error setting password, please try again.');
     }
   }
@@ -269,7 +254,6 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
     required WidgetRef ref,
   }) async {
     try {
-      print('Refreshing token...');
       final response = await _httpClient.post(
         url: '$_baseUrl/auth/v1/token?grant_type=refresh_token',
         headers: {
@@ -281,7 +265,6 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
           'refresh_token': token,
         },
       );
-      print('Refresh token response: ${response.data}');
       if (response.data['user'] != null) {
         final accessBox = await ref.read(accessBoxProvider.future);
         accessBox.put('session', response.data);
@@ -290,7 +273,6 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
         throw Exception('Token refresh failed');
       }
     } catch (e) {
-      print('Error refreshing token: $e');
       await _sentry.sendErrorEvent(
         ErrorEvent(
           message: 'Error refreshing token: $e',
@@ -317,7 +299,6 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
           'Authorization': 'Bearer $accessToken',
         },
       );
-      print('Validate token response: ${response.data}');
       if (response.data['id'] != null) {
         state = const AsyncValue.data(UserState.loggedIn);
         return true;
@@ -325,7 +306,6 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
       return false;
     } on DioError catch (e) {
       if (e.response?.statusCode == 401) {
-        print('Token validation failed, trying to refresh token...');
         await this.refreshToken(
           token: refreshToken,
           ref: ref,
@@ -345,10 +325,6 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
         throw Exception('Token validation failed');
       }
     } catch (e) {
-      print('Error validating token: $e');
-      print('Error token: $accessToken');
-      print('Error refresh token: $refreshToken');
-      print('Error url: $_baseUrl/auth/v1/user');
       showErrorSnackBar(context, 'Error with token.');
       return false;
     }

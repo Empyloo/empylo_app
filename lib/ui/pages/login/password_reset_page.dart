@@ -57,7 +57,6 @@ class PasswordResetPage extends ConsumerWidget {
                                 .read(
                                     passwordResetLoadingStateProvider.notifier)
                                 .state = true;
-                            print('Send Password Reset Email');
                             // Call your password reset function here and pass the email
                             await user.passwordReset(
                               email: emailController.text,
@@ -80,7 +79,6 @@ class PasswordResetPage extends ConsumerWidget {
                         const SizedBox(height: 16),
                         TextButton(
                           onPressed: () {
-                            print('Back to Login');
                             // Navigate to the login page
                             GoRouter.of(context).go('/');
                           },

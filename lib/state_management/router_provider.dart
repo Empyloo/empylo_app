@@ -1,5 +1,5 @@
 // Path: lib/services/router_provider.dart
-// import 'package:empylo_app/build_atoms_main.dart';
+import 'package:empylo_app/dev_main.dart';
 import 'package:empylo_app/models/redirect_params.dart';
 import 'package:empylo_app/models/user_profile.dart';
 import 'package:empylo_app/state_management/auth_state_notifier.dart';
@@ -13,7 +13,10 @@ import 'package:empylo_app/ui/pages/login/factors_page.dart';
 import 'package:empylo_app/ui/pages/login/password_reset_page.dart';
 import 'package:empylo_app/ui/pages/login/set_password_page.dart';
 import 'package:empylo_app/ui/pages/user/user_profile_page.dart';
+import 'package:empylo_app/ui/pages/user_management/admin_user_edit_page.dart';
 import 'package:empylo_app/utils/get_query_params.dart';
+import 'package:empylo_app/utils/user_utils/get_user_profile_by_id.dart';
+import 'package:empylo_app/utils/user_utils/page_to_display.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -27,30 +30,29 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         name: 'login',
         path: '/',
-        builder: (context, state) => const LoginPage(), //const ShowPage()
+        builder: (context, state) => const ShowPage(), //const LoginPage(),
       ),
       GoRoute(
         name: 'user-profile',
         path: '/user-profile',
+        builder: (context, state) => UserProfilePage(),
+      ),
+      GoRoute(
+        name: 'admin-user-edit',
+        path: '/admin-user-edit',
         builder: (context, state) {
-          final authState = ref.watch(authStateProvider);
-          final userId = state.queryParams['id']!;
-          final userProfilesList = ref.watch(userProfilesListProvider);
-          final userProfileNotifier = ref.watch(userProfileNotifierProvider);
-          UserProfile? userProfile;
-          try {
-            userProfile = userProfilesList.firstWhere(
-              (userProfile) => userProfile.id == userId,
-            );
-          } catch (_) {
-            userProfile = null;
+          if (!state.queryParameters.containsKey('id')) {
+            return const ErrorPage('Missing user ID parameter.');
           }
+          final authState = ref.watch(authStateProvider);
+          final userId = state.queryParameters['id']!;
+          final userProfile = getUserProfileById(ref, userId);
 
-          userProfile ??=
-              (userProfileNotifier?.id == userId ? userProfileNotifier : null);
-
-          if (authState.isAuthenticated && userProfile != null) {
-            return UserProfilePage(userProfile: userProfile);
+          if (authState.isAuthenticated &&
+              (authState.role == UserRole.admin ||
+                  authState.role == UserRole.superAdmin) &&
+              userProfile != null) {
+            return AdminUserEditPage(userProfile: userProfile);
           } else {
             return const ErrorPage(
                 'You do not have permission to access this page.');
@@ -104,7 +106,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/company-profile',
         builder: (context, state) {
           final authState = ref.watch(authStateProvider);
-          final companyId = state.queryParams['id']!;
+          final companyId = state.queryParameters['id']!;
           if (authState.isAuthenticated &&
               (authState.role == UserRole.admin ||
                   authState.role == UserRole.superAdmin)) {
