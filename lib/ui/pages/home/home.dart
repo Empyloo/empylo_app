@@ -1,9 +1,8 @@
-// Path: lib/ui/pages/home/home_page.dart
 import 'package:empylo_app/state_management/auth_state_notifier.dart';
 import 'package:empylo_app/state_management/router_provider.dart';
-import 'package:empylo_app/state_management/user_profile_provider.dart';
-import 'package:empylo_app/tokens/spacing.dart';
+import 'package:empylo_app/ui/molecules/widgets/custom_drawer.dart';
 import 'package:empylo_app/ui/pages/company_management/super_admin_company_list.dart';
+import 'package:empylo_app/ui/pages/dashboard/dash.dart';
 import 'package:empylo_app/ui/pages/user_management/user_management.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,114 +18,50 @@ class HomePage extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final box = ref.watch(accessBoxProvider);
     final authState = ref.watch(authStateProvider);
-    final userProfile = ref.watch(userProfileNotifierProvider);
-    const borderRadius = BorderRadius.all(Radius.circular(16));
 
     if (box.asData == null) {
       router.go('/');
       return const SizedBox.shrink();
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home Page'),
-      ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const Text('Welcome!'),
-              VerticalSpacing.s,
-              ElevatedButton(
-                onPressed: () {
-                  // navigate to profile page
-                  router.go('/user-profile');
-                },
-                child: const Text('Go to Profile'),
-              ),
-              VerticalSpacing.s,
-              ElevatedButton(
-                onPressed: () {
-                  // remove session from Hive box
-                  box.asData!.value.delete('session');
-                  // navigate to login page
-                  router.go('/');
-                },
-                child: const Text('Logout'),
-              ),
+    return DefaultTabController(
+      length: 4, // Adjust the number of tabs
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Home Page'),
+          bottom: TabBar(
+            tabs: [
+              const Tab(icon: Icon(Icons.dashboard), text: "Dashboard"),
               if (authState.role == UserRole.admin ||
                   authState.role == UserRole.superAdmin)
-                Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Container(
-                    padding: const EdgeInsets.all(24.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: borderRadius,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.shade300,
-                          blurRadius: 10,
-                          spreadRadius: 5,
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      child: HomePageInviteForm(),
-                    ),
-                  ),
-                ),
-              VerticalSpacing.m,
+                const Tab(icon: Icon(Icons.person_add), text: "Invite"),
               if (authState.role == UserRole.superAdmin)
-                Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Container(
-                    padding: const EdgeInsets.all(24.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: borderRadius,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.shade300,
-                          blurRadius: 10,
-                          spreadRadius: 5,
-                        ),
-                      ],
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      child: SuperAdminCompanyList(),
-                    ),
-                  ),
-                ),
-              VerticalSpacing.m,
+                const Tab(icon: Icon(Icons.business), text: "Companies"),
               if (authState.role == UserRole.admin ||
                   authState.role == UserRole.superAdmin)
-                Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Container(
-                    padding: const EdgeInsets.all(24.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: borderRadius,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.shade300,
-                          blurRadius: 10,
-                          spreadRadius: 5,
-                        ),
-                      ],
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      child: UserManagement(),
-                    ),
-                  ),
-                ),
+                const Tab(icon: Icon(Icons.people), text: "Users"),
             ],
           ),
+        ),
+        drawer: const CustomDrawer(),
+        body: TabBarView(
+          children: [
+            // Add 'Dashboard' page here
+            if (authState.role == UserRole.admin ||
+                authState.role == UserRole.superAdmin)
+              const DashboardPage(),
+            // Add functionality of 'Invite' button here
+            if (authState.role == UserRole.admin ||
+                authState.role == UserRole.superAdmin)
+              HomePageInviteForm(),
+            // Add 'Company List' page here
+            if (authState.role == UserRole.superAdmin)
+              const SuperAdminCompanyList(),
+            // Add 'User Management' page here
+            if (authState.role == UserRole.admin ||
+                authState.role == UserRole.superAdmin)
+              const UserManagement(),
+          ],
         ),
       ),
     );

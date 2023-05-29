@@ -21,17 +21,18 @@ class UserProfilesList extends StateNotifier<List<UserProfile>> {
     }
   }
 
-  Future<void> updateUserProfile(
+  Future<bool> updateUserProfile(
       String id, Map<String, dynamic> updates, String accessToken) async {
     try {
       await _userService.updateUserProfile(id, updates, accessToken);
-      final updatedUserProfile = state
-          .firstWhere((userProfile) => userProfile.id == id)
-          .fromMap(updates);
-      state = state
-          .map((userProfile) =>
-              userProfile.id == id ? updatedUserProfile : userProfile)
-          .toList();
+      state = state.map((userProfile) {
+        if (userProfile.id == id) {
+          return userProfile.copyWith(updates);
+        } else {
+          return userProfile;
+        }
+      }).toList();
+      return true;
     } catch (e) {
       rethrow;
     }

@@ -1,33 +1,53 @@
-// Path:
-import 'package:empylo_app/models/user_profile.dart';
+// Path: lib/ui/pages/user/profile_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-TextFormField email(
-    UserProfile? userProfileState,
-    BorderRadius borderRadius,
-    void Function(
-            BuildContext context, WidgetRef ref, String field, dynamic value)
-        updateField,
-    BuildContext context,
-    WidgetRef ref,
-    TextEditingController controller) {
-  controller.text = userProfileState?.email ?? '';
+class EmailField extends StatelessWidget {
+  final TextEditingController controller;
+  final void Function(String) onChanged;
+
+  const EmailField({
+    Key? key,
+    required this.controller,
+    required this.onChanged,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: TextInputType.emailAddress,
+      decoration: InputDecoration(
+        labelText: 'Email',
+        border: const OutlineInputBorder(
+          borderSide: BorderSide.none,
+        ),
+        filled: true,
+        fillColor: Colors.grey.shade100,
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+      ),
+      onChanged: onChanged,
+    );
+  }
+}
+
+Widget email(
+  String? defaultValue,
+  BorderRadius borderRadius,
+  void Function(BuildContext context, WidgetRef ref, String field,
+          dynamic value, String? userId)
+      updateField,
+  BuildContext context,
+  WidgetRef ref,
+  TextEditingController controller,
+  String? userId,
+) {
+  controller.text = defaultValue ?? '';
   controller.selection =
       TextSelection.fromPosition(TextPosition(offset: controller.text.length));
-  return TextFormField(
+  return EmailField(
     controller: controller,
-    keyboardType: TextInputType.emailAddress,
-    decoration: InputDecoration(
-      labelText: 'Email',
-      border: const OutlineInputBorder(
-        borderSide: BorderSide.none,
-      ),
-      filled: true,
-      fillColor: Colors.grey.shade100,
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-    ),
-    onChanged: (value) => updateField(context, ref, 'email', value),
+    onChanged: (value) => updateField(context, ref, 'email', value, userId),
   );
 }

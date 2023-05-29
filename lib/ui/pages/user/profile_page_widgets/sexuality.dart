@@ -1,22 +1,22 @@
-// Path:
-import 'package:empylo_app/models/user_profile.dart';
+// Path: lib/ui/pages/user/profile_page_widgets/sexuality.dart
 import 'package:empylo_app/tokens/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-SizedBox sexuality(
-    UserProfile? userProfileState,
-    BorderRadius borderRadius,
-    void Function(
-            BuildContext context, WidgetRef ref, String field, dynamic value)
-        updateField,
-    BuildContext context,
-    WidgetRef ref) {
-  return SizedBox(
-    width: Sizes.massive,
-    height: Sizes.xxl,
-    child: DropdownButtonFormField<String>(
-      value: userProfileState?.sexuality,
+class SexualityDropdown extends StatelessWidget {
+  final String? value;
+  final void Function(String?) onChanged;
+
+  const SexualityDropdown({
+    Key? key,
+    required this.value,
+    required this.onChanged,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<String>(
+      value: value,
       decoration: InputDecoration(
         labelText: 'Sexuality',
         border: const OutlineInputBorder(
@@ -38,8 +38,28 @@ SizedBox sexuality(
           child: Text(value),
         );
       }).toList(),
+      onChanged: onChanged,
+    );
+  }
+}
+
+SizedBox sexuality(
+  String? defaultValue,
+  BorderRadius borderRadius,
+  void Function(BuildContext context, WidgetRef ref, String field,
+          dynamic value, String? userId)
+      updateField,
+  BuildContext context,
+  WidgetRef ref,
+  String? userId,
+) {
+  return SizedBox(
+    width: Sizes.massive,
+    height: Sizes.xxl,
+    child: SexualityDropdown(
+      value: defaultValue,
       onChanged: (String? newValue) {
-        updateField(context, ref, 'sexuality', newValue);
+        updateField(context, ref, 'sexuality', newValue, userId);
       },
     ),
   );

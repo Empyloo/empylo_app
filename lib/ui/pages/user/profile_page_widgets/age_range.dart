@@ -4,19 +4,20 @@ import 'package:empylo_app/tokens/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-SizedBox ageRange(
-    UserProfile? userProfileState,
-    BorderRadius borderRadius,
-    void Function(
-            BuildContext context, WidgetRef ref, String field, dynamic value)
-        updateField,
-    BuildContext context,
-    WidgetRef ref) {
-  return SizedBox(
-    width: Sizes.massive,
-    height: Sizes.xxl,
-    child: DropdownButtonFormField<String>(
-      value: userProfileState?.ageRange,
+class AgeRangeDropdown extends StatelessWidget {
+  final String? value;
+  final void Function(String?) onChanged;
+
+  const AgeRangeDropdown({
+    Key? key,
+    required this.value,
+    required this.onChanged,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<String>(
+      value: value,
       decoration: InputDecoration(
         labelText: 'Age Range',
         border: const OutlineInputBorder(
@@ -34,8 +35,33 @@ SizedBox ageRange(
           child: Text(value),
         );
       }).toList(),
+      onChanged: onChanged,
+    );
+  }
+}
+
+SizedBox ageRange(
+  String? defaultValue,
+  BorderRadius borderRadius,
+  void Function(BuildContext context, WidgetRef ref, String field,
+          dynamic value, String? userId)
+      updateField,
+  BuildContext context,
+  WidgetRef ref,
+  String? userId,
+) {
+  return SizedBox(
+    width: Sizes.massive,
+    height: Sizes.xxl,
+    child: AgeRangeDropdown(
+      value: defaultValue,
       onChanged: (String? newValue) {
-        updateField(context, ref, 'age_range', newValue);
+        try {
+          updateField(context, ref, 'age_range', newValue, userId);
+          print('age_range: $newValue');
+        } catch (e) {
+          print(e);
+        }
       },
     ),
   );

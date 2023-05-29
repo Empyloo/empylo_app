@@ -1,24 +1,43 @@
-// Path:
-import 'package:empylo_app/models/user_profile.dart';
+// Path: lib/ui/pages/user/profile_page_widgets/disability.dart
 import 'package:empylo_app/tokens/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+class DisabilityCheckbox extends StatelessWidget {
+  final bool? value;
+  final void Function(bool?) onChanged;
+
+  const DisabilityCheckbox({
+    Key? key,
+    required this.value,
+    required this.onChanged,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return CheckboxListTile(
+      title: const Text('Disability'),
+      value: value ?? false,
+      onChanged: onChanged,
+    );
+  }
+}
+
 SizedBox disability(
-    UserProfile? userProfileState,
-    void Function(
-            BuildContext context, WidgetRef ref, String field, dynamic value)
+    bool? defaultValue,
+    void Function(BuildContext context, WidgetRef ref, String field,
+            dynamic value, String? userId)
         updateField,
     BuildContext context,
-    WidgetRef ref) {
+    WidgetRef ref,
+    String? userId) {
   return SizedBox(
     width: Sizes.massive,
     height: Sizes.xxl,
-    child: CheckboxListTile(
-      title: const Text('Disability'),
-      value: userProfileState?.disability ?? false,
+    child: DisabilityCheckbox(
+      value: defaultValue,
       onChanged: (bool? newValue) {
-        updateField(context, ref, 'disability', newValue);
+        updateField(context, ref, 'disability', newValue, userId);
       },
     ),
   );

@@ -33,7 +33,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
     }
   }
 
-  void removeUserProfile(String id, String accessToken) {
+  void deleteUserProfile(String id, String accessToken) {
     try {
       _userService.deleteUserProfile(id, accessToken);
       state = null;

@@ -34,8 +34,8 @@ class UserProfilePage extends ConsumerWidget {
     final hasChanges = ref.watch(hasChangesProvider);
     final box = ref.watch(accessBoxProvider);
 
-    void updateField(
-        BuildContext context, WidgetRef ref, String field, dynamic value) {
+    void updateField(BuildContext context, WidgetRef ref, String field,
+        dynamic value, String? userId) {
       ref.read(userProfileNotifierProvider.notifier).updateField(field, value);
       ref.read(hasChangesProvider.notifier).state = true;
     }
@@ -53,30 +53,34 @@ class UserProfilePage extends ConsumerWidget {
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 children: [
-                  email(userProfileState, borderRadius, updateField, context,
-                      ref, emailController),
+                  email(userProfileState.email, borderRadius, updateField,
+                      context, ref, emailController, userId),
                   VerticalSpacing.s,
-                  jobTitle(userProfileState, borderRadius, updateField, context,
-                      ref, jobTitleController),
+                  jobTitle(userProfileState.jobTitle, borderRadius, updateField,
+                      context, ref, jobTitleController, userId),
                   VerticalSpacing.s,
-                  ageRange(userProfileState, borderRadius, updateField, context,
-                      ref),
+                  ageRange(userProfileState.ageRange, borderRadius, updateField,
+                      context, ref, userId),
                   VerticalSpacing.s,
-                  ethnicity(userProfileState, borderRadius, updateField,
-                      context, ref),
+                  ethnicity(userProfileState.ethnicity, borderRadius,
+                      updateField, context, ref, userId),
                   VerticalSpacing.s,
-                  sexuality(userProfileState, borderRadius, updateField,
-                      context, ref),
+                  sexuality(userProfileState.sexuality, borderRadius,
+                      updateField, context, ref, userId),
                   VerticalSpacing.s,
-                  disability(userProfileState, updateField, context, ref),
+                  disability(userProfileState.disability, updateField, context,
+                      ref, userId),
                   VerticalSpacing.s,
-                  married(userProfileState, updateField, context, ref),
+                  married(userProfileState.married, updateField, context, ref,
+                      userId),
                   VerticalSpacing.s,
-                  isParent(userProfileState, updateField, context, ref),
+                  isParent(userProfileState.isParent, updateField, context, ref,
+                      userId),
                   VerticalSpacing.s,
                   const TeamList(),
                   VerticalSpacing.s,
-                  terms(userProfileState, updateField, context, ref),
+                  terms(userProfileState.acceptedTerms, updateField, context,
+                      ref, userId),
                   VerticalSpacing.s,
                   homeButton(ref),
                   VerticalSpacing.s,

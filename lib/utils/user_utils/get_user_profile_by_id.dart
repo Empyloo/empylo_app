@@ -12,3 +12,12 @@ UserProfile? getUserProfileById(ProviderRef ref, String userId) {
     return null;
   }
 }
+
+UserProfile? getUserProfileByIdWidgetRef(WidgetRef ref, String userId) {
+  final userProfilesList = ref.watch(userProfilesListProvider);
+  try {
+    return userProfilesList.firstWhere((profile) => profile.id == userId);
+  } catch (_) {
+    return null;
+  }
+}

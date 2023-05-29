@@ -1,10 +1,8 @@
 // Path: lib/services/router_provider.dart
 import 'package:empylo_app/dev_main.dart';
 import 'package:empylo_app/models/redirect_params.dart';
-import 'package:empylo_app/models/user_profile.dart';
 import 'package:empylo_app/state_management/auth_state_notifier.dart';
-import 'package:empylo_app/state_management/user_profile_provider.dart';
-import 'package:empylo_app/state_management/users/user_profiles_list.dart';
+import 'package:empylo_app/state_management/users/admin_edit_user_notifier.dart';
 import 'package:empylo_app/ui/molecules/widgets/companies/company_profile_page.dart';
 import 'package:empylo_app/ui/pages/dashboard/dash.dart';
 import 'package:empylo_app/ui/pages/error/erro_page.dart';
@@ -16,7 +14,6 @@ import 'package:empylo_app/ui/pages/user/user_profile_page.dart';
 import 'package:empylo_app/ui/pages/user_management/admin_user_edit_page.dart';
 import 'package:empylo_app/utils/get_query_params.dart';
 import 'package:empylo_app/utils/user_utils/get_user_profile_by_id.dart';
-import 'package:empylo_app/utils/user_utils/page_to_display.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -28,10 +25,12 @@ final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     routes: [
       GoRoute(
-        name: 'login',
-        path: '/',
-        builder: (context, state) => const ShowPage(), //const LoginPage(),
-      ),
+          name: 'login',
+          path: '/',
+          builder: (context, state) {
+            return const ShowPage();
+          } //const LoginPage(),
+          ),
       GoRoute(
         name: 'user-profile',
         path: '/user-profile',
@@ -45,14 +44,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             return const ErrorPage('Missing user ID parameter.');
           }
           final authState = ref.watch(authStateProvider);
-          final userId = state.queryParameters['id']!;
-          final userProfile = getUserProfileById(ref, userId);
-
           if (authState.isAuthenticated &&
               (authState.role == UserRole.admin ||
-                  authState.role == UserRole.superAdmin) &&
-              userProfile != null) {
-            return AdminUserEditPage(userProfile: userProfile);
+                  authState.role == UserRole.superAdmin)) {
+            return AdminUserEditPage();
           } else {
             return const ErrorPage(
                 'You do not have permission to access this page.');

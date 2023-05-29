@@ -50,7 +50,7 @@ class CompanyListNotifier extends StateNotifier<List<Company>> {
       ];
       return true;
     } catch (e) {
-      return false;
+      rethrow;
     }
   }
 

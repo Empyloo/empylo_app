@@ -1,22 +1,22 @@
-// Path:
-import 'package:empylo_app/models/user_profile.dart';
+// Path: lib/
 import 'package:empylo_app/tokens/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-SizedBox ethnicity(
-    UserProfile? userProfileState,
-    BorderRadius borderRadius,
-    void Function(
-            BuildContext context, WidgetRef ref, String field, dynamic value)
-        updateField,
-    BuildContext context,
-    WidgetRef ref) {
-  return SizedBox(
-    width: Sizes.massive,
-    height: Sizes.xxl,
-    child: DropdownButtonFormField<String>(
-      value: userProfileState?.ethnicity,
+class EthnicityDropdown extends StatelessWidget {
+  final String? value;
+  final void Function(String?) onChanged;
+
+  const EthnicityDropdown({
+    Key? key,
+    required this.value,
+    required this.onChanged,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<String>(
+      value: value,
       decoration: InputDecoration(
         labelText: 'Ethnicity',
         border: const OutlineInputBorder(
@@ -37,8 +37,28 @@ SizedBox ethnicity(
           child: Text(value),
         );
       }).toList(),
+      onChanged: onChanged,
+    );
+  }
+}
+
+SizedBox ethnicity(
+  String? defaultValue,
+  BorderRadius borderRadius,
+  void Function(BuildContext context, WidgetRef ref, String field,
+          dynamic value, String? userId)
+      updateField,
+  BuildContext context,
+  WidgetRef ref,
+  String? userId,
+) {
+  return SizedBox(
+    width: Sizes.massive,
+    height: Sizes.xxl,
+    child: EthnicityDropdown(
+      value: defaultValue,
       onChanged: (String? newValue) {
-        updateField(context, ref, 'ethnicity', newValue);
+        updateField(context, ref, 'ethnicity', newValue, userId);
       },
     ),
   );

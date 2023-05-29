@@ -69,6 +69,7 @@ class UserRestService {
   Future<UserProfile> updateUserProfile(
       String id, Map<String, dynamic> updates, String accessToken) async {
     try {
+      print('updates: $updates');
       final response = await _client.patch(
         url: '$remoteBaseUrl/rest/v1/users?id=eq.$id',
         headers: {
@@ -79,6 +80,7 @@ class UserRestService {
         },
         data: updates,
       );
+      print('response.data: ${response.data[0]}');
       return UserProfile.fromJson(response.data[0]);
     } catch (e) {
       await _sentry.sendErrorEvent(
