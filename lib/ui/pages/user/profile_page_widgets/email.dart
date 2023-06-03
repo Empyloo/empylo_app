@@ -14,20 +14,23 @@ class EmailField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: TextInputType.emailAddress,
-      decoration: InputDecoration(
-        labelText: 'Email',
-        border: const OutlineInputBorder(
-          borderSide: BorderSide.none,
+    return SizedBox(
+      width: 300,
+      child: TextFormField(
+        controller: controller,
+        keyboardType: TextInputType.emailAddress,
+        decoration: InputDecoration(
+          labelText: 'Email',
+          border: const OutlineInputBorder(
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: Colors.grey.shade100,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
         ),
-        filled: true,
-        fillColor: Colors.grey.shade100,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+        onChanged: onChanged,
       ),
-      onChanged: onChanged,
     );
   }
 }

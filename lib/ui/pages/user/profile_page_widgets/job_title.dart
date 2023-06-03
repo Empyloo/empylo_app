@@ -14,13 +14,23 @@ class JobTitleField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: TextInputType.text,
-      decoration: const InputDecoration(
-        border: InputBorder.none,
+    return SizedBox(
+      width: 300,
+      child: TextFormField(
+        controller: controller,
+        keyboardType: TextInputType.text,
+        decoration: InputDecoration(
+          labelText: 'Job Title',
+          border: const OutlineInputBorder(
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: Colors.grey.shade100,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+        ),
+        onChanged: onChanged,
       ),
-      onChanged: onChanged,
     );
   }
 }

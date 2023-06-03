@@ -55,7 +55,7 @@ SizedBox sexuality(
 ) {
   return SizedBox(
     width: Sizes.massive,
-    height: Sizes.xxl,
+    height: Sizes.mega,
     child: SexualityDropdown(
       value: defaultValue,
       onChanged: (String? newValue) {

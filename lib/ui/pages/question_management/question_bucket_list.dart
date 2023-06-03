@@ -14,8 +14,12 @@ import 'package:empylo_app/utils/get_access_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../models/question_bucket.dart';
+
 final questionBucketCreatingProvider = StateProvider<bool>((ref) => false);
 final questionBucketEditingProvider = StateProvider<bool>((ref) => false);
+final questionBucketSelectedProvider = StateProvider<QuestionBucket?>((ref) => null);
+
 
 class QuestionBucketList extends ConsumerWidget {
   const QuestionBucketList({Key? key}) : super(key: key);
@@ -79,6 +83,7 @@ class QuestionBucketList extends ConsumerWidget {
                   itemCount: questionBuckets.length,
                   itemBuilder: (context, index) {
                     final bucket = questionBuckets[index];
+                    
                     return Padding(
                       padding: EmpyloEdgeInserts.s,
                       child: QuestionBucketTile(
@@ -90,6 +95,7 @@ class QuestionBucketList extends ConsumerWidget {
                           ref
                               .read(questionBucketEditingProvider.notifier)
                               .state = true;
+                              
                         },
                         onDelete: () async {
                           final accessToken = await getAccessToken(ref);

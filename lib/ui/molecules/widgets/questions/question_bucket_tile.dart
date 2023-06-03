@@ -28,14 +28,18 @@ class QuestionBucketTile extends ConsumerWidget {
           title: Text(bucket.name, style: EmpyloTypography.caption),
           subtitle: Text(bucket.description ?? 'No description',
               style: EmpyloTypography.body),
-          onTap: onTap,
+          onTap: () {
+            ref.read(questionBucketSelectedProvider.notifier).state = bucket;
+          },
           trailing: IconButton(
             icon: const Icon(Icons.delete),
             onPressed: onDelete,
           ),
         ),
-        // onTap load and show QuestionBucketCard
-        if (ref.watch(questionBucketEditingProvider) == true)
+        // onTap load and show QuestionBucketCard for this specific bucket
+        // if (ref.watch(questionBucketEditingProvider) == true)
+        //   QuestionBucketCard(bucket: bucket),
+          if (ref.watch(questionBucketSelectedProvider)?.id == bucket.id)
           QuestionBucketCard(bucket: bucket),
       ],
     );

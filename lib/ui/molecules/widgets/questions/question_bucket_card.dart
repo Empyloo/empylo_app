@@ -115,16 +115,17 @@ class QuestionBucketCard extends ConsumerWidget {
 
     void onHide() {
       final isCreating = ref.read(questionBucketCreatingProvider);
-      final isEditing = ref.read(questionBucketEditingProvider);
+      // final isEditing = ref.read(questionBucketEditingProvider);
       if (isCreating) {
         clearTextFields();
         ref
             .read(questionBucketCreatingProvider.notifier)
             .update((state) => false);
-      } else if (isEditing) {
+      } else {
         ref
             .read(questionBucketEditingProvider.notifier)
             .update((state) => false);
+        ref.read(questionBucketSelectedProvider.notifier).state = null;
       }
     }
 

@@ -54,7 +54,7 @@ SizedBox ethnicity(
 ) {
   return SizedBox(
     width: Sizes.massive,
-    height: Sizes.xxl,
+    height: Sizes.mega,
     child: EthnicityDropdown(
       value: defaultValue,
       onChanged: (String? newValue) {
