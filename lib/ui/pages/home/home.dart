@@ -29,7 +29,7 @@ class HomePage extends ConsumerWidget {
       length: 5, // Adjust the number of tabs
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Home Page'),
+          title: const Text('Empylo Home Page'),
           bottom: TabBar(
             tabs: [
               const Tab(icon: Icon(Icons.dashboard), text: "Dashboard"),
