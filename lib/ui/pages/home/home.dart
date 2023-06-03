@@ -3,6 +3,7 @@ import 'package:empylo_app/state_management/router_provider.dart';
 import 'package:empylo_app/ui/molecules/widgets/custom_drawer.dart';
 import 'package:empylo_app/ui/pages/company_management/super_admin_company_list.dart';
 import 'package:empylo_app/ui/pages/dashboard/dash.dart';
+import 'package:empylo_app/ui/pages/question_management/question_bucket_list.dart';
 import 'package:empylo_app/ui/pages/user_management/user_management.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,7 +26,7 @@ class HomePage extends ConsumerWidget {
     }
 
     return DefaultTabController(
-      length: 4, // Adjust the number of tabs
+      length: 5, // Adjust the number of tabs
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Home Page'),
@@ -40,6 +41,11 @@ class HomePage extends ConsumerWidget {
               if (authState.role == UserRole.admin ||
                   authState.role == UserRole.superAdmin)
                 const Tab(icon: Icon(Icons.people), text: "Users"),
+              if (authState.role == UserRole.admin ||
+                  authState.role == UserRole.superAdmin)
+                const Tab(
+                    icon: Icon(Icons.question_answer),
+                    text: "Questions Bucket"),
             ],
           ),
         ),
@@ -54,13 +60,14 @@ class HomePage extends ConsumerWidget {
             if (authState.role == UserRole.admin ||
                 authState.role == UserRole.superAdmin)
               HomePageInviteForm(),
-            // Add 'Company List' page here
             if (authState.role == UserRole.superAdmin)
               const SuperAdminCompanyList(),
-            // Add 'User Management' page here
             if (authState.role == UserRole.admin ||
                 authState.role == UserRole.superAdmin)
               const UserManagement(),
+            if (authState.role == UserRole.admin ||
+                authState.role == UserRole.superAdmin)
+              const QuestionBucketList(),
           ],
         ),
       ),

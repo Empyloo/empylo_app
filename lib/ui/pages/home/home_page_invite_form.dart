@@ -1,8 +1,6 @@
 // lib/ui/pages/home/home_page_invite_form.dart
-import 'package:dio/dio.dart';
 import 'package:empylo_app/models/company.dart';
 import 'package:empylo_app/state_management/auth_state_notifier.dart';
-import 'package:empylo_app/state_management/company_list_provider.dart';
 import 'package:empylo_app/state_management/selected_company_state.dart';
 import 'package:empylo_app/tokens/border_radius.dart';
 import 'package:empylo_app/tokens/colors.dart';
@@ -14,7 +12,6 @@ import 'package:empylo_app/tokens/typography.dart';
 import 'package:empylo_app/ui/molecules/widgets/companies_drop_down.dart';
 import 'package:empylo_app/state_management/access_box_provider.dart';
 import 'package:empylo_app/state_management/user_invite_service_provider.dart';
-import 'package:empylo_app/ui/molecules/widgets/custom_containers.dart';
 import 'package:empylo_app/utils/request_processing_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
