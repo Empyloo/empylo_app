@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:empylo_app/models/sentry.dart';
+import 'package:empylo_app/models/session.dart';
 import 'package:empylo_app/models/user_profile.dart';
 import 'package:empylo_app/services/http_client.dart';
 import 'package:empylo_app/state_management/login_state_provider.dart';
@@ -16,7 +17,6 @@ import 'package:empylo_app/ui/molecules/dialogues/mfa_dialog.dart';
 import 'package:empylo_app/utils/user_utils/get_user_role.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 
 enum UserState { loggedIn, loggedOut }
 
@@ -45,6 +45,14 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
     );
   }
 
+  Function(BuildContext) getErrorCallback(WidgetRef ref) {
+    return (BuildContext context) {
+      showErrorSnackBar(context, 'MFA verification failed');
+      ref.read(loginStateProvider.notifier).toggleLoading();
+      ref.read(routerProvider).go('/');
+    };
+  }
+
   bool isUserEnrolled(Map<String, dynamic> response) {
     return response['user']?['factors'] != null;
   }
@@ -64,7 +72,38 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
     return factors?.length ?? 0;
   }
 
-  /// Given the userRole, mfaRequired, isEnrolled and isVerified, return the appropriate [UserState]
+  Future<void> navigateToUserProfileOrHome(
+      WidgetRef ref, UserProfile? userProfile) async {
+    if (userProfile?.acceptedTerms == true) {
+      ref.read(routerProvider).go('/home');
+    } else {
+      ref.read(routerProvider).go('/user-profile?id=${userProfile?.id}');
+    }
+  }
+
+  Future<void> allowAccess(BuildContext context, WidgetRef ref,
+      Map<String, dynamic> responseData, UserRole userRole) async {
+    state = const AsyncValue.data(UserState.loggedIn);
+    ref.read(authStateProvider.notifier).login(userRole);
+
+    // Fetch the user profile
+    final userProfileNotifier = ref.read(userProfileNotifierProvider.notifier);
+    await userProfileNotifier.getUserProfile(
+        responseData['user']['id'], responseData['access_token']);
+
+    // Check if the user has accepted the terms
+    final UserProfile? userProfile = ref.read(userProfileNotifierProvider);
+    ref.read(loginStateProvider.notifier).clearTextFields();
+
+    await navigateToUserProfileOrHome(ref, userProfile);
+  }
+
+  void denyAccess(BuildContext context, WidgetRef ref) {
+    ref.read(loginStateProvider.notifier).toggleLoading();
+    showErrorSnackBar(context,
+        'Error logging in, please check your credentials and try again.');
+    ref.read(routerProvider).go('/');
+  }
 
   Future<void> login({
     required String email,
@@ -73,9 +112,9 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
     required BuildContext context,
   }) async {
     try {
-      Map<String, dynamic>? sessionData;
       ref.read(loginStateProvider.notifier).toggleLoading();
-      final response = await _httpClient.post(
+
+      _httpClient.post(
         url: '$_baseUrl/auth/v1/token?grant_type=password',
         headers: {
           'Content-Type': 'application/json',
@@ -85,84 +124,165 @@ class UserNotifier extends StateNotifier<AsyncValue<UserState>> {
           'email': email,
           'password': password,
         },
-      );
-      UserRole userRole = getUserRoleFromResponse(response.data);
-      final bool mfaRequired =
-          userRole == UserRole.admin || userRole == UserRole.superAdmin;
-      final bool isEnrolled = isUserEnrolled(response.data);
-      final bool isVerified = isFactorVerified(response.data);
-      // if the user is enrolled and factor is verified, then we can challengeAndVerifyMFA
-      // if the user is enrolled and factor is not verified, then we can enrollAndVerifyMFA
-      ref.read(loginStateProvider.notifier).toggleLoading();
-      if (getFactorsLength(response.data) >= 9) {
-        ref.watch(routerProvider).go('/factors');
-      } else if ((!isEnrolled && mfaRequired) || (isEnrolled && !isVerified)) {
-        final sessionData = await ref
-            .read(mfaServiceProvider)
-            .enrollAndVerifyMFA(
-              ref: ref,
-              accessToken: response.data['access_token'],
-              showDialogFn: () async {
-                return await showDialog<String>(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return const MFADialog();
-                  },
-                );
-              },
-            )
-            .catchError((error) {
-          showErrorSnackBar(context, 'MFA verification failed');
-          return null;
-        });
-      } else if (isEnrolled) {
-        ref.read(loginStateProvider.notifier).toggleDialogState(true);
-        final sessionData = await ref
-            .read(mfaServiceProvider)
-            .verifiedChallengeFlow(
-              ref: ref,
-              accessToken: response.data['access_token'],
-              user: response.data['user'],
-              showDialogFn: () async {
-                return await showDialog<String>(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return const CodeDialog();
-                  },
-                );
-              },
-            )
-            .catchError((error) {
-          showErrorSnackBar(context, 'MFA verification failed');
-          return null;
-        });
-        ref.read(loginStateProvider.notifier).toggleDialogState(true);
-        final accessBox = await ref.read(accessBoxProvider.future);
-        accessBox.put('session', sessionData);
-      } else {
-      }
-      state = const AsyncValue.data(UserState.loggedIn);
-      ref.read(authStateProvider.notifier).login(userRole);
-      // Fetch the user profile
-      final userProfileNotifier =
-          ref.read(userProfileNotifierProvider.notifier);
-      await userProfileNotifier.getUserProfile(
-          response.data['user']['id'], response.data['access_token']);
+      ).then((response) {
+        UserRole userRole = getUserRoleFromResponse(response.data);
+        final bool mfaRequired =
+            userRole == UserRole.admin || userRole == UserRole.superAdmin;
 
-      // Check if the user has accepted the terms
-      final UserProfile? userProfile = ref.read(userProfileNotifierProvider);
-      ref.read(loginStateProvider.notifier).clearTextFields();
-      if (userProfile?.acceptedTerms == true) {
-        ref.read(routerProvider).go('/home');
-      } else {
-        ref.read(routerProvider).go('/user-profile?id=${userProfile?.id}');
-        // context.go('/profile');
-      }
+        if (mfaRequired) {
+          handleMfaFlow(
+            context,
+            ref,
+            response.data,
+            userRole,
+            getErrorCallback(ref),
+          ).catchError((_) {
+            ref.read(loginStateProvider.notifier).toggleLoading();
+          });
+        } else {
+          ref.read(loginStateProvider.notifier).toggleLoading();
+          allowAccess(context, ref, response.data, userRole);
+        }
+      }).catchError((error) {
+        ref.read(loginStateProvider.notifier).toggleLoading();
+        denyAccess(context, ref);
+      });
     } catch (e) {
       ref.read(loginStateProvider.notifier).toggleLoading();
-      showErrorSnackBar(context,
-          'Error logging in, please check you credentials and try again.');
+      denyAccess(context, ref);
+    } finally {
+      ref.read(loginStateProvider.notifier).toggleLoading();
+    }
+  }
+
+  // Inside UserNotifier class
+  void loginWithToken({
+    required String accessToken,
+    required WidgetRef ref,
+    required BuildContext context,
+  }) {
+    _httpClient.get(
+      url: '$_baseUrl/auth/v1/user',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': _anonKey,
+        'Authorization': 'Bearer $accessToken',
+      },
+    ).then((response) {
+      if (response.data['user'] != null) {
+        UserRole userRole = getUserRoleFromResponse(response.data);
+        allowAccess(context, ref, response.data, userRole);
+      } else {
+        throw Exception('Token login failed');
+      }
+    }).catchError((_) {
+      denyAccess(context, ref);
+    });
+  }
+
+  Future<void> handleMfaFlow(
+      BuildContext context,
+      WidgetRef ref,
+      Map<String, dynamic> responseData,
+      UserRole userRole,
+      Function(BuildContext) errorCallback) async {
+    final bool isEnrolled = isUserEnrolled(responseData);
+    final bool isVerified = isFactorVerified(responseData);
+
+    if (getFactorsLength(responseData) >= 9) {
+      ref.read(routerProvider).go('/factors');
+    } else if (!isEnrolled || !isVerified) {
+      return enrollAndVerifyMfa(context, ref, responseData, errorCallback);
+    } else {
+      return verifiedChallengeFlow(
+          context, ref, responseData, userRole, errorCallback);
+    }
+  }
+
+  void enrollAndVerifyMfa(
+      BuildContext context,
+      WidgetRef ref,
+      Map<String, dynamic> responseData,
+      Function(BuildContext) errorCallback) async {
+    try {
+      await ref.read(mfaServiceProvider).enrollAndVerifyMFA(
+            ref: ref,
+            accessToken: responseData['access_token'],
+            showDialogFn: () async {
+              final String? code = await showDialog<String>(
+                context: context,
+                builder: (BuildContext context) {
+                  return const MFADialog();
+                },
+              );
+              if (code == null || code.isEmpty) {
+                throw Exception("MFA code not provided");
+              }
+              return code;
+            },
+          );
+    } catch (error) {
+      errorCallback(context);
+    }
+  }
+
+  void verifiedChallengeFlow(
+      BuildContext context,
+      WidgetRef ref,
+      Map<String, dynamic> responseData,
+      UserRole userRole,
+      Function(BuildContext) errorCallback) async {
+    ref.read(loginStateProvider.notifier).toggleDialogState(true);
+    try {
+      final sessionData =
+          await ref.read(mfaServiceProvider).verifiedChallengeFlow(
+                ref: ref,
+                accessToken: responseData['access_token'],
+                user: responseData['user'],
+                showDialogFn: () async {
+                  final String? code = await showDialog<String>(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return const CodeDialog();
+                    },
+                  );
+                  if (code == null || code.isEmpty) {
+                    throw Exception("MFA code not provided");
+                  }
+                  return code;
+                },
+              );
+
+      if (sessionData != null) {
+        ref.read(loginStateProvider.notifier).toggleDialogState(true);
+        await ref.read(accessBoxProvider.future).then((accessBox) async {
+          accessBox.put('session', sessionData);
+          await allowAccess(context, ref, responseData, userRole);
+        });
+      } else {
+        ref.read(loginStateProvider.notifier).toggleDialogState(false);
+        ref.read(routerProvider).go('/');
+      }
+    } catch (error) {
+      errorCallback(context);
+      ref.read(loginStateProvider.notifier).toggleDialogState(false);
       ref.read(routerProvider).go('/');
+    }
+  }
+
+  Future<void> fetchUserProfile(Response response, WidgetRef ref) async {
+    final userProfileNotifier = ref.read(userProfileNotifierProvider.notifier);
+    await userProfileNotifier.getUserProfile(
+        response.data['user']['id'], response.data['access_token']);
+  }
+
+  void navigateToNextPage(WidgetRef ref) {
+    final UserProfile? userProfile = ref.read(userProfileNotifierProvider);
+    ref.read(loginStateProvider.notifier).clearTextFields();
+    if (userProfile?.acceptedTerms == true) {
+      ref.read(routerProvider).go('/home');
+    } else {
+      ref.read(routerProvider).go('/user-profile?id=${userProfile?.id}');
     }
   }
 

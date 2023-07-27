@@ -14,18 +14,24 @@ class LoginPage extends ConsumerWidget {
     final user = ref.watch(userProvider.notifier);
     final loginState = ref.watch(loginStateProvider);
 
-    user.login(
-      email: loginState.email.text,
-      password: loginState.password.text,
-      ref: ref,
-      context: context,
-    );
+    // Validate user input before trying to log in
+    if (loginState.email.text.isEmpty || loginState.password.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in both fields.')),
+      );
+    } else {
+      user.login(
+        email: loginState.email.text,
+        password: loginState.password.text,
+        ref: ref,
+        context: context,
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final loginState = ref.watch(loginStateProvider);
-    final user = ref.watch(userProvider.notifier);
 
     const borderRadius = BorderRadius.all(Radius.circular(16));
 
@@ -93,14 +99,7 @@ class LoginPage extends ConsumerWidget {
                     ),
                     const SizedBox(height: 32),
                     ElevatedButton(
-                      onPressed: () {
-                        user.login(
-                          email: loginState.email.text,
-                          password: loginState.password.text,
-                          ref: ref,
-                          context: context,
-                        );
-                      },
+                      onPressed: () => onLoginButtonPressed(context, ref),
                       style: ButtonStyle(
                         shape: MaterialStateProperty.all(
                           const RoundedRectangleBorder(

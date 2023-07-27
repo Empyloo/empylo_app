@@ -39,8 +39,8 @@ class QuestionBucketTile extends ConsumerWidget {
         // onTap load and show QuestionBucketCard for this specific bucket
         // if (ref.watch(questionBucketEditingProvider) == true)
         //   QuestionBucketCard(bucket: bucket),
-          if (ref.watch(questionBucketSelectedProvider)?.id == bucket.id)
-          QuestionBucketCard(bucket: bucket),
+        if (ref.watch(questionBucketSelectedProvider)?.id == bucket.id)
+          Expanded(child: QuestionBucketCard(bucket: bucket)),
       ],
     );
   }

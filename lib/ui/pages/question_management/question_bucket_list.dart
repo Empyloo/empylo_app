@@ -73,7 +73,6 @@ class QuestionBucketList extends ConsumerWidget {
                 ],
               ),
             ),
-            // show QuestionBucketCard for new QuestionBucket if creating is true
             if (ref.watch(questionBucketCreatingProvider) == true)
               QuestionBucketCard(),
             VerticalSpacing.m,

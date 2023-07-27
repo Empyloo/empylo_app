@@ -1,5 +1,4 @@
 // Path: lib/ui/molecules/dialogues/code_dialog.dart
-// Path: lib/ui/molecules/dialogues/code_dialog.dart
 import 'package:flutter/material.dart';
 
 class CodeDialog extends StatelessWidget {
@@ -8,6 +7,11 @@ class CodeDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextEditingController mfaCodeController = TextEditingController();
+    ValueNotifier<bool> isButtonDisabled = ValueNotifier<bool>(true);
+
+    mfaCodeController.addListener(() {
+      isButtonDisabled.value = mfaCodeController.text.isEmpty;
+    });
 
     return AlertDialog(
       title: const Text('Enter MFA Code'),
@@ -19,15 +23,29 @@ class CodeDialog extends StatelessWidget {
             controller: mfaCodeController,
             keyboardType: TextInputType.number,
             decoration: const InputDecoration(hintText: 'Enter your MFA code'),
+            onChanged: (text) {
+              isButtonDisabled.value = text.isEmpty;
+            },
           ),
         ],
       ),
       actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop(mfaCodeController.text);
+        ValueListenableBuilder<bool>(
+          valueListenable: isButtonDisabled,
+          builder: (context, value, child) {
+            return TextButton(
+              onPressed: value
+                  ? null
+                  : () {
+                      Navigator.of(context).pop(mfaCodeController.text);
+                    },
+              style: TextButton.styleFrom(
+                foregroundColor:
+                    value ? Colors.grey : Theme.of(context).primaryColor,
+              ),
+              child: const Text('Submit'),
+            );
           },
-          child: const Text('Submit'),
         ),
       ],
     );

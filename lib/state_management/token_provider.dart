@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TokenValidationStateNotifier extends StateNotifier<AsyncValue<bool>> {
   TokenValidationStateNotifier() : super(const AsyncValue.loading());
-
+  
   Future<void> handleTokenValidation({
     required String accessToken,
     required String refreshToken,

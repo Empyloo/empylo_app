@@ -31,6 +31,7 @@ class HomePage extends ConsumerWidget {
         appBar: AppBar(
           title: const Text('Empylo Home Page'),
           bottom: TabBar(
+            isScrollable: MediaQuery.of(context).size.width < 600,
             tabs: [
               const Tab(icon: Icon(Icons.dashboard), text: "Dashboard"),
               if (authState.role == UserRole.admin ||
