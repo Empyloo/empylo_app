@@ -11,6 +11,7 @@ import 'package:empylo_app/ui/pages/home/home.dart';
 import 'package:empylo_app/ui/pages/login/factors_page.dart';
 import 'package:empylo_app/ui/pages/login/password_reset_page.dart';
 import 'package:empylo_app/ui/pages/login/set_password_page.dart';
+import 'package:empylo_app/ui/pages/survey/survey.dart';
 import 'package:empylo_app/ui/pages/user/user_profile_page.dart';
 import 'package:empylo_app/ui/pages/user_management/admin_user_edit_page.dart';
 import 'package:empylo_app/utils/get_query_params.dart';
@@ -136,13 +137,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'survey',
         path: '/survey',
         builder: (context, state) {
-          // Extract the access token from the URL
           RedirectParams? params = getQueryParams(Uri.base);
           if (params != null && params.accessToken.isNotEmpty) {
-            // Perform the automatic login with the access token
-            ref.read(userProvider.notifier).loginWithToken(params.accessToken);
-            // Direct the user to the Survey page
-            return SurveyPage();
+            return SurveyPage(redirectParams: params);
           } else {
             return const ErrorPage(
               'You do not have permission to access this page.',
