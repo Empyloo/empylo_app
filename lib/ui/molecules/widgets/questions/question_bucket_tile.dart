@@ -40,7 +40,7 @@ class QuestionBucketTile extends ConsumerWidget {
         // if (ref.watch(questionBucketEditingProvider) == true)
         //   QuestionBucketCard(bucket: bucket),
         if (ref.watch(questionBucketSelectedProvider)?.id == bucket.id)
-          Expanded(child: QuestionBucketCard(bucket: bucket)),
+          QuestionBucketCard(bucket: bucket),
       ],
     );
   }
