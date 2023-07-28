@@ -9,3 +9,22 @@ RedirectParams? getQueryParams(Uri uri) {
   }
   return RedirectParams.fromJson(uriObject.queryParameters);
 }
+
+Map<String, String> parseSurveyFragment(String fragment) {
+  final result = <String, String>{};
+  final parts = fragment.split('&');
+
+  for (var part in parts) {
+    final keyValue = part.split('=');
+
+    if (keyValue.length != 2) {
+      throw FormatException('Invalid query parameter: $part');
+    }
+
+    final key = keyValue[0];
+    final value = keyValue[1];
+    result[key] = Uri.decodeFull(value);
+  }
+
+  return result;
+}

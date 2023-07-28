@@ -137,9 +137,23 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'survey',
         path: '/survey',
         builder: (context, state) {
-          RedirectParams? params = getQueryParams(Uri.base);
-          if (params != null && params.accessToken.isNotEmpty) {
-            return SurveyPage(redirectParams: params);
+          final uri = Uri.base;
+          final decodedFragment =
+              Uri.decodeFull(uri.fragment).replaceAll('#', '?');
+          final uriObject = Uri.parse(decodedFragment);
+
+          Map<String, String> queryParams =
+              Map<String, String>.from(uriObject.queryParameters);
+
+          if (queryParams.containsKey('surveyId')) {
+            List<String> surveyIdAndToken = queryParams['surveyId']!.split('?');
+            if (surveyIdAndToken.length > 1) {
+              queryParams['surveyId'] = surveyIdAndToken[0];
+              queryParams['access_token'] = surveyIdAndToken[1].split('=')[1];
+            }
+          }
+          if (queryParams.containsKey('access_token')) {
+            return SurveyPage(queryParams: queryParams);
           } else {
             return const ErrorPage(
               'You do not have permission to access this page.',
