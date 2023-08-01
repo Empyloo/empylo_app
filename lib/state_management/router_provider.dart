@@ -1,5 +1,5 @@
 // Path: lib/services/router_provider.dart
-// import 'package:empylo_app/dev_main.dart';
+import 'package:empylo_app/dev_main.dart';
 import 'package:empylo_app/models/redirect_params.dart';
 import 'package:empylo_app/state_management/auth_state_notifier.dart';
 import 'package:empylo_app/state_management/user_provider.dart';
@@ -30,7 +30,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           name: 'login',
           path: '/',
           builder: (context, state) {
-            return const LoginPage(); //const ShowPage();
+            return const ShowPage(); // const LoginPage(); //const ShowPage();
           }),
       GoRoute(
         name: 'user-profile',
