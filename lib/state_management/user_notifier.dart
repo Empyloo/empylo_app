@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:empylo_app/models/sentry.dart';
-import 'package:empylo_app/models/session.dart';
 import 'package:empylo_app/models/user_profile.dart';
 import 'package:empylo_app/services/http_client.dart';
 import 'package:empylo_app/state_management/login_state_provider.dart';

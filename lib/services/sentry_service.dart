@@ -53,5 +53,5 @@ void main() async {
     level: 'error',
     extra: {'context': 'dart test'},
   );
-  final response = await sentry.sendErrorEvent(event);
+  await sentry.sendErrorEvent(event);
 }

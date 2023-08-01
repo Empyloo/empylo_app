@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:empylo_app/constants/api_constants.dart';
 import 'package:empylo_app/models/sentry.dart';
 import 'package:empylo_app/models/team.dart';
-import 'package:empylo_app/models/user_data.dart';
 import 'package:empylo_app/models/user_profile.dart';
 import 'package:empylo_app/models/user_team_mapping.dart';
 import 'package:empylo_app/services/http_client.dart';
@@ -95,7 +94,7 @@ class UserRestService {
 
   Future<void> deleteUserProfile(String id, String accessToken) async {
     try {
-      final response = await _client.delete(
+      await _client.delete(
         url: '$remoteBaseUrl/rest/v1/users?id=eq.$id',
         headers: {
           'apikey': remoteAnonKey,

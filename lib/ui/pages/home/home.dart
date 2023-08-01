@@ -1,5 +1,6 @@
 import 'package:empylo_app/state_management/auth_state_notifier.dart';
 import 'package:empylo_app/state_management/router_provider.dart';
+import 'package:empylo_app/ui/molecules/widgets/campaigns/campaign_form.dart';
 import 'package:empylo_app/ui/molecules/widgets/custom_drawer.dart';
 import 'package:empylo_app/ui/pages/company_management/super_admin_company_list.dart';
 import 'package:empylo_app/ui/pages/dashboard/dash.dart';
@@ -26,7 +27,7 @@ class HomePage extends ConsumerWidget {
     }
 
     return DefaultTabController(
-      length: 5, // Adjust the number of tabs
+      length: 6,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Empylo Home Page'),
@@ -47,6 +48,7 @@ class HomePage extends ConsumerWidget {
                 const Tab(
                     icon: Icon(Icons.question_answer),
                     text: "Questions Bucket"),
+              const Tab(icon: Icon(Icons.campaign), text: "Campaigns"),
             ],
           ),
         ),
@@ -69,6 +71,9 @@ class HomePage extends ConsumerWidget {
             if (authState.role == UserRole.admin ||
                 authState.role == UserRole.superAdmin)
               const QuestionBucketList(),
+            if (authState.role == UserRole.admin ||
+                authState.role == UserRole.superAdmin)
+              const CampaignForm(),
           ],
         ),
       ),

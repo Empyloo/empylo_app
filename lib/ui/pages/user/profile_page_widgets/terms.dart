@@ -1,5 +1,4 @@
-// Path:
-import 'package:empylo_app/models/user_profile.dart';
+// Path: lib/ui/pages/profile_page_widgets/terms.dart
 import 'package:empylo_app/tokens/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

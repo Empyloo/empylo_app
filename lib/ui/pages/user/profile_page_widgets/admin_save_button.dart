@@ -2,7 +2,6 @@
 import 'package:empylo_app/models/user_profile.dart';
 import 'package:empylo_app/state_management/access_box_provider.dart';
 import 'package:empylo_app/state_management/users/admin_edit_user_notifier.dart';
-import 'package:empylo_app/ui/pages/user/user_profile_page.dart';
 import 'package:empylo_app/ui/pages/user_management/admin_user_edit_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -5,3 +5,6 @@ run-dev:
 
 run:
 	flutter run -d chrome
+
+exp:
+	dart experiments_cred.dart

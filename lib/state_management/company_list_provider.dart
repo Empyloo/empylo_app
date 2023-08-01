@@ -22,6 +22,7 @@ class CompanyListNotifier extends StateNotifier<List<Company>> {
       state = companies;
       return true;
     } catch (e) {
+      print('error: $e');
       return false;
     }
   }

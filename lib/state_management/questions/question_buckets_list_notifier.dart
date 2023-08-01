@@ -16,7 +16,7 @@ class QuestionBucketsList extends StateNotifier<List<QuestionBucket>> {
       String userRole,
       String companyId) async {
     try {
-      final questionBucketResponse = await questionBucketService.createQuestionBucket(
+      await questionBucketService.createQuestionBucket(
           accessToken, questionBucket, userId, userRole, companyId);
       state = [...state, questionBucket];
       return true;

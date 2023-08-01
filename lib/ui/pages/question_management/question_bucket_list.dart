@@ -18,8 +18,8 @@ import '../../../models/question_bucket.dart';
 
 final questionBucketCreatingProvider = StateProvider<bool>((ref) => false);
 final questionBucketEditingProvider = StateProvider<bool>((ref) => false);
-final questionBucketSelectedProvider = StateProvider<QuestionBucket?>((ref) => null);
-
+final questionBucketSelectedProvider =
+    StateProvider<QuestionBucket?>((ref) => null);
 
 class QuestionBucketList extends ConsumerWidget {
   const QuestionBucketList({Key? key}) : super(key: key);
@@ -58,7 +58,7 @@ class QuestionBucketList extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Company List",
+                    "Question Buckets",
                     style: EmpyloTypography.caption
                         .copyWith(color: ColorTokens.textLight),
                   ),
@@ -82,7 +82,7 @@ class QuestionBucketList extends ConsumerWidget {
                   itemCount: questionBuckets.length,
                   itemBuilder: (context, index) {
                     final bucket = questionBuckets[index];
-                    
+
                     return Padding(
                       padding: EmpyloEdgeInserts.s,
                       child: QuestionBucketTile(
@@ -94,7 +94,6 @@ class QuestionBucketList extends ConsumerWidget {
                           ref
                               .read(questionBucketEditingProvider.notifier)
                               .state = true;
-                              
                         },
                         onDelete: () async {
                           final accessToken = await getAccessToken(ref);

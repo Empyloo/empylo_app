@@ -12,38 +12,45 @@ class CustomDrawer extends ConsumerWidget {
     final box = ref.watch(accessBoxProvider);
 
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          const DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue,
+      child: GestureDetector(
+        onTap: () => Navigator.pop(context),
+        behavior: HitTestBehavior.translucent,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text('Pages'),
             ),
-            child: Text('Pages'),
-          ),
-          ListTile(
-            title: const Text('Home'),
-            onTap: () {
-              router.go('/home');
-            },
-          ),
-          ListTile(
-            title: const Text('Profile'),
-            onTap: () {
-              router.go('/user-profile');
-            },
-          ),
-          ListTile(
-            title: const Text('Logout'),
-            onTap: () {
-              // remove session from Hive box
-              box.asData!.value.delete('session');
-              // navigate to login page
-              router.go('/');
-            },
-          ),
-          // Add more ListTile for each route
-        ],
+            ListTile(
+              title: const Text('Home'),
+              onTap: () {
+                router.go('/home');
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('Profile'),
+              onTap: () {
+                router.go('/user-profile');
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('Logout'),
+              onTap: () {
+                // remove session from Hive box
+                box.asData!.value.delete('session');
+                // navigate to login page
+                router.go('/');
+                Navigator.pop(context);
+              },
+            ),
+            // Add more ListTile for each route
+          ],
+        ),
       ),
     );
   }
