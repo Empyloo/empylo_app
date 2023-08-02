@@ -31,7 +31,7 @@ class AudienceNotifier extends StateNotifier<List<Audience>> {
   }
 
   Future<void> createAudience(
-      String companyId, String accessToken, Audience audience) async {
+      String companyId, String userId, String accessToken, Audience audience) async {
     try {
       final newAudience = await _audienceService.createAudience(
           companyId, accessToken, audience);

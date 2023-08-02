@@ -29,12 +29,13 @@ class AudienceMemberNotifier extends StateNotifier<List<AudienceMember>> {
 
   AudienceMemberNotifier(this._audienceUserService) : super([]);
 
-  Future<void> getUsersInAudience(String audienceId, String accessToken,
-      String userRole, String companyId) async {
+  Future<List<AudienceMember>> getUsersInAudience(String audienceId,
+      String accessToken, String userRole, String companyId) async {
     try {
       final audienceMembers = await _audienceUserService.getUsersInAudience(
           audienceId, accessToken, userRole, companyId);
       state = audienceMembers;
+      return audienceMembers;
     } catch (e) {
       throw Exception('Error fetching users in audience: $e');
     }
@@ -49,20 +50,21 @@ class AudienceMemberNotifier extends StateNotifier<List<AudienceMember>> {
         ...state,
         AudienceMember(
             audienceId: userAudienceLink.audienceId,
-            email: userAudienceLink.userId)
+            email: userAudienceLink.userId) // use user ID
       ];
     } catch (e) {
       throw Exception('Error adding user to audience: $e');
     }
   }
 
-  Future<void> removeUserFromAudience(
-      String accessToken, UserAudienceLink userAudienceLink) async {
+  Future<void> removeUserFromAudience(String accessToken,
+      UserAudienceLink userAudienceLink, String userId) async {
     try {
       await _audienceUserService.removeUserFromAudience(
-          accessToken, userAudienceLink);
+          accessToken, userAudienceLink.audienceId, userId);
       state = state
-          .where((member) => member.email != userAudienceLink.userId)
+          .where((member) =>
+              member.email != userAudienceLink.userId) // compare user IDs
           .toList();
     } catch (e) {
       throw Exception('Error removing user from audience: $e');

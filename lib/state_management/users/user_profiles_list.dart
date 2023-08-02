@@ -11,9 +11,11 @@ class UserProfilesList extends StateNotifier<List<UserProfile>> {
       : _userService = userService,
         super([]);
 
-  Future<void> getUserProfiles(String accessToken) async {
+  Future<void> getUserProfiles(
+      String accessToken, String userRole, String companyId) async {
     try {
-      final userProfiles = await _userService.getUserProfiles(accessToken);
+      final userProfiles =
+          await _userService.getUserProfiles(accessToken, userRole, companyId);
       state = userProfiles;
     } catch (e) {
       state = [];

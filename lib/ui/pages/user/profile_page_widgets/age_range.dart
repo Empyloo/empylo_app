@@ -57,9 +57,12 @@ SizedBox ageRange(
       onChanged: (String? newValue) {
         try {
           updateField(context, ref, 'age_range', newValue, userId);
-          print('age_range: $newValue');
         } catch (e) {
-          print(e);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error updating age range: $e'),
+            ),
+          );
         }
       },
     ),

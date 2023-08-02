@@ -1,5 +1,7 @@
 // Path: lib/ui/pages/user_management/user_management.dart
 import 'package:empylo_app/models/user_profile.dart';
+import 'package:empylo_app/state_management/auth_state_notifier.dart';
+import 'package:empylo_app/state_management/user_profile_provider.dart';
 import 'package:empylo_app/state_management/users/user_profiles_list.dart';
 import 'package:empylo_app/tokens/colors.dart';
 import 'package:empylo_app/tokens/spacing.dart';
@@ -20,9 +22,10 @@ class UserManagement extends ConsumerWidget {
     if (userProfiles.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         final accessToken = await getAccessToken(ref);
-        await ref
-            .read(userProfilesListProvider.notifier)
-            .getUserProfiles(accessToken);
+        final userProfile = ref.watch(userProfileNotifierProvider);
+        final userRole = ref.watch(authStateProvider);
+        await ref.read(userProfilesListProvider.notifier).getUserProfiles(
+            accessToken, userRole.role.name, userProfile!.companyID);
       });
       return const Center(child: CircularProgressIndicator());
     }

@@ -5,3 +5,8 @@ Future<String> getAccessToken(WidgetRef ref) async {
   final accessBox = await ref.watch(accessBoxProvider.future);
   return accessBox.get('session')['access_token'];
 }
+
+Future<String> getAccessTokenWithProviderRef(ProviderRef ref) async {
+  final accessBox = await ref.watch(accessBoxProvider.future);
+  return accessBox.get('session')['access_token'];
+}

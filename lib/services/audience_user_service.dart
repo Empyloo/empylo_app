@@ -64,10 +64,10 @@ class AudienceUserService {
   }
 
   Future<void> removeUserFromAudience(
-      String accessToken, UserAudienceLink userAudienceLink) async {
+      String accessToken, String audienceId, String userId) async {
     await _http.delete(
       url:
-          '$remoteBaseUrl/rest/v1/user_audience_link?audience_id=eq.${userAudienceLink.audienceId}&user_id=eq.${userAudienceLink.userId}',
+          '$remoteBaseUrl/rest/v1/user_audience_link?audience_id=eq.$audienceId&user_id=eq.$userId',
       headers: {
         'apikey': remoteAnonKey,
         'Authorization': 'Bearer $accessToken',

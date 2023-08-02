@@ -8,6 +8,7 @@ import 'package:empylo_app/models/user_profile.dart';
 import 'package:empylo_app/models/user_team_mapping.dart';
 import 'package:empylo_app/services/http_client.dart';
 import 'package:empylo_app/services/sentry_service.dart';
+import 'package:empylo_app/utils/role_based_url.dart';
 
 class UserRestService {
   final HttpClient _client;
@@ -78,7 +79,6 @@ class UserRestService {
         },
         data: updates,
       );
-      print('response.data: ${response.data[0]}');
       return UserProfile.fromJson(response.data[0]);
     } catch (e) {
       await _sentry.sendErrorEvent(
@@ -113,10 +113,12 @@ class UserRestService {
     }
   }
 
-  Future<List<UserProfile>> getUserProfiles(String accessToken) async {
+ Future<List<UserProfile>> getUserProfiles(
+    String accessToken, String userRole, String companyId) async {
     try {
+      final filter = getRoleBasedFilter(userRole, companyId);
       final response = await _client.get(
-        url: '$remoteBaseUrl/rest/v1/users?select=*',
+        url: '$remoteBaseUrl/rest/v1/users?select=*$filter',
         headers: {
           'apikey': remoteAnonKey,
           'Authorization': 'Bearer $accessToken',

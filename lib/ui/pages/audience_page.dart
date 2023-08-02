@@ -1,9 +1,9 @@
 // Path: lib/ui/pages/audience_page.dart
 import 'package:empylo_app/state_management/auth_state_notifier.dart';
 import 'package:empylo_app/state_management/user_profile_provider.dart';
+import 'package:empylo_app/ui/molecules/widgets/audiences/audience_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:empylo_app/ui/molecules/widgets/audience_edit_modal.dart';
 import 'package:empylo_app/state_management/audiences/audience_notifier.dart';
 import 'package:empylo_app/utils/get_access_token.dart';
 
@@ -32,6 +32,11 @@ class AudiencePage extends ConsumerWidget {
       physics: const NeverScrollableScrollPhysics(),
       itemCount: audienceList.length,
       itemBuilder: (context, index) {
+        // store context in a variable to avoid using context after async gap
+        navPop() {
+          Navigator.pop(context);
+        }
+
         return Container(
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey),
@@ -41,19 +46,18 @@ class AudiencePage extends ConsumerWidget {
             title: Text(audienceList[index].name),
             onTap: () => showDialog(
               context: context,
-              builder: (context) => Dialog(
-                child: AudienceEditModal(
-                  audience: audienceList[index],
-                  onAudienceEdited: (updatedAudience) async {
-                    final accessToken = await getAccessToken(ref);
-                    ref.read(audienceNotifierProvider.notifier).updateAudience(
-                        userProfile!.companyID,
-                        accessToken,
-                        audienceList[index].id,
-                        updatedAudience);
-                    Navigator.pop(context);
-                  },
-                ),
+              builder: (context) => AudienceModal(
+                audience: audienceList[index],
+                onAudienceEdited: (updatedAudience) async {
+                  final accessToken = await getAccessToken(ref);
+                  ref.read(audienceNotifierProvider.notifier).updateAudience(
+                      userProfile!.companyID,
+                      accessToken,
+                      audienceList[index].id!,
+                      updatedAudience);
+                  navPop();
+                },
+                type: "edit",
               ),
             ),
             trailing: IconButton(
@@ -63,7 +67,7 @@ class AudiencePage extends ConsumerWidget {
                 ref.read(audienceNotifierProvider.notifier).deleteAudience(
                     userProfile!.companyID,
                     accessToken,
-                    audienceList[index].id);
+                    audienceList[index].id!);
               },
             ),
           ),

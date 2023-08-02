@@ -1,5 +1,5 @@
 class Audience {
-  final String id;
+  final String? id;
   final String name;
   final String? description;
   final int? count;
@@ -10,7 +10,7 @@ class Audience {
   final String? companyId;
 
   Audience({
-    required this.id,
+    this.id,
     required this.name,
     this.description,
     this.count,
@@ -37,7 +37,6 @@ class Audience {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'name': name,
       'description': description,
       'count': count,
