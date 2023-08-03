@@ -1,6 +1,7 @@
 // Path: lib/ui/molecules/widgets/questions/question_item.dart
 import 'package:empylo_app/models/question.dart';
-import 'package:empylo_app/utils/get_access_token.dart';
+import 'package:empylo_app/state_management/access_box_provider.dart';
+import 'package:empylo_app/ui/molecules/widgets/questions/question_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:empylo_app/state_management/questions/question_notifier.dart';
@@ -12,8 +13,12 @@ class QuestionItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    String accessToken = '';
+    ref.watch(accessBoxProvider.future).then((accessBox) {
+      accessToken = accessBox.get('session')['access_token'];
+    });
     return Card(
-      color: Colors.blue[50],
+      color: const Color.fromARGB(255, 236, 245, 251),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -71,14 +76,15 @@ class QuestionItem extends ConsumerWidget {
                   icon: const Icon(Icons.edit),
                   onPressed: () async {
                     final scaffoldMessenger = ScaffoldMessenger.of(context);
-                    final accessToken = await getAccessToken(ref);
                     try {
-                      ref
-                          .read(questionNotifierProvider.notifier)
-                          .updateQuestion(accessToken, question);
-                      scaffoldMessenger.showSnackBar(
-                        const SnackBar(
-                          content: Text('Question updated'),
+                      showDialog(
+                        context: context,
+                        builder: (context) => QuestionForm(
+                          question: question,
+                          onQuestionEdited: (updatedQuestion) => ref
+                              .read(questionNotifierProvider.notifier)
+                              .updateQuestion(accessToken, updatedQuestion),
+                          type: 'update',
                         ),
                       );
                     } catch (e) {
@@ -97,7 +103,7 @@ class QuestionItem extends ConsumerWidget {
                     try {
                       ref
                           .read(questionNotifierProvider.notifier)
-                          .deleteQuestion('accessToken', question.id!);
+                          .deleteQuestion(accessToken, question.id!);
                       scaffoldMessenger.showSnackBar(
                         const SnackBar(
                           content: Text('Question deleted'),
