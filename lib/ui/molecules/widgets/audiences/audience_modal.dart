@@ -39,7 +39,7 @@ class AudienceModal extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Dialog(
       child: Container(
-        width: 300,
+        width: 400,
         // height: 400,
         padding: const EdgeInsets.all(16),
         child: Column(

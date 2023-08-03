@@ -54,4 +54,28 @@ class Questionnaire {
       'company_id': companyId,
     };
   }
+
+  Questionnaire copyWith({
+    String? id,
+    String? name,
+    String? description,
+    String? createdBy,
+    String? editedBy,
+    DateTime? createdAt,
+    DateTime? editedAt,
+    int? count,
+    String? companyId,
+  }) {
+    return Questionnaire(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      createdBy: createdBy ?? this.createdBy,
+      editedBy: editedBy ?? this.editedBy,
+      createdAt: createdAt ?? this.createdAt,
+      editedAt: editedAt ?? this.editedAt,
+      count: count ?? this.count,
+      companyId: companyId ?? this.companyId,
+    );
+  }
 }

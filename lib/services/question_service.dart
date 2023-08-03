@@ -305,4 +305,35 @@ class QuestionService {
       rethrow;
     }
   }
+
+  Future<List<Question>> getQuestionsInQuestionnaire(
+      String questionnaireId, String accessToken) async {
+    try {
+      final response = await _http.get(
+        url:
+            '$remoteBaseUrl/rest/v1/question_questionnaire_link?questionnaire_id=eq.$questionnaireId',
+        headers: {
+          'apikey': remoteAnonKey,
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+      final data = response.data as List<dynamic>;
+      final questions = data
+          .map((json) => Question.fromJson(json as Map<String, dynamic>))
+          .toList();
+      return questions;
+    } catch (e) {
+      await _sentry.sendErrorEvent(
+        ErrorEvent(
+          message: 'Error fetching questions in questionnaire',
+          level: 'error',
+          extra: {
+            'context': 'QuestionService.getQuestionsInQuestionnaire',
+            'error': e,
+          },
+        ),
+      );
+      rethrow;
+    }
+  }
 }

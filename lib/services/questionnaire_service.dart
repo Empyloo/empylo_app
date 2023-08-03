@@ -16,8 +16,9 @@ class QuestionnaireService {
   })  : _sentry = sentry,
         _http = http;
 
-Future<List<Questionnaire>> getQuestionnaires(
-      String companyId, String accessToken, String userRole, {String? questionnaireId}) async {
+  Future<List<Questionnaire>> getQuestionnaires(
+      String companyId, String accessToken, String userRole,
+      {String? questionnaireId}) async {
     try {
       final filter = getRoleBasedFilter(userRole, companyId);
       final url =
@@ -52,6 +53,7 @@ Future<List<Questionnaire>> getQuestionnaires(
   Future<Questionnaire> createQuestionnaire(
       String accessToken, Questionnaire questionnaire) async {
     try {
+      print(questionnaire.toJson());
       final response = await _http.post(
         url: '$remoteBaseUrl/rest/v1/questionnaires',
         headers: {
