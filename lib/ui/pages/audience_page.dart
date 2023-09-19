@@ -7,8 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:empylo_app/state_management/audiences/audience_notifier.dart';
 import 'package:empylo_app/utils/get_access_token.dart';
 
-class AudiencePage extends ConsumerWidget {
-  const AudiencePage({super.key});
+class Audiences extends ConsumerWidget {
+  const Audiences({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

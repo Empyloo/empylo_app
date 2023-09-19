@@ -81,10 +81,10 @@ class QuestionItem extends ConsumerWidget {
                         context: context,
                         builder: (context) => QuestionForm(
                           question: question,
-                          onQuestionEdited: (updatedQuestion) => ref
+                          onQuestionCreateOrEdited: (updatedQuestion) => ref
                               .read(questionNotifierProvider.notifier)
                               .updateQuestion(accessToken, updatedQuestion),
-                          type: 'update',
+                          formType: FormType.edit,
                         ),
                       );
                     } catch (e) {

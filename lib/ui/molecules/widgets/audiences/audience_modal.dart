@@ -1,5 +1,4 @@
 // Path: lib/ui/molecules/widgets/audiences/audience_modal.dart
-
 import 'package:empylo_app/ui/molecules/widgets/audiences/audience_form_fields.dart';
 import 'package:empylo_app/ui/molecules/widgets/audiences/audience_member_list.dart';
 import 'package:empylo_app/ui/molecules/widgets/audiences/add_user_to_audience_button.dart';
@@ -73,7 +72,8 @@ class AudienceModal extends ConsumerWidget {
               child: Text('Submit ${type.capitalizeFirst()} Audience'),
             ),
             const SizedBox(height: 16),
-            AudienceMemberList(audience: audience),
+            if (type == "edit" && audience != null && audience!.count! > 0)
+              AudienceMemberList(audience: audience),
             AddUserToAudienceButton(audience: audience),
           ],
         ),

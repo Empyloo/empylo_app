@@ -53,7 +53,6 @@ class QuestionnaireService {
   Future<Questionnaire> createQuestionnaire(
       String accessToken, Questionnaire questionnaire) async {
     try {
-      print(questionnaire.toJson());
       final response = await _http.post(
         url: '$remoteBaseUrl/rest/v1/questionnaires',
         headers: {

@@ -12,15 +12,10 @@ class QuestionCard extends ConsumerWidget {
 
   Future<void> handleQuestionCreation(
       BuildContext context, WidgetRef ref, Question question) async {
-    navPop() {
-      Navigator.pop(context);
-    } // close the dialog
-
     final accessToken = await getAccessToken(ref);
     await ref
         .read(questionNotifierProvider.notifier)
         .createQuestion(accessToken, question);
-    navPop(); // close the modal
   }
 
   @override
@@ -52,9 +47,9 @@ class QuestionCard extends ConsumerWidget {
                       context: context,
                       builder: (context) => QuestionForm(
                         question: null,
-                        onQuestionEdited: (question) =>
+                        onQuestionCreateOrEdited: (question) =>
                             handleQuestionCreation(context, ref, question),
-                        type: 'create',
+                        formType: FormType.create,
                       ),
                     );
                   },

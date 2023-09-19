@@ -1,3 +1,4 @@
+// Path: lib/ui/molecules/widgets/campaigns/cards/audience_card.dart
 import 'package:empylo_app/models/audience.dart';
 import 'package:empylo_app/state_management/audiences/audience_notifier.dart';
 import 'package:empylo_app/state_management/user_profile_provider.dart';
@@ -61,7 +62,7 @@ class AudienceCard extends ConsumerWidget {
               ),
             ],
           ),
-          const AudiencePage(),
+          const Audiences(),
         ],
       ),
     );

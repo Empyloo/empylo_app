@@ -192,7 +192,7 @@ class QuestionService {
           'question_id': questionId,
           'questionnaire_id': questionnaireId,
           'created_by': userId,
-          'updated_by': userId,
+          'edited_by': userId,
         },
       );
     } catch (e) {
@@ -233,6 +233,38 @@ class QuestionService {
           level: 'error',
           extra: {
             'context': 'QuestionService.removeQuestionFromQuestionnaire',
+            'error': e,
+          },
+        ),
+      );
+      rethrow;
+    }
+  }
+
+  Future<List<Question>> getQuestionsInQuestionnaire(
+      String questionnaireId, String accessToken) async {
+    try {
+      final response = await _http.post(
+        url: '$remoteBaseUrl/rest/v1/rpc/get_questions_for_questionnaire',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': remoteAnonKey,
+          'Authorization': 'Bearer $accessToken',
+        },
+        data: {
+          "questionnaire_id": questionnaireId,
+        },
+      );
+      List<dynamic> data = response.data;
+      final questions = data.map((json) => Question.fromJson(json)).toList();
+      return questions;
+    } catch (e) {
+      await _sentry.sendErrorEvent(
+        ErrorEvent(
+          message: 'Error fetching questions in questionnaire',
+          level: 'error',
+          extra: {
+            'context': 'QuestionService.getQuestionsInQuestionnaire',
             'error': e,
           },
         ),
@@ -306,12 +338,12 @@ class QuestionService {
     }
   }
 
-  Future<List<Question>> getQuestionsInQuestionnaire(
-      String questionnaireId, String accessToken) async {
+  Future<List<Question>> getBucketQuestions(
+      String accessToken, String bucketId) async {
     try {
       final response = await _http.get(
         url:
-            '$remoteBaseUrl/rest/v1/question_questionnaire_link?questionnaire_id=eq.$questionnaireId',
+            '$remoteBaseUrl/rest/v1/question_bucket_map?question_bucket_id=eq.$bucketId',
         headers: {
           'apikey': remoteAnonKey,
           'Authorization': 'Bearer $accessToken',
@@ -325,10 +357,10 @@ class QuestionService {
     } catch (e) {
       await _sentry.sendErrorEvent(
         ErrorEvent(
-          message: 'Error fetching questions in questionnaire',
+          message: 'Error fetching questions in bucket',
           level: 'error',
           extra: {
-            'context': 'QuestionService.getQuestionsInQuestionnaire',
+            'context': 'QuestionService.getBucketQuestions',
             'error': e,
           },
         ),

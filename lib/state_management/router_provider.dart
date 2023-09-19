@@ -41,7 +41,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'admin-user-edit',
         path: '/admin-user-edit',
         builder: (context, state) {
-          if (!state.queryParameters.containsKey('id')) {
+          if (!state.uri.queryParameters.containsKey('id')) {
             return const ErrorPage('Missing user ID parameter.');
           }
           final authState = ref.watch(authStateProvider);
@@ -102,7 +102,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/company-profile',
         builder: (context, state) {
           final authState = ref.watch(authStateProvider);
-          final companyId = state.queryParameters['id']!;
+          final companyId = state.uri.queryParameters['id']!;
           if (authState.isAuthenticated &&
               (authState.role == UserRole.admin ||
                   authState.role == UserRole.superAdmin)) {

@@ -10,7 +10,7 @@ UserProfile? retrieveUserProfile(
     BuildContext context, ProviderRef ref, GoRouterState state) {
   final userProfilesList = ref.watch(userProfilesListProvider);
   final userProfileNotifier = ref.watch(userProfileNotifierProvider);
-  final userId = state.queryParameters['id']!;
+  final userId = state.uri.queryParameters['id']!;
 
   UserProfile? userProfile;
   try {

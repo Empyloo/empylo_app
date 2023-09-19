@@ -132,10 +132,21 @@ class QuestionnaireNotifier extends StateNotifier<QuestionnaireState> {
         accessToken,
         role,
       );
-      final questionnairesWithQuestions = questionnaires
-          .map((q) =>
-              QuestionnaireWithQuestions(questionnaire: q, questions: []))
-          .toList();
+
+      // Create an empty list to store the QuestionnaireWithQuestions objects.
+      List<QuestionnaireWithQuestions> questionnairesWithQuestions = [];
+
+      // For each questionnaire, get the associated questions and
+      // create a QuestionnaireWithQuestions object.
+      for (var q in questionnaires) {
+        final questions = await _questionService.getQuestionsInQuestionnaire(
+          q.id!,
+          accessToken,
+        );
+        questionnairesWithQuestions.add(
+            QuestionnaireWithQuestions(questionnaire: q, questions: questions));
+      }
+
       state = state.copyWith(
           questionnairesWithQuestions: questionnairesWithQuestions,
           status: QuestionnaireStateStatus.success);
@@ -143,32 +154,6 @@ class QuestionnaireNotifier extends StateNotifier<QuestionnaireState> {
       state = state.copyWith(
           status: QuestionnaireStateStatus.error,
           errorMessage: 'Failed to get questionnaires');
-    }
-  }
-
-  Future addQuestionToQuestionnaire(Question question, String accessToken,
-      String userId, String questionnaireId) async {
-    state = state.copyWith(status: QuestionnaireStateStatus.loading);
-    try {
-      await _questionService.addQuestionToQuestionnaire(
-        accessToken,
-        question.id!,
-        questionnaireId,
-        userId,
-      );
-      final updatedQuestionnairesWithQuestions = state
-          .questionnairesWithQuestions!
-          .map((q) => q.questionnaire.id == questionnaireId
-              ? q.copyWith(questions: [...q.questions, question])
-              : q)
-          .toList();
-      state = state.copyWith(
-          questionnairesWithQuestions: updatedQuestionnairesWithQuestions,
-          status: QuestionnaireStateStatus.success);
-    } catch (e) {
-      state = state.copyWith(
-          status: QuestionnaireStateStatus.error,
-          errorMessage: 'Failed to add question to questionnaire');
     }
   }
 
@@ -197,6 +182,60 @@ class QuestionnaireNotifier extends StateNotifier<QuestionnaireState> {
       state = state.copyWith(
           status: QuestionnaireStateStatus.error,
           errorMessage: 'Failed to remove question from questionnaire');
+      rethrow;
+    }
+  }
+
+  Future addQuestionToQuestionnaire(Question question, String accessToken,
+      String userId, String questionnaireId) async {
+    state = state.copyWith(status: QuestionnaireStateStatus.loading);
+    try {
+      await _questionService.addQuestionToQuestionnaire(
+        accessToken,
+        question.id!,
+        questionnaireId,
+        userId,
+      );
+      final updatedQuestionnairesWithQuestions = state
+          .questionnairesWithQuestions!
+          .map((q) => q.questionnaire.id == questionnaireId
+              ? q.copyWith(questions: [...q.questions, question])
+              : q)
+          .toList();
+      state = state.copyWith(
+          questionnairesWithQuestions: updatedQuestionnairesWithQuestions,
+          status: QuestionnaireStateStatus.success);
+    } catch (e) {
+      state = state.copyWith(
+          status: QuestionnaireStateStatus.error,
+          errorMessage: 'Failed to add question to questionnaire');
+      rethrow;
+    }
+  }
+
+  Future<List<Question>> getQuestionsForQuestionnaire(
+      String questionnaireId, String accessToken) async {
+    state = state.copyWith(status: QuestionnaireStateStatus.loading);
+    try {
+      final questions = await _questionService.getQuestionsInQuestionnaire(
+        accessToken,
+        questionnaireId,
+      );
+      final updatedQuestionnairesWithQuestions = state
+          .questionnairesWithQuestions!
+          .map((q) => q.questionnaire.id == questionnaireId
+              ? q.copyWith(questions: questions)
+              : q)
+          .toList();
+      state = state.copyWith(
+          questionnairesWithQuestions: updatedQuestionnairesWithQuestions,
+          status: QuestionnaireStateStatus.success);
+      return questions;
+    } catch (e) {
+      state = state.copyWith(
+          status: QuestionnaireStateStatus.error,
+          errorMessage: 'Failed to get questions for questionnaire');
+      rethrow;
     }
   }
 }

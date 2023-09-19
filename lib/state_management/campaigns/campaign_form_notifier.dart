@@ -7,9 +7,9 @@ import 'package:empylo_app/state_management/campaigns/campaign_service_provider.
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CampaignFormNotifier extends StateNotifier<Campaign> {
-  final CampaignsService campaignsService;
+  final CampaignListNotifier campaignListNotifier;
 
-  CampaignFormNotifier(this.campaignsService)
+  CampaignFormNotifier(this.campaignListNotifier)
       : super(Campaign(
           name: '',
           count: 0,
@@ -18,21 +18,13 @@ class CampaignFormNotifier extends StateNotifier<Campaign> {
           companyId: '',
           createdBy: '',
           nextRunTime: DateTime.now(),
-          type: null,
+          type: '',
         ));
-
-  Future<String> getAccessToken(WidgetRef ref) async {
-    final accessBox = await ref.watch(accessBoxProvider.future);
-    return accessBox.get('session')['access_token'];
-  }
 
   Future<bool> createCampaign(Map<String, dynamic> data, WidgetRef ref) async {
     try {
-      final accessToken = await getAccessToken(ref);
-      final campaign = await campaignsService.createCampaign(
-          campaign: Campaign.fromJson(data), accessToken: accessToken);
-      state = Campaign.fromJson(campaign.data);
-      return true;
+      final campaign = Campaign.fromJson(data);
+      return await campaignListNotifier.createCampaign(campaign, ref);
     } catch (e) {
       return false;
     }
@@ -41,26 +33,16 @@ class CampaignFormNotifier extends StateNotifier<Campaign> {
   Future<bool> updateCampaign(
       String id, Map<String, dynamic> data, WidgetRef ref) async {
     try {
-      final accessToken = await getAccessToken(ref);
-      final updatedCampaign = await campaignsService.updateCampaign(
-          campaignId: id,
-          campaign: Campaign.fromJson(data),
-          accessToken: accessToken);
-      state = Campaign.fromJson(updatedCampaign.data);
-      return true;
+      final updatedCampaign = Campaign.fromJson(data);
+      return await campaignListNotifier.updateCampaign(
+          updatedCampaign, ref);
     } catch (e) {
       rethrow;
     }
   }
 
   Future<bool> deleteCampaign(String id, WidgetRef ref) async {
-    try {
-      final accessToken = await getAccessToken(ref);
-      await campaignsService.deleteCampaign(accessToken, id);
-      return true;
-    } catch (e) {
-      return false;
-    }
+    return await campaignListNotifier.deleteCampaign(id, ref);
   }
 
   void reset() {
@@ -72,6 +54,7 @@ class CampaignFormNotifier extends StateNotifier<Campaign> {
       companyId: '',
       createdBy: '',
       nextRunTime: DateTime.now(),
+      type: '',
     );
   }
 }
@@ -79,8 +62,9 @@ class CampaignFormNotifier extends StateNotifier<Campaign> {
 final campaignFormNotifierProvider =
     StateNotifierProvider<CampaignFormNotifier, Campaign>(
   (ref) {
-    final campaignsService = ref.watch(campaignsServiceProvider);
-    return CampaignFormNotifier(campaignsService);
+    final campaignListNotifier =
+        ref.watch(campaignListNotifierProvider.notifier);
+    return CampaignFormNotifier(campaignListNotifier);
   },
 );
 

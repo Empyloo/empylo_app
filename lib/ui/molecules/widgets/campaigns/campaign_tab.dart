@@ -42,12 +42,18 @@ class CampaignTab extends ConsumerWidget {
                                   child: const AudienceCard(),
                                 ),
                               ),
-                              const Expanded(
-                                child: CampaignCard(),
+                              Expanded(
+                                child: Container(
+                                  margin: const EdgeInsets.only(right: 16.0),
+                                  child: const QuestionnaireCard(),
+                                ),
                               ),
-                              const Expanded(
-                                child: QuestionnaireCard(),
-                              )
+                              Expanded(
+                                child: Container(
+                                  margin: const EdgeInsets.only(right: 16.0),
+                                  child: const CampaignCard(),
+                                ),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 8.0),
@@ -71,8 +77,8 @@ class CampaignTab extends ConsumerWidget {
                               margin: const EdgeInsets.only(bottom: 16.0),
                               child: const AudienceCard(),
                             ),
-                            const CampaignCard(),
                             const QuestionnaireCard(),
+                            const CampaignCard(),
                             const SizedBox(
                               width: double.infinity,
                               child: QuestionCard(),

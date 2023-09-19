@@ -14,6 +14,12 @@ import 'package:empylo_app/services/sentry_service.dart';
 
 enum HttpMethod { GET, POST, PUT, DELETE, PATCH }
 
+enum RetryStrategy {
+  none,
+  immediate,
+  exponentialBackoff,
+}
+
 class HttpClient {
   final Dio _dio;
   final SentryService _sentry;
@@ -103,12 +109,14 @@ class HttpClient {
   Future<Response> delete({
     required String url,
     Map<String, dynamic>? headers,
+    dynamic data,
     int maxRetries = 3,
     int initialDelay = 1000,
   }) async {
     return _retryOnError(
       () => _dio.delete(
         url,
+        data: data,
         options: Options(headers: headers),
       ),
       HttpMethod.DELETE,
@@ -117,24 +125,32 @@ class HttpClient {
     );
   }
 
-  Future<T> _retryOnError<T>(Future<T> Function() request, HttpMethod method,
-      {int maxRetries = 3, int initialDelay = 1000}) async {
+  Future<T> _retryOnError<T>(
+    Future<T> Function() request,
+    HttpMethod method, {
+    int maxRetries = 3,
+    int initialDelay = 1000,
+  }) async {
     int retries = 0;
     int delay = initialDelay;
     while (retries < maxRetries) {
       try {
         return await request();
       } on DioError catch (e) {
-        bool shouldRetry = await _handleError(e, method);
+        final retryStrategy = await _handleError(e, method);
 
-        if (!shouldRetry) {
-          rethrow;
+        switch (retryStrategy) {
+          case RetryStrategy.none:
+            rethrow;
+          case RetryStrategy.immediate:
+            break; // Will retry immediately.
+          case RetryStrategy.exponentialBackoff:
+            await Future.delayed(Duration(milliseconds: delay));
+            delay *= _backoffFactor;
+            break;
         }
 
         retries++;
-        await Future.delayed(Duration(milliseconds: delay));
-        delay *= _backoffFactor;
-
         if (retries == maxRetries) {
           rethrow;
         }
@@ -143,30 +159,37 @@ class HttpClient {
     throw Exception('Could not connect to server.');
   }
 
-  Future<bool> _handleError(DioError e, HttpMethod method) async {
+  Future<RetryStrategy> _handleError(DioError e, HttpMethod method) async {
     await _sentry.sendErrorEvent(
       ErrorEvent(
         message: e.toString(),
         level: 'error',
-        extra: {'method': method, 'context': e.response?.data},
+        extra: {
+          'method': method.toString(),
+          'url': e.requestOptions.uri.toString(),
+          'data': e.requestOptions.data,
+          'context': e.response?.data,
+        },
       ),
     );
 
-    if (e.response != null &&
-        e.response!.data is Map<String, dynamic> &&
-        (e.response!.data as Map<String, dynamic>)['error'] ==
-            'invalid_grant') {
-      return false;
-    } else if (e.response!.statusCode == 400) {
-      return false;
-    } else if (e.response!.statusCode == 401) {
-      return false;
-    } else if (e.response!.statusCode == 403) {
-      return false;
-    } else if (e.response!.statusCode == 404) {
-      return false;
-    } else {
-      return true;
+    if (e.response != null) {
+      final statusCode = e.response!.statusCode;
+      switch (statusCode) {
+        case 400:
+        case 401:
+        case 403:
+        case 404:
+          return RetryStrategy.none;
+        case 500:
+        case 502:
+        case 503:
+        case 504:
+          return RetryStrategy.exponentialBackoff;
+        default:
+          return RetryStrategy.immediate;
+      }
     }
+    return RetryStrategy.immediate;
   }
 }

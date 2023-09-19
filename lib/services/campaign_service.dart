@@ -1,9 +1,13 @@
 // Path: lib/services/campaign_service.dart
 import 'package:dio/dio.dart';
+import 'package:empylo_app/constants/api_constants.dart';
 import 'package:empylo_app/services/http_client.dart';
 import 'package:empylo_app/models/sentry.dart';
 import 'package:empylo_app/services/sentry_service.dart';
 import 'package:empylo_app/models/campaign.dart';
+import 'dart:convert';
+
+import 'package:empylo_app/utils/role_based_url.dart';
 
 class CampaignsService {
   final HttpClient _httpClient;
@@ -20,18 +24,19 @@ class CampaignsService {
     String? accessToken,
   }) async {
     try {
+      Map<String, dynamic> data = {
+        "queue_name": "campaigns",
+        "action_type": "create_campaign",
+        "payload": campaign.toJson(),
+      };
+      String jsonString = jsonEncode(data);
       return await _httpClient.post(
-        url: 'https://app.empylo.com/api/v1/campaigns',
-        headers: {
-          'Authorization': 'Bearer $accessToken',
-          'Content-Type': 'application/json',
-        },
-        data: {
-          "queue_name": "campaigns",
-          "action_type": "create_campaign",
-          "payload": campaign.toJson()
-        },
-      );
+          url: 'https://app.empylo.com/api/v1/campaigns',
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json',
+          },
+          data: jsonString);
     } catch (e) {
       await _sentry.sendErrorEvent(ErrorEvent(
         message: e.toString(),
@@ -46,16 +51,23 @@ class CampaignsService {
   }
 
   Future<Response> updateCampaign({
-    required String campaignId,
     required Campaign campaign,
     String? accessToken,
+    required String userRole,
+    required String companyId,
   }) async {
-    final data = campaign.toJson();
-    data['id'] = campaignId;
+    final data = campaign.toJsonForUpdate();
+    // Use getRoleBasedUrl for URL generation
+    final url = getRoleBasedUrl(
+      userRole,
+      companyId,
+      'rest/v1/campaigns?id=eq.${campaign.id}',
+    );
     try {
-      return await _httpClient.put(
-        url: 'https://app.empylo.com/api/v1/campaigns',
+      return await _httpClient.patch(
+        url: url,
         headers: {
+          'apikey': remoteAnonKey,
           'Authorization': 'Bearer $accessToken',
           'Content-Type': 'application/json',
         },
@@ -74,33 +86,61 @@ class CampaignsService {
     }
   }
 
-  Future<Campaign> getCampaign(String accessToken, String campaignId) async {
+  Future<List<Campaign>> getCampaigns(
+      String companyId, String accessToken, String userRole,
+      {String? campaignId}) async {
     try {
+      final filter = getRoleBasedFilter(userRole, companyId);
+      final url = getRoleBasedUrl(
+        userRole,
+        companyId,
+        'rest/v1/campaign_with_links',
+        queryParams: {
+          if (campaignId != null) 'id': 'eq.$campaignId',
+        },
+      );
+
       final response = await _httpClient.get(
-        url: 'https://app.empylo.com/api/v1/campaigns?id=eq.$campaignId',
+        url: url + filter,
         headers: {
+          'apikey': remoteAnonKey,
           'Authorization': 'Bearer $accessToken',
         },
       );
-      return Campaign.fromJson(response
-          .data[0]); // assuming that Campaign class has a fromJson method
+      return response.data
+          .map<Campaign>((campaign) => Campaign.fromJson(campaign))
+          .toList();
     } catch (e) {
       await _sentry.sendErrorEvent(
         ErrorEvent(
-          message: 'Error getting campaign',
+          message: 'Error fetching campaigns',
           level: 'error',
-          extra: {'context': 'CampaignsService.getCampaign', 'error': e},
+          extra: {
+            'context': 'CampaignService.getCampaigns',
+            'error': e,
+          },
         ),
       );
       rethrow;
     }
   }
 
-  Future<void> deleteCampaign(String accessToken, String campaignId) async {
+  Future<void> deleteCampaign(String accessToken, String companyId,
+      String userRole, String campaignId) async {
     try {
+      final url = getRoleBasedUrl(
+        userRole,
+        companyId,
+        'rest/v1/campaigns?id=eq.$campaignId',
+        queryParams: {
+          'id': 'eq.$campaignId',
+        },
+      );
+
       await _httpClient.delete(
-        url: 'https://app.empylo.com/api/v1/campaigns?id=eq.$campaignId',
+        url: url,
         headers: {
+          'apikey': remoteAnonKey,
           'Authorization': 'Bearer $accessToken',
         },
       );
@@ -109,7 +149,10 @@ class CampaignsService {
         ErrorEvent(
           message: 'Error deleting campaign',
           level: 'error',
-          extra: {'context': 'CampaignsService.deleteCampaign', 'error': e},
+          extra: {
+            'context': 'CampaignService.deleteCampaign',
+            'error': e,
+          },
         ),
       );
       rethrow;

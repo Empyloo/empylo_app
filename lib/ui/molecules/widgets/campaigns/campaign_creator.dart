@@ -22,6 +22,7 @@ class CreateCampaignForm extends ConsumerWidget {
     required this.startDateController,
     required this.endDateController,
     required this.thresholdController,
+    required this.timeOfDayController,
     required this.audienceIdsController,
     required this.questionnaireIdsController,
   });
@@ -35,6 +36,7 @@ class CreateCampaignForm extends ConsumerWidget {
   final TextEditingController startDateController;
   final TextEditingController endDateController;
   final TextEditingController thresholdController;
+  final TextEditingController timeOfDayController;
   final TextEditingController audienceIdsController;
   final TextEditingController questionnaireIdsController;
 
@@ -70,12 +72,13 @@ class CreateCampaignForm extends ConsumerWidget {
             controller: endDateController,
             labelText: 'End Date',
           ),
+          // Todo: Change Threshold to be a slider
           StyledCampaignTextField(
             controller: thresholdController,
             labelText: 'Threshold',
           ),
           TimePickerTextField(
-            controller: startDateController,
+            controller: timeOfDayController,
             labelText: 'Time of Day',
           ),
           StyledCampaignTextField(

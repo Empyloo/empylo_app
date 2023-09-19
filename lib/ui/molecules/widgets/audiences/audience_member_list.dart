@@ -33,8 +33,9 @@ class AudienceMemberList extends ConsumerWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else {
-          final audienceUsers =
-              ref.watch(audienceUsersListProvider)[audience!.id!];
+          final audienceUsers = (audience != null && audience!.id != null)
+              ? ref.watch(audienceUsersListProvider)[audience!.id!]
+              : null;
           final userProfiles = ref.watch(userProfilesListProvider);
 
           if (audienceUsers == null || audienceUsers.isEmpty) {
