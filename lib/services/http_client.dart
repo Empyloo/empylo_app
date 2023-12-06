@@ -2,88 +2,49 @@
 An example of an endpoint is:
 ```
 select
-curl 'https://banckend.com/rest/v1/users?select=id' \
+curl 'https://backend.com/rest/v1/users?select=id' \
 -H "apikey: KEY" \
 -H "Authorization: Bearer KEY"
 ```
 */
 // Path: lib/services/http_client.dart
 import 'package:dio/dio.dart';
-import 'package:empylo_app/models/sentry.dart';
-import 'package:empylo_app/services/sentry_service.dart';
-
-enum HttpMethod { GET, POST, PUT, DELETE, PATCH }
-
-enum RetryStrategy {
-  none,
-  immediate,
-  exponentialBackoff,
-}
+import 'package:empylo_app/constants/api_constants.dart';
+import 'package:empylo_app/services/retry_handler.dart';
 
 class HttpClient {
   final Dio _dio;
-  final SentryService _sentry;
-
-  static const int _backoffFactor = 2;
+  final RetryHandler _retryHandler;
 
   HttpClient({
     required Dio dio,
-    required SentryService sentry,
+    required RetryHandler retryHandler,
   })  : _dio = dio,
-        _sentry = sentry;
+        _retryHandler = retryHandler;
 
   Future<Response> post({
     required String url,
     Map<String, dynamic>? headers,
     dynamic data,
-    int maxRetries = 3,
-    int initialDelay = 1000,
   }) async {
-    return _retryOnError(
+    return _retryHandler.execute(
       () => _dio.post(
         url,
         data: data,
         options: Options(headers: headers),
       ),
-      HttpMethod.POST,
-      maxRetries: maxRetries,
-      initialDelay: initialDelay,
     );
   }
 
   Future<Response> get({
     required String url,
     Map<String, dynamic>? headers,
-    int maxRetries = 3,
-    int initialDelay = 1000,
   }) async {
-    return _retryOnError(
+    return _retryHandler.execute(
       () => _dio.get(
         url,
         options: Options(headers: headers),
       ),
-      HttpMethod.GET,
-      maxRetries: maxRetries,
-      initialDelay: initialDelay,
-    );
-  }
-
-  Future<Response> patch({
-    required String url,
-    Map<String, dynamic>? headers,
-    dynamic data,
-    int maxRetries = 3,
-    int initialDelay = 1000,
-  }) async {
-    return _retryOnError(
-      () => _dio.patch(
-        url,
-        data: data,
-        options: Options(headers: headers),
-      ),
-      HttpMethod.PATCH,
-      maxRetries: maxRetries,
-      initialDelay: initialDelay,
     );
   }
 
@@ -91,105 +52,59 @@ class HttpClient {
     required String url,
     Map<String, dynamic>? headers,
     dynamic data,
-    int maxRetries = 3,
-    int initialDelay = 1000,
   }) async {
-    return _retryOnError(
+    return _retryHandler.execute(
       () => _dio.put(
         url,
         data: data,
         options: Options(headers: headers),
       ),
-      HttpMethod.PUT,
-      maxRetries: maxRetries,
-      initialDelay: initialDelay,
     );
   }
 
   Future<Response> delete({
     required String url,
     Map<String, dynamic>? headers,
-    dynamic data,
-    int maxRetries = 3,
-    int initialDelay = 1000,
   }) async {
-    return _retryOnError(
+    return _retryHandler.execute(
       () => _dio.delete(
+        url,
+        options: Options(headers: headers),
+      ),
+    );
+  }
+
+  Future<Response> patch({
+    required String url,
+    Map<String, dynamic>? headers,
+    dynamic data,
+  }) async {
+    return _retryHandler.execute(
+      () => _dio.patch(
         url,
         data: data,
         options: Options(headers: headers),
       ),
-      HttpMethod.DELETE,
-      maxRetries: maxRetries,
-      initialDelay: initialDelay,
     );
   }
+}
 
-  Future<T> _retryOnError<T>(
-    Future<T> Function() request,
-    HttpMethod method, {
-    int maxRetries = 3,
-    int initialDelay = 1000,
-  }) async {
-    int retries = 0;
-    int delay = initialDelay;
-    while (retries < maxRetries) {
-      try {
-        return await request();
-      } on DioError catch (e) {
-        final retryStrategy = await _handleError(e, method);
 
-        switch (retryStrategy) {
-          case RetryStrategy.none:
-            rethrow;
-          case RetryStrategy.immediate:
-            break; // Will retry immediately.
-          case RetryStrategy.exponentialBackoff:
-            await Future.delayed(Duration(milliseconds: delay));
-            delay *= _backoffFactor;
-            break;
-        }
+void main() async {
+  final dio = Dio();
+  final retryHandler = RetryHandler();
+  final httpClient = HttpClient(
+    dio: dio,
+    retryHandler: retryHandler,
+  );
 
-        retries++;
-        if (retries == maxRetries) {
-          rethrow;
-        }
-      }
-    }
-    throw Exception('Could not connect to server.');
-  }
+  final response = await httpClient.get(
+    url: '$remoteBaseUrl/rest/v1/companies',
+    headers: {
+      'apikey': remoteAnonKey,
+      'Authorization': 'Bearer $remoteAnonKey',
+    },
+  );
 
-  Future<RetryStrategy> _handleError(DioError e, HttpMethod method) async {
-    await _sentry.sendErrorEvent(
-      ErrorEvent(
-        message: e.toString(),
-        level: 'error',
-        extra: {
-          'method': method.toString(),
-          'url': e.requestOptions.uri.toString(),
-          'data': e.requestOptions.data,
-          'context': e.response?.data,
-        },
-      ),
-    );
-
-    if (e.response != null) {
-      final statusCode = e.response!.statusCode;
-      switch (statusCode) {
-        case 400:
-        case 401:
-        case 403:
-        case 404:
-          return RetryStrategy.none;
-        case 500:
-        case 502:
-        case 503:
-        case 504:
-          return RetryStrategy.exponentialBackoff;
-        default:
-          return RetryStrategy.immediate;
-      }
-    }
-    return RetryStrategy.immediate;
-  }
+  print(response.data);
 }

@@ -1,6 +1,6 @@
 // Path: lib/ui/pages/login/login_page.dart
 import 'package:empylo_app/state_management/login_state_provider.dart';
-import 'package:empylo_app/state_management/router_provider.dart';
+import 'package:empylo_app/state_management/routing/router_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

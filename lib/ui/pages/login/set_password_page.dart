@@ -1,6 +1,6 @@
 import 'package:empylo_app/models/redirect_params.dart';
 import 'package:empylo_app/state_management/access_box_provider.dart';
-import 'package:empylo_app/state_management/router_provider.dart';
+import 'package:empylo_app/state_management/routing/router_provider.dart';
 import 'package:empylo_app/state_management/token_provider.dart';
 import 'package:empylo_app/state_management/user_provider.dart';
 import 'package:empylo_app/ui/pages/error/erro_page.dart';

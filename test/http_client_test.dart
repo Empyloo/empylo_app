@@ -1,7 +1,7 @@
 // Path: test/http_client_test.dart
 import 'package:dio/dio.dart';
 import 'package:empylo_app/services/http_client.dart';
-import 'package:empylo_app/services/sentry_service.dart';
+import 'package:empylo_app/services/retry_handler.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
@@ -11,22 +11,12 @@ class MockSentryDio extends Mock implements Dio {}
 
 void main() {
   late MockDio dio;
-  late MockSentryDio sentryDio;
-  late SentryService sentry;
   late HttpClient client;
 
   setUp(() {
     dio = MockDio();
-    sentryDio = MockSentryDio();
-    sentry = SentryService(
-      dio: sentryDio,
-      sentryKey: 'key',
-      projectId: 'project-id',
-    );
-    client = HttpClient(
-      dio: dio,
-      sentry: sentry,
-    );
+    final retryHandler = RetryHandler();
+    client = HttpClient(dio: dio, retryHandler: retryHandler);
   });
 
   group('HttpClient Post', () {
@@ -119,13 +109,6 @@ void main() {
       expect(response.requestOptions.path,
           'https://banckend.com/rest/v1/users?select=id');
 
-      verify(
-        () => sentryDio.post(
-          any(),
-          data: any(named: 'data'),
-          options: any(named: 'options'),
-        ),
-      ).called(3);
     });
   });
 
@@ -216,13 +199,6 @@ void main() {
       expect(response.requestOptions.path,
           'https://banckend.com/rest/v1/users?select=id');
 
-      verify(
-        () => sentryDio.post(
-          any(),
-          data: any(named: 'data'),
-          options: any(named: 'options'),
-        ),
-      ).called(3);
     });
   });
 
@@ -246,7 +222,7 @@ void main() {
       );
 
       // act
-      final response = await client.update(
+      final response = await client.put(
         url: 'https://banckend.com/rest/v1/users?select=id',
       );
 
@@ -275,7 +251,7 @@ void main() {
       );
 
       // act
-      final response = await client.update(
+      final response = await client.put(
         url: 'https://banckend.com/rest/v1/users?select=id',
       );
 
@@ -307,7 +283,7 @@ void main() {
       );
 
       // act
-      final response = await client.update(
+      final response = await client.put(
         url: 'https://banckend.com/rest/v1/users?select=id',
       );
 
@@ -315,14 +291,7 @@ void main() {
       expect(response.statusCode, 500);
       expect(response.requestOptions.path,
           'https://banckend.com/rest/v1/users?select=id');
-        
-      verify(
-        () => sentryDio.post(
-          any(),
-          data: any(named: 'data'),
-          options: any(named: 'options'),
-        ),
-      ).called(3);
+
     });
   });
 
@@ -413,13 +382,6 @@ void main() {
       expect(response.requestOptions.path,
           'https://banckend.com/rest/v1/users?select=id');
 
-      verify(
-        () => sentryDio.post(
-          any(),
-          data: any(named: 'data'),
-          options: any(named: 'options'),
-        ),
-      ).called(3);
     });
   });
 }

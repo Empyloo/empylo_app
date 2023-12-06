@@ -1,5 +1,5 @@
 // Path: lib/main.dart
-import 'package:empylo_app/state_management/router_provider.dart';
+import 'package:empylo_app/state_management/routing/router_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';

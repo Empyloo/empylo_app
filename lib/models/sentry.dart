@@ -1,3 +1,4 @@
+// Path: lib/models/sentry.dart
 // Sentry Model
 class SentryEvent {
   final String eventId;
@@ -40,4 +41,18 @@ class ErrorEvent {
         'level': level,
         'extra': extra,
       };
+}
+
+class SentryError extends Error {
+  final String message;
+  @override
+  final StackTrace stackTrace;
+  final int statusCode;
+
+  SentryError(this.message, this.stackTrace, this.statusCode);
+
+  @override
+  String toString() {
+    return 'SentryError: $message, Status Code: $statusCode, Stack Trace: $stackTrace';
+  }
 }

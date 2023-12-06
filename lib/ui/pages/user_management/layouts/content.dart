@@ -1,5 +1,5 @@
 // Path: lib/ui/pages/user_management/layouts/content.dart
-import 'package:empylo_app/state_management/router_provider.dart';
+import 'package:empylo_app/state_management/routing/router_provider.dart';
 import 'package:empylo_app/state_management/users/admin_edit_user_notifier.dart';
 import 'package:empylo_app/tokens/button_styles.dart';
 import 'package:empylo_app/ui/pages/company_management/utils/on_delete_company.dart';

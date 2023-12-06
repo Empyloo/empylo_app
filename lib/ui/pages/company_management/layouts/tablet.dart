@@ -1,5 +1,5 @@
 // Path: lib/ui/pages/company_management/layouts/tablet.dart
-import 'package:empylo_app/state_management/router_provider.dart';
+import 'package:empylo_app/state_management/routing/router_provider.dart';
 import 'package:empylo_app/tokens/button_styles.dart';
 import 'package:empylo_app/tokens/sizes.dart';
 import 'package:empylo_app/ui/pages/company_management/utils/on_delete_company.dart';

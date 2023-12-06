@@ -1,5 +1,6 @@
 // Path: lib/utils/get_query_params.dart
 import 'package:empylo_app/models/redirect_params.dart';
+import 'package:empylo_app/models/url/url_parameters.dart';
 
 RedirectParams? getQueryParams(Uri uri) {
   final decodedFragment = Uri.decodeFull(uri.fragment).replaceAll('#', '?');
@@ -27,4 +28,22 @@ Map<String, String> parseSurveyFragment(String fragment) {
   }
 
   return result;
+}
+
+UrlParameters? parseUrl(String url) {
+  Uri uri = Uri.parse(url);
+  final decodedFragment = Uri.decodeFull(uri.fragment).replaceAll('#', '?');
+  final parameters = Uri.parse(decodedFragment).queryParameters;
+  if (parameters['access_token'] == null) {
+    return null;
+  }
+  return UrlParameters.fromMap(parameters);
+}
+
+void main() {
+  String urlNoFragment = "https://app.empylo.com/";
+  String url =
+      "https://app.empylo.com/#/#access_token=eyJhbGciJ0eXifQ.eyJhcCI6MTcwMDU1dLCJaW9uX2lkIjoiMDA0Nzgw.1nUx5otb9-UW_T5XsD5WSOq0&expires_at=1700552791&expires_in=3600&refresh_token=OpCld-NKdwHAjQ8Ow68jAQ&token_type=bearer&type=recovery";
+  UrlParameters? urlParameters = parseUrl(url);
+  print(urlParameters!.type);
 }

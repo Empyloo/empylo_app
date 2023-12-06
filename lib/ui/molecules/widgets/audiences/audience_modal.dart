@@ -55,9 +55,9 @@ class AudienceModal extends ConsumerWidget {
             const SizedBox(height: 16),
             // Always reserve the space for the audience count
             if (type == "edit" && audience != null)
-              Text('Count: ${audience!.count}') // Display count here
+              Text('Count: ${audience!.count ?? ''}')
             else
-              Container(height: 16), // Empty container to maintain the height
+              Container(height: 16),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => editOrCreateAudience(

@@ -6,7 +6,7 @@ import 'package:empylo_app/models/user_profile.dart';
 import 'package:empylo_app/services/http_client.dart';
 import 'package:empylo_app/state_management/login_state_provider.dart';
 import 'package:empylo_app/state_management/mfa_service_provider.dart';
-import 'package:empylo_app/state_management/router_provider.dart';
+import 'package:empylo_app/state_management/routing/router_provider.dart';
 import 'package:empylo_app/services/sentry_service.dart';
 import 'package:empylo_app/state_management/access_box_provider.dart';
 import 'package:empylo_app/state_management/auth_state_notifier.dart';

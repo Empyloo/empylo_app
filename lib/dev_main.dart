@@ -3,7 +3,7 @@ import 'package:empylo_app/constants/api_constants.dart';
 import 'package:empylo_app/state_management/access_box_provider.dart';
 import 'package:empylo_app/state_management/auth_state_notifier.dart';
 import 'package:empylo_app/state_management/http_client_provider.dart';
-import 'package:empylo_app/state_management/router_provider.dart';
+import 'package:empylo_app/state_management/routing/router_provider.dart';
 import 'package:empylo_app/state_management/user_profile_provider.dart';
 import 'package:empylo_app/tokens/edge_inserts.dart';
 import 'package:empylo_app/ui/pages/home/home.dart';

@@ -1,5 +1,5 @@
 import 'package:empylo_app/state_management/auth_state_notifier.dart';
-import 'package:empylo_app/state_management/router_provider.dart';
+import 'package:empylo_app/state_management/routing/router_provider.dart';
 import 'package:empylo_app/ui/molecules/widgets/campaigns/campaign_tab.dart';
 import 'package:empylo_app/ui/molecules/widgets/custom_drawer.dart';
 import 'package:empylo_app/ui/pages/company_management/super_admin_company_list.dart';

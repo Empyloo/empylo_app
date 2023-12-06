@@ -17,9 +17,15 @@ void main() {
   late MockDio dio;
   const String sentryKey = 'key';
   const String projectId = 'project-id';
+  late SentryService sentry;
 
   setUp(() {
     dio = MockDio();
+    sentry = SentryService(
+      dio: dio,
+      sentryKey: sentryKey,
+      projectId: projectId,
+    );
   });
 
   group('SentryService', () {
@@ -38,48 +44,109 @@ void main() {
             ),
           ));
 
-      final sentry = SentryService(
-        dio: dio,
-        sentryKey: sentryKey,
-        projectId: projectId,
-      );
-
       // act
-      final response = await sentry.sendErrorEvent(event);
+      await sentry.sendErrorEvent(event);
 
       // assert
-      expect(response.statusCode, 200);
-      expect(response.requestOptions.path,
-          'https://sentry.io/api/project-id/store/');
+      verify(
+        () => dio.post(
+          'https://sentry.io/api/project-id/store/',
+          data: event.toJson(),
+          options: any(named: 'options'),
+        ),
+      ).called(1);
     });
 
-    test('should return error response', () async {
-      // arrange
-      when(
-        () => dio.post(
+    test(
+      'sendErrorEvent throws SentryError when Sentry API returns an error response',
+      () async {
+        when(() => dio.post(
+              any(),
+              data: any(named: 'data'),
+              options: any(named: 'options'),
+            )).thenThrow(
+          DioException(
+            requestOptions: RequestOptions(
+              path: 'https://sentry.io/api/project-id/store/',
+            ),
+            response: Response(
+              statusCode: 500,
+              requestOptions: RequestOptions(
+                path: 'https://sentry.io/api/project-id/store/',
+              ),
+            ),
+            type: DioExceptionType.badResponse,
+          ),
+        );
+
+        await expectLater(
+          () => sentry.sendErrorEvent(event),
+          throwsA(isA<SentryError>()),
+        );
+
+        // Act and Assert
+        verify(
+          () => dio.post(
+            'https://sentry.io/api/project-id/store/',
+            data: event.toJson(),
+            options: any(named: 'options'),
+          ),
+        ).called(1);
+      },
+    );
+  });
+
+  test("Test non-dio error/excpetion", () async {
+    when(() => dio.post(
           any(),
           data: any(named: 'data'),
           options: any(named: 'options'),
-        ),
-      ).thenThrow(Exception('error'));
+        )).thenThrow(
+      Exception("Test Exception"),
+    );
 
-      final sentry = SentryService(
-        dio: dio,
-        sentryKey: sentryKey,
-        projectId: projectId,
+    await expectLater(
+      () => sentry.sendErrorEvent(event),
+      throwsA(isA<SentryError>()),
+    );
+
+    // Act and Assert
+    verify(
+      () => dio.post(
+        'https://sentry.io/api/project-id/store/',
+        data: event.toJson(),
+        options: any(named: 'options'),
+      ),
+    ).called(1);
+  });
+
+  test(
+    'sendErrorEvent throws SentryError when Sentry API returns a non-200 status code',
+    () async {
+      when(() => dio.post(
+            any(),
+            data: any(named: 'data'),
+            options: any(named: 'options'),
+          )).thenAnswer((_) async => Response(
+            statusCode: 202,
+            requestOptions: RequestOptions(
+              path: 'https://sentry.io/api/project-id/store/',
+            ),
+          ));
+
+      await expectLater(
+        () => sentry.sendErrorEvent(event),
+        throwsA(isA<SentryError>()),
       );
 
-      // act
-      final response = await sentry.sendErrorEvent(event);
-
-      // assert
-      expect(response.statusCode, 500);
-      expect(response.requestOptions.path,
-          'https://sentry.io/api/project-id/store/');
-      expect(response.requestOptions.data, isA<Exception>());
-    });
-  });
+      // Act and Assert
+      verify(
+        () => dio.post(
+          'https://sentry.io/api/project-id/store/',
+          data: event.toJson(),
+          options: any(named: 'options'),
+        ),
+      ).called(1);
+    },
+  );
 }
-
-// To run the test, run the following command:
-// $ flutter test test/sentry_test.dart

@@ -17,7 +17,7 @@ class SentryService {
         _sentryKey = sentryKey,
         _projectId = projectId;
 
-  Future<Response> sendErrorEvent(ErrorEvent event) async {
+  Future<void> sendErrorEvent(ErrorEvent event) async {
     try {
       final headers = {
         'Content-Type': 'application/json',
@@ -25,17 +25,22 @@ class SentryService {
             'Sentry sentry_version=7, sentry_key=$_sentryKey, sentry_client=dio/0.1',
       };
       final json = event.toJson();
-      return await _dio.post(
+      final response = await _dio.post(
         'https://sentry.io/api/$_projectId/store/',
         data: json,
         options: Options(headers: headers),
       );
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw SentryError('Error: ${response.statusCode}', StackTrace.current,
+            response.statusCode ?? 500);
+      }
     } catch (e) {
-      return Response(
-        statusCode: 500,
-        requestOptions: RequestOptions(
-            path: 'https://sentry.io/api/$_projectId/store/', data: e),
-      );
+      if (e is DioException) {
+        throw SentryError(e.message ?? e.toString(), e.stackTrace,
+            e.response?.statusCode ?? 500);
+      } else {
+        throw SentryError(e.toString(), StackTrace.current, 500);
+      }
     }
   }
 }
