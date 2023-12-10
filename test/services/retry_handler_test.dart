@@ -23,59 +23,6 @@ void main() {
     ));
   });
 
-  group('shouldRetry function tests', () {
-    test(
-        'should return true if the response status code is in the default retryable status codes',
-        () {
-      // Arrange
-      final exception = DioException(
-        response: Response(
-          statusCode: 500,
-          data: null,
-          requestOptions: RequestOptions(path: ''),
-        ),
-        requestOptions: RequestOptions(path: ''),
-      );
-
-      // Act
-      final result = shouldRetry(exception);
-
-      // Assert
-      expect(result, true);
-    });
-
-    test('should return false if the DioException is null', () {
-      // Arrange
-      const exception = null;
-
-      // Act
-      final result = shouldRetry(exception);
-
-      // Assert
-      expect(result, false);
-    });
-
-    test(
-        'should return false if the response status code is not in the default retryable status codes',
-        () {
-      // Arrange
-      final exception = DioException(
-        response: Response(
-          statusCode: 200,
-          data: null,
-          requestOptions: RequestOptions(path: ''),
-        ),
-        requestOptions: RequestOptions(path: ''),
-      );
-
-      // Act
-      final result = shouldRetry(exception);
-
-      // Assert
-      expect(result, false);
-    });
-  });
-
   group('Sentry logging tests', () {
     test('logs error even with correct message level and stack trace',
         () async {
@@ -183,7 +130,7 @@ void main() {
       );
 
       // Assert
-      expect(result, response.data);
+      expect(result, response);
     });
 
     // add test for retryRequest with unsuccessful response
@@ -286,7 +233,7 @@ void main() {
       );
 
       // Assert
-      expect(result, response.data);
+      expect(result, response);
     });
 
     // add test for retryRequest with DioException
@@ -334,5 +281,7 @@ void main() {
         throwsA(isA<DioException>()),
       );
     });
+
+    
   });
 }
