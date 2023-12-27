@@ -6,10 +6,13 @@ class Endpoints {
   static const String companiesUrl = '$baseUrl/rest/v1/companies';
   // users
   static const String usersUrl = '$baseUrl/rest/v1/users';
+  static const String audiences = '$baseUrl/rest/v1/audiences';
   // answers
   static const String answersUrl = '$baseUrl/rest/v1/answers';
   // questions
   static const String questionsUrl = '$baseUrl/rest/v1/questions';
+  // failed invites
+  static const String failedInvitesUrl = '$baseUrl/rest/v1/failed_invites';
   // auth
   static const String authUrl = '$baseUrl/auth/v1/token';
   static const String loginUrl = '$authUrl?grant_type=password';

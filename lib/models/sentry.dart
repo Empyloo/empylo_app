@@ -41,6 +41,11 @@ class ErrorEvent {
         'level': level,
         'extra': extra,
       };
+
+  @override
+  String toString() {
+    return 'ErrorEvent(message: $message, level: $level, extra: $extra)';
+  }
 }
 
 class SentryError extends Error {

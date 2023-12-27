@@ -7,7 +7,18 @@ import 'package:test/test.dart';
 
 class MockDio extends Mock implements Dio {}
 
-final event = ErrorEvent(
+class MockSentryService extends Mock implements SentryService {
+  @override
+  Future<void> sendErrorEvent(ErrorEvent event) {
+    return super.noSuchMethod(
+      Invocation.method(#sendErrorEvent, [event]),
+    );
+  }
+}
+
+class StackTraceFake extends Fake implements StackTrace {}
+
+final errorEvent = ErrorEvent(
   message: 'This is a test message',
   level: 'error',
   extra: {'context': 'dart test'},
@@ -15,16 +26,16 @@ final event = ErrorEvent(
 
 void main() {
   late MockDio dio;
-  const String sentryKey = 'key';
-  const String projectId = 'project-id';
   late SentryService sentry;
+  var id = 'project-id';
+  var sentryKey = 'sentry-key';
 
   setUp(() {
     dio = MockDio();
     sentry = SentryService(
       dio: dio,
       sentryKey: sentryKey,
-      projectId: projectId,
+      projectId: id,
     );
   });
 
@@ -45,20 +56,20 @@ void main() {
           ));
 
       // act
-      await sentry.sendErrorEvent(event);
+      await sentry.sendErrorEvent(errorEvent);
 
       // assert
       verify(
         () => dio.post(
           'https://sentry.io/api/project-id/store/',
-          data: event.toJson(),
+          data: errorEvent.toJson(),
           options: any(named: 'options'),
         ),
       ).called(1);
     });
 
     test(
-      'sendErrorEvent throws SentryError when Sentry API returns an error response',
+      'sendErrorEvent does not throw when Sentry API returns an error response',
       () async {
         when(() => dio.post(
               any(),
@@ -80,73 +91,73 @@ void main() {
         );
 
         await expectLater(
-          () => sentry.sendErrorEvent(event),
-          throwsA(isA<SentryError>()),
+          sentry.sendErrorEvent(errorEvent),
+          completes,
         );
 
         // Act and Assert
         verify(
           () => dio.post(
             'https://sentry.io/api/project-id/store/',
-            data: event.toJson(),
+            data: errorEvent.toJson(),
             options: any(named: 'options'),
           ),
         ).called(1);
       },
     );
-  });
 
-  test("Test non-dio error/excpetion", () async {
-    when(() => dio.post(
-          any(),
-          data: any(named: 'data'),
-          options: any(named: 'options'),
-        )).thenThrow(
-      Exception("Test Exception"),
-    );
-
-    await expectLater(
-      () => sentry.sendErrorEvent(event),
-      throwsA(isA<SentryError>()),
-    );
-
-    // Act and Assert
-    verify(
-      () => dio.post(
-        'https://sentry.io/api/project-id/store/',
-        data: event.toJson(),
-        options: any(named: 'options'),
-      ),
-    ).called(1);
-  });
-
-  test(
-    'sendErrorEvent throws SentryError when Sentry API returns a non-200 status code',
-    () async {
+    test("Test non-dio error/exception", () async {
       when(() => dio.post(
             any(),
             data: any(named: 'data'),
             options: any(named: 'options'),
-          )).thenAnswer((_) async => Response(
-            statusCode: 202,
-            requestOptions: RequestOptions(
-              path: 'https://sentry.io/api/project-id/store/',
-            ),
-          ));
+          )).thenThrow(
+        Exception("Test Exception"),
+      );
 
       await expectLater(
-        () => sentry.sendErrorEvent(event),
-        throwsA(isA<SentryError>()),
+        sentry.sendErrorEvent(errorEvent),
+        completes,
       );
 
       // Act and Assert
       verify(
         () => dio.post(
           'https://sentry.io/api/project-id/store/',
-          data: event.toJson(),
+          data: errorEvent.toJson(),
           options: any(named: 'options'),
         ),
       ).called(1);
-    },
-  );
+    });
+
+    test(
+      'sendErrorEvent does not throw when Sentry API returns a non-200 status code',
+      () async {
+        when(() => dio.post(
+              any(),
+              data: any(named: 'data'),
+              options: any(named: 'options'),
+            )).thenAnswer((_) async => Response(
+              statusCode: 202,
+              requestOptions: RequestOptions(
+                path: 'https://sentry.io/api/project-id/store/',
+              ),
+            ));
+
+        await expectLater(
+          sentry.sendErrorEvent(errorEvent),
+          completes,
+        );
+
+        // Act and Assert
+        verify(
+          () => dio.post(
+            'https://sentry.io/api/project-id/store/',
+            data: errorEvent.toJson(),
+            options: any(named: 'options'),
+          ),
+        ).called(1);
+      },
+    );
+  });
 }

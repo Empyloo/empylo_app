@@ -1,11 +1,11 @@
 // Path: test/services/retry_handler_test.dart
 
 import 'package:empylo_app/models/sentry.dart';
+import 'package:empylo_app/services/retry_handler.dart';
 import 'package:empylo_app/services/sentry_service.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 import 'package:dio/dio.dart';
-import 'package:empylo_app/services/retry_handler.dart';
 
 class MockDio extends Mock implements Dio {}
 
@@ -16,76 +16,15 @@ void main() {
     const error = 'Test error';
     final stackTrace = StackTrace.current;
     const attempt = 1;
-    registerFallbackValue(ErrorEvent(
-      message: 'Failed to execute request on attempt $attempt: $error',
-      level: 'error',
-      extra: {'stackTrace': stackTrace.toString()},
-    ));
-  });
-
-  group('Sentry logging tests', () {
-    test('logs error even with correct message level and stack trace',
-        () async {
-      // Arrange
-      final mockSentryService = MockSentryService();
-      const error = 'Test error';
-      final stackTrace = StackTrace.current;
-      const attempt = 1;
-
-      // Setup mock to return a future
-      when(() => mockSentryService.sendErrorEvent(any())).thenAnswer(
-        (_) async => Response<dynamic>(
-          requestOptions: RequestOptions(path: ''),
-        ),
-      );
-
-      // Act
-      await logErrorToSentry(error, stackTrace, attempt, mockSentryService);
-
-      // Assert
-      final captured =
-          verify(() => mockSentryService.sendErrorEvent(captureAny()))
-              .captured
-              .single as ErrorEvent;
-      expect(captured.message,
-          'Failed to execute request on attempt $attempt: $error');
-      expect(captured.level, 'error');
-      expect(captured.extra['stackTrace'], stackTrace.toString());
-    });
-
-    test('logErrorToSentry does not call sendErrorEvent if exception is null',
-        () async {
-      // Arrange
-      final mockSentryService = MockSentryService();
-      final stackTrace = StackTrace.current;
-      const attempt = 1;
-
-      // Act
-      await Future(
-          () => logErrorToSentry(null, stackTrace, attempt, mockSentryService));
-
-      // Assert
-      verifyNever(() => mockSentryService.sendErrorEvent(any()));
-    });
-
-    test('logErrorToSentry propagates exception if sendErrorEvent throws',
-        () async {
-      // Arrange
-      final mockSentryService = MockSentryService();
-      const error = 'Test error';
-      final stackTrace = StackTrace.current;
-      const attempt = 1;
-
-      // Setup mock to throw an exception
-      when(() => mockSentryService.sendErrorEvent(any()))
-          .thenThrow(Exception('Test exception'));
-
-      // Act & Assert
-      expect(
-          () async => await logErrorToSentry(
-              error, stackTrace, attempt, mockSentryService),
-          throwsException);
-    });
+    registerFallbackValue(
+      ErrorEvent(
+        message: 'Failed to execute request on attempt $attempt: $error',
+        level: 'error',
+        extra: {
+          'stackTrace': stackTrace.toString(),
+        },
+      ),
+    );
   });
 
   // add group for retryRequest tests
@@ -104,6 +43,7 @@ void main() {
         data: 'Test data',
         requestOptions: RequestOptions(path: ''),
       );
+      final retryHandler = RetryHandler(sentryService: mockSentryService);
 
       // Setup mock to return a future
       when(() => mockDio.post(
@@ -115,7 +55,7 @@ void main() {
       );
 
       // Act
-      final result = await retryRequest<dynamic>(
+      final result = await retryHandler.retryRequest<dynamic>(
         () => mockDio.post(
           request,
           data: request,
@@ -126,7 +66,6 @@ void main() {
         maxRetries: maxRetries,
         backoffFactor: backoffFactor,
         initialDelay: delay,
-        sentryService: mockSentryService,
       );
 
       // Assert
@@ -138,31 +77,33 @@ void main() {
       /// Arrange
       final mockDio = MockDio();
       final mockSentryService = MockSentryService();
+      final RetryHandler retryHandler = RetryHandler(
+        sentryService: mockSentryService,
+      );
       const maxRetries = 3;
       const backoffFactor = 2;
       const delay = 100;
       const request = 'Test request';
 
-// Setup mock to return a future
+      // Setup mock to throw a DioException
       when(() => mockDio.post(
             any(),
             data: any(named: 'data'),
             options: any(named: 'options'),
-          )).thenAnswer(
-        (_) async => Response<dynamic>(
-          statusCode: 500,
-          data: 'Test data',
+          )).thenThrow(
+        DioException(
           requestOptions: RequestOptions(path: ''),
+          error: 'Dio error',
         ),
       );
 
-// Ensure sendErrorEvent returns a Future<void>
+      // Ensure sendErrorEvent returns a Future<void>
       when(() => mockSentryService.sendErrorEvent(any()))
           .thenAnswer((_) async => Future.value());
 
-// Act & Assert
+      // Act & Assert
       expect(
-          () async => await retryRequest<dynamic>(
+          () async => await retryHandler.retryRequest<dynamic>(
                 () => mockDio.post(
                   request,
                   data: request,
@@ -173,15 +114,17 @@ void main() {
                 maxRetries: maxRetries,
                 backoffFactor: backoffFactor,
                 initialDelay: delay,
-                sentryService: mockSentryService,
               ),
-          throwsException);
+          throwsA(isA<DioException>()));
     });
 
-    test('Should successfully execute a request with one retry', () async {
+    test('Should successfully execute a request with retries', () async {
       // Arrange
       final mockDio = MockDio();
       final mockSentryService = MockSentryService();
+      final RetryHandler retryHandler = RetryHandler(
+        sentryService: mockSentryService,
+      );
       const maxRetries = 3;
       const backoffFactor = 2;
       const delay = 100;
@@ -192,33 +135,30 @@ void main() {
         requestOptions: RequestOptions(path: ''),
       );
 
-      // Setup mock to return a future
-      when(() => mockDio.post(
-            any(),
-            data: any(named: 'data'),
-            options: any(named: 'options'),
-          )).thenAnswer(
-        (_) async => Response<dynamic>(
-          statusCode: 500,
-          data: 'Test data',
-          requestOptions: RequestOptions(path: ''),
-        ),
-      );
+      int callCount = 0;
+      when(() => mockDio.post(any(),
+          data: any(named: 'data'),
+          options: any(named: 'options'))).thenAnswer((_) async {
+        callCount++;
+        if (callCount < maxRetries) {
+          throw DioException(
+            requestOptions: RequestOptions(path: ''),
+            response: Response<dynamic>(
+              statusCode: 500,
+              data: 'Test data',
+              requestOptions: RequestOptions(path: ''),
+            ),
+            error: 'Dio error',
+          );
+        }
+        return response;
+      });
 
-      when(() => mockDio.post(
-            any(),
-            data: any(named: 'data'),
-            options: any(named: 'options'),
-          )).thenAnswer(
-        (_) async => response,
-      );
-
-      // Ensure sendErrorEvent returns a Future<void>
       when(() => mockSentryService.sendErrorEvent(any()))
           .thenAnswer((_) async => Future.value());
 
       // Act
-      final result = await retryRequest<dynamic>(
+      final result = await retryHandler.retryRequest<dynamic>(
         () => mockDio.post(
           request,
           data: request,
@@ -229,11 +169,13 @@ void main() {
         maxRetries: maxRetries,
         backoffFactor: backoffFactor,
         initialDelay: delay,
-        sentryService: mockSentryService,
       );
 
       // Assert
       expect(result, response);
+      verify(() => mockDio.post(any(),
+          data: any(named: 'data'),
+          options: any(named: 'options'))).called(maxRetries);
     });
 
     // add test for retryRequest with DioException
@@ -243,6 +185,9 @@ void main() {
       // Arrange
       final mockDio = MockDio();
       final mockSentryService = MockSentryService();
+      final RetryHandler retryHandler = RetryHandler(
+        sentryService: mockSentryService,
+      );
       const maxRetries = 3;
       const backoffFactor = 2;
       const delay = 100;
@@ -265,7 +210,7 @@ void main() {
 
       // Act & Assert
       expect(
-        () async => await retryRequest<dynamic>(
+        () async => await retryHandler.retryRequest<dynamic>(
           () => mockDio.post(
             request,
             data: request,
@@ -276,12 +221,176 @@ void main() {
           maxRetries: maxRetries,
           backoffFactor: backoffFactor,
           initialDelay: delay,
-          sentryService: mockSentryService,
         ),
         throwsA(isA<DioException>()),
       );
     });
 
-    
+    test('retryRequest retries on failure and eventually succeeds', () async {
+      // Arrange
+      final mockDio = MockDio();
+      final mockSentryService = MockSentryService();
+      final RetryHandler retryHandler = RetryHandler(
+        sentryService: mockSentryService,
+      );
+      const maxRetries = 3;
+      const backoffFactor = 2;
+      const delay = 100;
+      const request = 'Test request';
+      final response = Response<dynamic>(
+        statusCode: 200,
+        data: 'Test data',
+        requestOptions: RequestOptions(path: ''),
+      );
+
+      // Setup mock to throw a DioException
+      when(() => mockDio.post(
+            any(),
+            data: any(named: 'data'),
+            options: any(named: 'options'),
+          )).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: ''),
+          error: 'Dio error',
+        ),
+      );
+
+      when(() => mockDio.post(
+            any(),
+            data: any(named: 'data'),
+            options: any(named: 'options'),
+          )).thenAnswer(
+        (_) async => response,
+      );
+
+      // Ensure sendErrorEvent returns a Future<void>
+      when(() => mockSentryService.sendErrorEvent(any()))
+          .thenAnswer((_) async => Future.value());
+
+      // Act
+      final result = await retryHandler.retryRequest<dynamic>(
+        () => mockDio.post(
+          request,
+          data: request,
+          options: Options(
+            headers: {'Content-Type': 'application/json'},
+          ),
+        ),
+        maxRetries: maxRetries,
+        backoffFactor: backoffFactor,
+        initialDelay: delay,
+      );
+
+      // Assert
+      expect(result, response);
+    });
+
+    test('should call request() function maxRetries times if request() fails',
+        () async {
+      final sentryService = MockSentryService();
+      final dio = MockDio();
+      final retryHandler = RetryHandler(sentryService: sentryService);
+
+      const url = 'https://api.example.com/data';
+      final List<Future<Response<dynamic>> Function()> answers = [
+        () => Future.error(DioException(
+              requestOptions: RequestOptions(path: url),
+              error: 'Network Error',
+              type: DioExceptionType
+                  .badResponse, // Adjust the error type as necessary
+            )),
+        () => Future.error(DioException(
+              requestOptions: RequestOptions(path: url),
+              error: 'Network Error',
+              type: DioExceptionType
+                  .badResponse, // Adjust the error type as necessary
+            )),
+        () => Future.error(DioException(
+              requestOptions: RequestOptions(path: url),
+              error: 'Network Error',
+              type: DioExceptionType
+                  .badResponse, // Adjust the error type as necessary
+            )),
+        () => Future.value(Response(
+              requestOptions: RequestOptions(path: url),
+              data: 'Test data',
+              statusCode: 200,
+            )),
+      ];
+
+      // Set up the mock to use the next answer from the list on each call
+      when(() => dio.get(url)).thenAnswer((_) => answers.removeAt(0)());
+
+      try {
+        await retryHandler.retryRequest(() => dio.get(url), maxRetries: 3);
+      } catch (e) {
+        // Expect an exception to be thrown after max retries
+      }
+
+      // Verify that the dio.get() method is called the expected number of times
+      verify(() => dio.get(url)).called(3);
+    });
+  });
+
+  // add group for isRetryableError tests
+  group('isRetryableError tests', () {
+    final mockSentryService = MockSentryService();
+    final RetryHandler retryHandler = RetryHandler(
+      sentryService: mockSentryService,
+    );
+    // add test for isRetryableError with DioException
+    test('isRetryableError returns true if DioException is retryable',
+        () async {
+      // Arrange
+      final dioException = DioException(
+        requestOptions: RequestOptions(path: ''),
+        error: 'Dio error',
+        response: Response<dynamic>(
+          statusCode: 500,
+          data: 'Test data',
+          requestOptions: RequestOptions(path: ''),
+        ),
+      );
+
+      // Act
+      final result = retryHandler.isRetryableError(dioException);
+
+      // Assert
+      expect(result, true);
+    });
+
+    // add test for isRetryableError with non-retryable DioException
+    test('isRetryableError returns false if DioException is not retryable',
+        () async {
+      // Arrange
+      final dioException = DioException(
+        requestOptions: RequestOptions(path: ''),
+        error: 'Dio error',
+        response: Response<dynamic>(
+          statusCode: 200,
+          data: 'Test data',
+          requestOptions: RequestOptions(path: ''),
+        ),
+      );
+
+      // Act
+      final result = retryHandler.isRetryableError(dioException);
+
+      // Assert
+      expect(result, false);
+    });
+
+    // add test for isRetryableError with non-DioException
+    test('isRetryableError returns false if error is not DioException',
+        () async {
+      // Arrange
+      const error = 'Test error';
+
+      // Act
+      final result = retryHandler.isRetryableError(error);
+
+      // Assert
+      expect(result, false);
+    });
   });
 }
