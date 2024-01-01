@@ -67,7 +67,6 @@ class HttpClient {
         throw DioHttpException(message, e.response?.statusCode);
       }
     } catch (e) {
-      print('££ Unknown error: ${e.toString()}');
       await _sentryService.sendErrorEvent(
         ErrorEvent(
           message: e.toString(),
@@ -75,8 +74,6 @@ class HttpClient {
           extra: {'stackTrace': e.toString()},
         ),
       );
-      //
-      // Handle the unknown error here
       throw DioHttpException(e.toString());
     } finally {
       // Clean up resources

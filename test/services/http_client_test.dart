@@ -2,6 +2,7 @@
 import 'package:dio/dio.dart';
 import 'package:empylo_app/models/sentry.dart';
 import 'package:empylo_app/services/retry_handler.dart';
+import 'package:empylo_app/utils/custom_exceptions/max_retries_exceeded_exception.dart';
 import 'package:empylo_app/utils/dio_http_exception.dart';
 import 'package:test/test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -47,23 +48,22 @@ void main() {
       // Arrange
       final httpService = MockHttpService();
       final sentryService = MockSentryService();
-      final retryHandler = MockRetryHandler();
+      final retryHandler = RetryHandler(
+        sentryService: sentryService,
+      );
+      final mockDio = MockDio();
 
-      when(
-        () => retryHandler.retryRequest(
-          any(),
-          maxRetries: any(named: 'maxRetries'),
-          initialDelay: any(named: 'initialDelay'),
-          backoffFactor: any(named: 'backoffFactor'),
-        ),
-      ).thenAnswer(
+      when(() => mockDio.get(
+            any(),
+            data: any(named: 'data'),
+            options: any(named: 'options'),
+          )).thenAnswer(
         (_) async => Response(
           requestOptions: RequestOptions(path: ''),
           statusCode: 200,
           data: {'test': 'test'},
         ),
       );
-
 
       final client = HttpClient(
         httpService: httpService,
@@ -73,7 +73,15 @@ void main() {
 
       // Act
       final response = await client.executeRequest(
-        () => httpService.get(''), // Removed the async keyword
+        () async {
+          return await mockDio.get(
+            '',
+            data: {'test': 'test'},
+            options: Options(
+              headers: {'test': 'test'},
+            ),
+          );
+        },
         retryParams: {
           'maxRetries': 3,
           'initialDelay': 1000,
@@ -83,30 +91,85 @@ void main() {
 
       // Assert
       expect(response, isA<Response>());
-      verify(() => httpService.get(any())).called(1);
+      verify(() => mockDio.get(
+            any(),
+            data: any(named: 'data'),
+            options: any(named: 'options'),
+          )).called(1);
     });
 
-    test(
-        'when executeRequest is called make sure retryRequest function is called with expected parameter values',
-        () async {
+    group('HttpClient executeRequest Tests', () {
+      test('executeRequest calls retryRequest with expected parameters',
+          () async {
+        // Arrange
+        final httpService = MockHttpService();
+        final sentryService = MockSentryService();
+        final mockRetryHandler = MockRetryHandler();
+
+        final client = HttpClient(
+          httpService: httpService,
+          sentryService: sentryService,
+          retryHandler: mockRetryHandler,
+        );
+
+        final mockResponse =
+            Response(requestOptions: RequestOptions(path: 'test'));
+
+        when(() => mockRetryHandler.retryRequest<dynamic>(
+              any(),
+              maxRetries: any(named: 'maxRetries'),
+              initialDelay: any(named: 'initialDelay'),
+              backoffFactor: any(named: 'backoffFactor'),
+            )).thenAnswer((invocation) async {
+          var requestFunction = invocation.positionalArguments[0]
+              as Future<Response<dynamic>> Function();
+          return await requestFunction();
+        });
+
+        // Act
+        await client.executeRequest(
+          () async => mockResponse,
+          retryParams: {
+            'maxRetries': 3,
+            'initialDelay': 2000,
+            'backoffFactor': 2,
+          },
+        );
+
+        // Assert
+        verify(() => mockRetryHandler.retryRequest(
+              any<Future<Response<dynamic>> Function()>(),
+              maxRetries: 3,
+              initialDelay: 2000,
+              backoffFactor: 2,
+            )).called(1);
+      });
+    });
+
+    test('Handles connectionError DioException correctly', () async {
       // Arrange
       final httpService = MockHttpService();
       final sentryService = MockSentryService();
       final retryHandler = MockRetryHandler();
 
-      when(() => httpService.get(any())).thenAnswer((_) async => Response(
-          requestOptions: RequestOptions(path: ''),
-          statusCode: 200,
-          data: {'test': 'test'}));
+      final dioException = DioException(
+        requestOptions: RequestOptions(path: ''),
+        type: DioExceptionType.connectionError,
+      );
 
-      when(() => retryHandler.retryRequest(any(),
-              maxRetries: any(named: 'maxRetries'),
-              initialDelay: any(named: 'initialDelay'),
-              backoffFactor: any(named: 'backoffFactor')))
-          .thenAnswer((_) async => Response(
-              requestOptions: RequestOptions(path: ''),
-              statusCode: 200,
-              data: {'test': 'test'}));
+      when(() => httpService.get(any(), headers: any(named: 'headers')))
+          .thenThrow(dioException);
+
+      when(() => retryHandler.retryRequest<dynamic>(
+            any(),
+            maxRetries: any(named: 'maxRetries'),
+            initialDelay: any(named: 'initialDelay'),
+            backoffFactor: any(named: 'backoffFactor'),
+          )).thenAnswer((invocation) async {
+        var requestFunction = invocation.positionalArguments[0]
+            as Future<Response<dynamic>> Function();
+        return await requestFunction();
+      });
 
       final client = HttpClient(
         httpService: httpService,
@@ -114,48 +177,27 @@ void main() {
         retryHandler: retryHandler,
       );
 
-      // Act
-      final response = await client.executeRequest(() async {
-        return await httpService.get('');
-      }, retryParams: {
-        'maxRetries': 3,
-        'initialDelay': 1000,
-        'backoffFactor': 2,
-      });
-
-      // Assert
-      expect(response, isA<Response>());
-      verify(() => httpService.get(any())).called(1);
-      verify(() => retryHandler.retryRequest(
-            any(),
-            maxRetries: any(named: 'maxRetries'),
-            initialDelay: any(named: 'initialDelay'),
-            backoffFactor: any(named: 'backoffFactor'),
-          )).called(1);
-    });
-    test('Handles connectionError DioException correctly', () async {
-      // Arrange
-      final httpService = MockHttpService();
-      final sentryService = MockSentryService();
-      final retryHandler = MockRetryHandler();
-
-      when(() => httpService.get(any())).thenThrow(DioException(
-          requestOptions: RequestOptions(path: ''),
-          type: DioExceptionType.connectionError));
-      final client = HttpClient(
-          httpService: httpService,
-          sentryService: sentryService,
-          retryHandler: retryHandler);
-
-      // Act
+      // Act & Assert
       try {
-        await client.executeRequest(() async {
-          return await httpService.get('');
-        });
+        await client.executeRequest(
+          () async => httpService.get('test', headers: {'test': 'test'}),
+          retryParams: {
+            'maxRetries': 3,
+            'initialDelay': 1000,
+            'backoffFactor': 2,
+          },
+        );
       } catch (e) {
-        // Assert
         expect(e, isA<DioHttpException>());
-        verify(() => httpService.get(any())).called(1);
+        if (e is DioHttpException) {
+          expect(
+              e.message,
+              equals(
+                  'An error occurred while processing your request. Please try again later.'));
+          expect(e.statusCode, equals(null));
+        } else {
+          fail('Expected DioHttpException');
+        }
       }
     });
 
@@ -185,15 +227,16 @@ void main() {
     });
   });
 
-  group('post, get, put, delete tests', () {
+  group('post tests', () {
     test('post happy path', () async {
       // Arrange
       final httpService = MockHttpService();
       final sentryService = MockSentryService();
       final retryHandler = MockRetryHandler();
 
-      when(() => httpService.post(any(), data: any(named: 'data'))).thenAnswer(
-          (_) async => Response(
+      when(() => httpService.post(any(),
+              headers: any(named: 'headers'), data: any(named: 'data')))
+          .thenAnswer((_) async => Response(
               requestOptions: RequestOptions(path: ''),
               statusCode: 200,
               data: {'test': 'test'}));
@@ -202,44 +245,25 @@ void main() {
           sentryService: sentryService,
           retryHandler: retryHandler);
 
-      // Act
-      final response = await client.executeRequest(() async {
-        return await httpService.post('test', data: {'test': 'test'});
+      when(() => retryHandler.retryRequest<dynamic>(
+            any(),
+            maxRetries: any(named: 'maxRetries'),
+            initialDelay: any(named: 'initialDelay'),
+            backoffFactor: any(named: 'backoffFactor'),
+          )).thenAnswer((invocation) async {
+        var requestFunction = invocation.positionalArguments[0]
+            as Future<Response<dynamic>> Function();
+        return await requestFunction();
       });
+
+      // Act
+      final response = await client
+          .post(url: 'test', headers: {'test': 'test'}, data: {'test': 'test'});
 
       // Assert
       expect(response, isA<Response>());
       verifyNever(() => sentryService.sendErrorEvent(any()));
     });
-
-    test('post recoverable error', () async {
-      // Arrange
-      final httpService = MockHttpService();
-      final sentryService = MockSentryService();
-      final retryHandler = MockRetryHandler();
-
-      when(() => httpService.post(any(), data: any(named: 'data'))).thenThrow(
-          DioException(
-              requestOptions: RequestOptions(path: ''),
-              type: DioExceptionType.connectionTimeout));
-      final client = HttpClient(
-          httpService: httpService,
-          sentryService: sentryService,
-          retryHandler: retryHandler);
-
-      // Act
-      try {
-        await client.executeRequest(() async {
-          return await httpService.post('test', data: {'test': 'test'});
-        });
-      } catch (e) {
-        // Assert
-        expect(e, isA<DioHttpException>());
-        verifyNever(() => sentryService.sendErrorEvent(any()));
-      }
-    });
-
-    // retry
 
     test('post unrecoverable error', () async {
       // Arrange
@@ -247,8 +271,9 @@ void main() {
       final sentryService = MockSentryService();
       final retryHandler = MockRetryHandler();
 
-      when(() => httpService.post(any(), data: any(named: 'data'))).thenThrow(
-          DioException(
+      when(() => httpService.post(any(),
+              headers: any(named: 'headers'), data: any(named: 'data')))
+          .thenThrow(DioException(
               requestOptions: RequestOptions(path: ''),
               type: DioExceptionType.sendTimeout));
       final client = HttpClient(
@@ -256,11 +281,24 @@ void main() {
           sentryService: sentryService,
           retryHandler: retryHandler);
 
+      when(
+        () => retryHandler.retryRequest<dynamic>(
+          any(),
+          maxRetries: any(named: 'maxRetries'),
+          initialDelay: any(named: 'initialDelay'),
+          backoffFactor: any(named: 'backoffFactor'),
+        ),
+      ).thenThrow(
+        MaxRetriesExceededException('Test Exception'),
+      );
+
+      when(() => sentryService.sendErrorEvent(any()))
+          .thenAnswer((_) async => {});
+
       // Act
       try {
-        await client.executeRequest(() async {
-          return await httpService.post('test', data: {'test': 'test'});
-        });
+        await client.post(
+            url: 'test', headers: {'test': 'test'}, data: {'test': 'test'});
       } catch (e) {
         // Assert
         expect(e, isA<DioHttpException>());

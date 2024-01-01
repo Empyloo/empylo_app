@@ -125,9 +125,8 @@ void main() {
         (_) async => Future.value(),
       );
 
-      // Act & Assert
-      expect(
-        () async => await retryHandler.retryRequest<dynamic>(
+      await expectLater(
+        () => retryHandler.retryRequest<dynamic>(
           () => mockDio.post(
             request,
             data: request,
@@ -143,6 +142,14 @@ void main() {
           isA<MaxRetriesExceededException>(),
         ),
       );
+
+      verify(
+        () => mockDio.post(
+          any(),
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).called(maxRetries);
     });
 
     test('Should successfully execute a request with retries', () async {
@@ -329,7 +336,7 @@ void main() {
       final sentryService = MockSentryService();
       final dio = MockDio();
       final retryHandler = RetryHandler(sentryService: sentryService);
-      final url = 'https://api.example.com/data';
+      const url = 'https://api.example.com/data';
       int callCount = 0;
 
       // Setup mock to throw a DioException
