@@ -14,8 +14,7 @@ final setPasswordLoadingStateProvider = StateProvider<bool>((ref) => false);
 class SetPasswordPage extends ConsumerWidget {
   final RedirectParams redirectParams;
 
-  const SetPasswordPage({Key? key, required this.redirectParams})
-      : super(key: key);
+  const SetPasswordPage({super.key, required this.redirectParams});
 
   void showSnackBarCallback(
       BuildContext context, String message, Color backgroundColor) {

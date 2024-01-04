@@ -1,7 +1,8 @@
 // Path: test/sentry_test.dart
 import 'package:dio/dio.dart';
 import 'package:empylo_app/models/sentry.dart';
-import 'package:empylo_app/services/sentry_service.dart';
+import 'package:empylo_app/services/sentry/sentry_service.dart';
+
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
@@ -105,7 +106,7 @@ void main() {
 
     test('should not send error event when error is null', () async {
       // arrange
-      final error = null;
+      const error = null;
       final stackTrace = StackTraceFake();
 
       // act

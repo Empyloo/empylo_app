@@ -19,7 +19,7 @@ class QuestionBucketCard extends ConsumerWidget {
   final TextEditingController dataKeyController = TextEditingController();
   final TextEditingController dataValueController = TextEditingController();
 
-  QuestionBucketCard({Key? key, this.bucket}) : super(key: key) {
+  QuestionBucketCard({super.key, this.bucket}) {
     if (bucket == null) {
       nameController.text = '';
       descriptionController.text = '';

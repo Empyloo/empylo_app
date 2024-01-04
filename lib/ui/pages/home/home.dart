@@ -13,7 +13,7 @@ import '../../../state_management/access_box_provider.dart';
 import 'home_page_invite_form.dart';
 
 class HomePage extends ConsumerWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

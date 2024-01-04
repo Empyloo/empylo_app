@@ -1,8 +1,8 @@
 // Path: lib/state_management/audiences/audience_member_notifier.dart
 import 'package:empylo_app/models/audience_member.dart';
 import 'package:empylo_app/models/user_audience_link.dart';
-import 'package:empylo_app/services/audience_user_service.dart';
-import 'package:empylo_app/services/http_client.dart';
+import 'package:empylo_app/services/http/http_client.dart';
+
 import 'package:empylo_app/state_management/http_client_provider.dart';
 import 'package:empylo_app/state_management/sentry_service_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

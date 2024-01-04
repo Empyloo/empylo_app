@@ -7,7 +7,7 @@ profile update, password reset, etc.
 import 'package:dio/dio.dart';
 import 'package:empylo_app/constants/api_constants.dart';
 import 'package:empylo_app/models/session.dart';
-import 'package:empylo_app/services/http_client.dart';
+import 'package:empylo_app/services/http/http_client.dart';
 import 'package:empylo_app/middleware/error_handling_middleware.dart';
 import 'package:empylo_app/constants/endpoints.dart';
 

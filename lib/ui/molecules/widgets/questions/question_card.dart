@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class QuestionCard extends ConsumerWidget {
-  const QuestionCard({Key? key}) : super(key: key);
+  const QuestionCard({super.key});
 
   Future<void> handleQuestionCreation(
       BuildContext context, WidgetRef ref, Question question) async {

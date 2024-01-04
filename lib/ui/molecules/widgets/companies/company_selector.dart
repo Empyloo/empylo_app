@@ -20,13 +20,13 @@ class CompanySelector extends ConsumerWidget {
   final String? selectedCompanyId;
 
   const CompanySelector({
-    Key? key,
+    super.key,
     required this.role,
     required this.companyList,
     required this.isEditMode,
     required this.onCompanySelected,
     this.selectedCompanyId,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -8,11 +8,11 @@ class QuestionCard extends StatelessWidget {
   final VoidCallback onDelete;
 
   const QuestionCard({
-    Key? key,
+    super.key,
     required this.question,
     required this.onEdit,
     required this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

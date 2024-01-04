@@ -11,8 +11,7 @@ final audienceDescriptionProvider = StateProvider<String>((ref) => '');
 class AudienceCreationModal extends ConsumerWidget {
   final AudienceCallback onAudienceCreated;
 
-  const AudienceCreationModal({Key? key, required this.onAudienceCreated})
-      : super(key: key);
+  const AudienceCreationModal({super.key, required this.onAudienceCreated});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -1,8 +1,8 @@
 // Path: lib/state_management/auth_state_notifier.dart
 import 'package:dio/dio.dart';
-import 'package:empylo_app/services/http_client.dart';
 import 'package:empylo_app/models/sentry.dart';
-import 'package:empylo_app/services/sentry_service.dart';
+import 'package:empylo_app/services/http/http_client.dart';
+import 'package:empylo_app/services/sentry/sentry_service.dart';
 
 class UserInviteService {
   final HttpClient _httpClient;

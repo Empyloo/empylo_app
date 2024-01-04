@@ -1,8 +1,8 @@
 import 'package:empylo_app/constants/api_constants.dart';
 import 'package:empylo_app/models/question_bucket.dart';
 import 'package:empylo_app/models/sentry.dart';
-import 'package:empylo_app/services/http_client.dart';
-import 'package:empylo_app/services/sentry_service.dart';
+import 'package:empylo_app/services/http/http_client.dart';
+import 'package:empylo_app/services/sentry/sentry_service.dart';
 
 class QuestionBucketService {
   final HttpClient _client;

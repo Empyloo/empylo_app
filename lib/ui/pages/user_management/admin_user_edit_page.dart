@@ -14,7 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final adminHasChangesProvider = StateProvider<bool>((ref) => false);
 
 class AdminUserEditPage extends ConsumerWidget {
-  AdminUserEditPage({Key? key}) : super(key: key);
+  AdminUserEditPage({super.key});
 
   // Adding TextEditingController for jobTitle and email
   final jobTitleController = TextEditingController();

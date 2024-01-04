@@ -13,8 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class CompanyProfilePage extends ConsumerWidget {
   final String companyId;
 
-  const CompanyProfilePage({Key? key, required this.companyId})
-      : super(key: key);
+  const CompanyProfilePage({super.key, required this.companyId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -64,7 +63,6 @@ class CompanyProfilePage extends ConsumerWidget {
                   ),
                   onChanged: (value) {
                     formHasChangesNotifier.value = true;
-                    ;
                   },
                 ),
                 VerticalSpacing.xs,
@@ -119,7 +117,6 @@ class CompanyProfilePage extends ConsumerWidget {
                   ),
                   onChanged: (value) {
                     formHasChangesNotifier.value = true;
-                    ;
                   },
                 ),
                 VerticalSpacing.xs,
@@ -139,7 +136,6 @@ class CompanyProfilePage extends ConsumerWidget {
                   maxLines: 5,
                   onChanged: (value) {
                     formHasChangesNotifier.value = true;
-                    ;
                   },
                 ),
                 VerticalSpacing.xs,
@@ -149,7 +145,6 @@ class CompanyProfilePage extends ConsumerWidget {
                   onChanged: (bool? value) {
                     subscribed = value ?? false;
                     formHasChangesNotifier.value = true;
-                    ;
                   },
                 ),
                 VerticalSpacing.xs,

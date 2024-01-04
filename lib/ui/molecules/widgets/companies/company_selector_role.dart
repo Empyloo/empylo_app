@@ -8,11 +8,11 @@ class CompanySelectorRow extends StatelessWidget {
   final Function(String?) onCompanySelected;
 
   const CompanySelectorRow({
-    Key? key,
+    super.key,
     required this.selectedCompanyId,
     required this.companyList,
     required this.onCompanySelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

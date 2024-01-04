@@ -6,8 +6,8 @@ import 'package:empylo_app/models/sentry.dart';
 import 'package:empylo_app/models/team.dart';
 import 'package:empylo_app/models/user_profile.dart';
 import 'package:empylo_app/models/user_team_mapping.dart';
-import 'package:empylo_app/services/http_client.dart';
-import 'package:empylo_app/services/sentry_service.dart';
+import 'package:empylo_app/services/http/http_client.dart';
+import 'package:empylo_app/services/sentry/sentry_service.dart';
 import 'package:empylo_app/utils/role_based_url.dart';
 
 class UserRestService {

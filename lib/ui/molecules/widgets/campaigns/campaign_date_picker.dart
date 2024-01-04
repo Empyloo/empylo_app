@@ -6,8 +6,7 @@ class DatePickerTextField extends StatelessWidget {
   final String labelText;
 
   const DatePickerTextField(
-      {Key? key, required this.controller, required this.labelText})
-      : super(key: key);
+      {super.key, required this.controller, required this.labelText});
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(

@@ -4,8 +4,8 @@ import 'package:empylo_app/models/answer.dart';
 import 'package:empylo_app/models/job.dart';
 import 'package:empylo_app/models/question.dart';
 import 'package:empylo_app/models/sentry.dart';
-import 'package:empylo_app/services/http_client.dart';
-import 'package:empylo_app/services/sentry_service.dart';
+import 'package:empylo_app/services/http/http_client.dart';
+import 'package:empylo_app/services/sentry/sentry_service.dart';
 
 class SurveyService {
   final HttpClient _client;

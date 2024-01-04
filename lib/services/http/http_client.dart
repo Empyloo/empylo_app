@@ -10,9 +10,11 @@ curl 'https://backend.com/rest/v1/users?select=id' \
 // Path: lib/services/http_client.dart
 import 'package:dio/dio.dart';
 import 'package:empylo_app/models/sentry.dart';
-import 'package:empylo_app/services/http_service.dart';
-import 'package:empylo_app/services/retry_handler.dart';
-import 'package:empylo_app/services/sentry_service.dart';
+import 'package:empylo_app/services/http/http_service.dart';
+import 'package:empylo_app/services/retry/retry_handler.dart';
+
+import 'package:empylo_app/services/sentry/sentry_service.dart';
+import 'package:empylo_app/utils/custom_exceptions/max_retries_exceeded_exception.dart';
 import 'package:empylo_app/utils/dio_http_exception.dart';
 
 /// HttpClient class using HttpService and ErrorService interfaces.
@@ -37,7 +39,7 @@ class HttpClient {
   /// @param request A function that returns a Future<Response>. This function is called to make the request.
   /// @param retryParams A map of parameters that can contain the maxRetries, initialDelay, and backoffFactor parameters.
   /// @returns A Future<Response> that completes with the response from the request.
-  /// @throws DioHttpException if an error occurs while processing the request.
+  /// @throws Exception if none DioException is thrown.
   Future<Response> executeRequest(
     Future<Response> Function() request, {
     Map<String, dynamic>? retryParams,
@@ -66,6 +68,16 @@ class HttpClient {
             'An error occurred while processing your request. It is not retryable.';
         throw DioHttpException(message, e.response?.statusCode);
       }
+    } on MaxRetriesExceededException catch (e) {
+      // Handle the MaxRetriesExceededException here
+      await _sentryService.sendErrorEvent(
+        ErrorEvent(
+          message: e.message,
+          level: 'error',
+          extra: {'stackTrace': StackTrace.current.toString()},
+        ),
+      );
+      rethrow;
     } catch (e) {
       await _sentryService.sendErrorEvent(
         ErrorEvent(
@@ -74,7 +86,7 @@ class HttpClient {
           extra: {'stackTrace': e.toString()},
         ),
       );
-      throw DioHttpException(e.toString());
+      throw Exception(e.toString());
     } finally {
       // Clean up resources
     }
@@ -84,13 +96,14 @@ class HttpClient {
   ///
   /// This method executes a POST request and handles retries based on the parameters provided.
   /// If a DioException is thrown, it handles the exception based on its type.
-  /// If an unknown exception is thrown, it logs the error using the ErrorService.
+  /// If an unknown exception is thrown, it logs the error using the ErrorService and throws a DioHttpException.
   ///
   /// @param url The URL to make the request to.
   /// @param headers The headers to include in the request.
   /// @param data The data to include in the request.
   /// @param retryParams A map of parameters that can contain the maxRetries, initialDelay, and backoffFactor parameters.
   /// @returns A Future<Response> that completes with the response from the request.
+  /// @throws Exception if none DioException is thrown.
   Future<Response> post({
     required String url,
     required Map<String, dynamic> headers,
@@ -117,6 +130,7 @@ class HttpClient {
   /// @param headers The headers to include in the request.
   /// @param retryParams A map of parameters that can contain the maxRetries, initialDelay, and backoffFactor parameters.
   /// @returns A Future<Response> that completes with the response from the request.
+  /// @throws Exception if none DioException is thrown.
   Future<Response> get({
     required String url,
     required Map<String, dynamic> headers,
@@ -141,6 +155,7 @@ class HttpClient {
   /// @param data The data to include in the request.
   /// @param params A map of parameters for retry logic.
   /// @returns A Future<Response> that completes with the response from the request.
+  /// @throws Exception if none DioException is thrown.
   Future<Response> patch({
     required String url,
     required Map<String, dynamic> headers,
@@ -164,6 +179,7 @@ class HttpClient {
   /// @param headers The headers to include in the request.
   /// @param retryParams A map of parameters that can contain the maxRetries, initialDelay, and backoffFactor parameters.
   /// @returns A Future<Response> that completes with the response from the request.
+  /// @throws Exception if none DioException is thrown.
   Future<Response> delete({
     required String url,
     required Map<String, dynamic> headers,

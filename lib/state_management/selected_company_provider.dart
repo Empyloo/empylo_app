@@ -8,7 +8,7 @@ final selectedCompanyProvider =
 });
 
 class SelectedCompanyNotifier extends StateNotifier<Company?> {
-  SelectedCompanyNotifier(Company? company) : super(company);
+  SelectedCompanyNotifier(super.company);
 
   void selectCompany(Company? company) {
     state = company;

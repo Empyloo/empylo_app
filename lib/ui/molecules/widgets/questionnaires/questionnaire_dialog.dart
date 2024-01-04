@@ -22,11 +22,11 @@ class QuestionnaireDialog extends ConsumerWidget {
   final TextEditingController companyIdController = TextEditingController();
 
   QuestionnaireDialog({
-    Key? key,
+    super.key,
     required this.questionnaireWithQuestions,
     required this.onQuestionnaireCreatedOrEdited,
     required this.type,
-  }) : super(key: key) {
+  }) {
     if (questionnaireWithQuestions != null) {
       nameController.text = questionnaireWithQuestions!.questionnaire.name;
       descriptionController.text =

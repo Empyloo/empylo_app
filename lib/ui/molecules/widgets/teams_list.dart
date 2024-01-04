@@ -5,7 +5,7 @@ import 'package:empylo_app/state_management/user_profile_provider.dart';
 import 'package:empylo_app/state_management/team_data_notifier.dart';
 
 class TeamList extends ConsumerWidget {
-  const TeamList({Key? key}) : super(key: key);
+  const TeamList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

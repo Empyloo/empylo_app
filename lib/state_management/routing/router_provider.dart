@@ -2,8 +2,6 @@
 import 'package:empylo_app/dev_main.dart';
 import 'package:empylo_app/models/redirect_params.dart';
 import 'package:empylo_app/state_management/auth_state_notifier.dart';
-import 'package:empylo_app/state_management/user_provider.dart';
-import 'package:empylo_app/state_management/users/admin_edit_user_notifier.dart';
 import 'package:empylo_app/ui/molecules/widgets/companies/company_profile_page.dart';
 import 'package:empylo_app/ui/pages/dashboard/dash.dart';
 import 'package:empylo_app/ui/pages/error/erro_page.dart';
@@ -15,11 +13,9 @@ import 'package:empylo_app/ui/pages/survey/survey.dart';
 import 'package:empylo_app/ui/pages/user/user_profile_page.dart';
 import 'package:empylo_app/ui/pages/user_management/admin_user_edit_page.dart';
 import 'package:empylo_app/utils/get_query_params.dart';
-import 'package:empylo_app/utils/user_utils/get_user_profile_by_id.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:empylo_app/ui/pages/login/login_page.dart';
 
 /// A provider that exposes the [GoRouter] instance
 /// to the rest of the app.

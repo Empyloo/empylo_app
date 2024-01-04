@@ -8,13 +8,13 @@ class StyledCampaignTextField extends StatelessWidget {
   final bool isAccompanyingWidgetCentered;
 
   const StyledCampaignTextField({
-    Key? key,
+    super.key,
     required this.controller,
     this.labelText = '',
     this.accompanyingWidget,
     this.isAccompanyingWidgetOnTop = true,
     this.isAccompanyingWidgetCentered = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

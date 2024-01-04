@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 import '../../../state_management/user_provider.dart';
 
 class LoginPage extends ConsumerWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   void onLoginButtonPressed(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider.notifier);

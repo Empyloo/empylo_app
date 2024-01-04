@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 class CodeDialog extends StatelessWidget {
-  const CodeDialog({Key? key}) : super(key: key);
+  const CodeDialog({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -2,8 +2,8 @@
 import 'package:empylo_app/constants/api_constants.dart';
 import 'package:empylo_app/models/questionnaire.dart';
 import 'package:empylo_app/models/sentry.dart';
-import 'package:empylo_app/services/http_client.dart';
-import 'package:empylo_app/services/sentry_service.dart';
+import 'package:empylo_app/services/http/http_client.dart';
+import 'package:empylo_app/services/sentry/sentry_service.dart';
 import 'package:empylo_app/utils/role_based_url.dart';
 
 class QuestionnaireService {
@@ -22,7 +22,7 @@ class QuestionnaireService {
     try {
       final filter = getRoleBasedFilter(userRole, companyId);
       final url =
-          '$remoteBaseUrl/rest/v1/questionnaires${questionnaireId != null ? '?id=eq.$questionnaireId$filter' : '$filter'}';
+          '$remoteBaseUrl/rest/v1/questionnaires${questionnaireId != null ? '?id=eq.$questionnaireId$filter' : filter}';
       final response = await _http.get(
         url: url,
         headers: {

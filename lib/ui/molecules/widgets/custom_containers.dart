@@ -13,7 +13,7 @@ class CustomContainer extends StatelessWidget {
   final bool scrollable;
 
   const CustomContainer({
-    Key? key,
+    super.key,
     required this.child,
     this.padding,
     this.margin,
@@ -21,7 +21,7 @@ class CustomContainer extends StatelessWidget {
     this.size,
     this.height,
     this.scrollable = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

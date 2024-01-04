@@ -10,11 +10,11 @@ class AudienceFormFields extends ConsumerWidget {
   final TextEditingController typeController;
 
   const AudienceFormFields({
-    Key? key,
+    super.key,
     required this.nameController,
     required this.descriptionController,
     required this.typeController,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

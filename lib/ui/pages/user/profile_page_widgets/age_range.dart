@@ -8,10 +8,10 @@ class AgeRangeDropdown extends StatelessWidget {
   final void Function(String?) onChanged;
 
   const AgeRangeDropdown({
-    Key? key,
+    super.key,
     required this.value,
     required this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

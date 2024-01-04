@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class MFADialog extends ConsumerWidget {
-  const MFADialog({Key? key}) : super(key: key);
+  const MFADialog({super.key});
 
   void _showCopiedSnackbar(BuildContext context) {
     const snackBar = SnackBar(

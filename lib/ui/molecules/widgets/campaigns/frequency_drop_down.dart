@@ -11,7 +11,7 @@ String? getDatabaseValue(String? displayValue, Map<String, String> mapping) {
 
 class FrequencyDropdown extends StatelessWidget {
   final TextEditingController controller;
-  FrequencyDropdown({Key? key, required this.controller}) : super(key: key);
+  FrequencyDropdown({super.key, required this.controller});
 
   final Map<String, String> frequencyMapping = {
     'daily': 'Daily',

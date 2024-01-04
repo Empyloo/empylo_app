@@ -51,10 +51,6 @@ class AudienceMemberList extends ConsumerWidget {
                   final userProfile = userProfiles
                       .firstWhere((profile) => profile.email == user.email);
 
-                  // If userProfile is null, it means no profile was found for this user.
-                  // In such case, we return a zero-sized widget.
-                  if (userProfile == null) return const SizedBox.shrink();
-
                   return ListTile(
                     title: Container(
                       padding: const EdgeInsets.all(8.0),

@@ -8,10 +8,10 @@ class MarriedCheckbox extends StatelessWidget {
   final void Function(bool?) onChanged;
 
   const MarriedCheckbox({
-    Key? key,
+    super.key,
     required this.value,
     required this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

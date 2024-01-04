@@ -12,7 +12,7 @@ class CompanyMenu extends ConsumerWidget {
   final TextEditingController controller;
   final String labelText = "Company";
 
-  const CompanyMenu({Key? key, required this.controller}) : super(key: key);
+  const CompanyMenu({super.key, required this.controller});
 
   void _selectCompany(BuildContext context, WidgetRef ref, String companyId) {
     final companies = ref.read(companyListNotifierProvider);

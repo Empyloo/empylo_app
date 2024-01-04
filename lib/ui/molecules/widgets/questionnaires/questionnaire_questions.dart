@@ -10,8 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class QuestionnaireQuestions extends ConsumerWidget {
   final String? questionnaireId;
 
-  const QuestionnaireQuestions({Key? key, this.questionnaireId})
-      : super(key: key);
+  const QuestionnaireQuestions({super.key, this.questionnaireId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

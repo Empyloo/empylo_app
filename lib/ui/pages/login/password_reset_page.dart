@@ -10,7 +10,7 @@ final passwordResetEmailControllerProvider =
 final passwordResetLoadingStateProvider = StateProvider<bool>((ref) => false);
 
 class PasswordResetPage extends ConsumerWidget {
-  const PasswordResetPage({Key? key}) : super(key: key);
+  const PasswordResetPage({super.key});
 
   void showSnackBarCallback(
       BuildContext context, String message, Color backgroundColor) {

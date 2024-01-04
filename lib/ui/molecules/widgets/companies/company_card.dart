@@ -7,8 +7,7 @@ class CompanyCard extends StatelessWidget {
   final Company company;
   final VoidCallback onEdit;
 
-  const CompanyCard({required this.company, required this.onEdit, Key? key})
-      : super(key: key);
+  const CompanyCard({required this.company, required this.onEdit, super.key});
 
   @override
   Widget build(BuildContext context) {

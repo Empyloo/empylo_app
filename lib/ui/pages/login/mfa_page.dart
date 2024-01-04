@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MFAPage extends StatelessWidget {
-  const MFAPage({Key? key}) : super(key: key);
+  const MFAPage({super.key});
 
   @override
   Widget build(BuildContext context) {

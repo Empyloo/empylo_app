@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 class DurationTextField extends StatelessWidget {
   final TextEditingController controller;
 
-  const DurationTextField({Key? key, required this.controller})
-      : super(key: key);
+  const DurationTextField({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {

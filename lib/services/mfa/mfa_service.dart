@@ -3,8 +3,9 @@ import 'dart:convert';
 
 import 'package:empylo_app/constants/api_constants.dart';
 import 'package:empylo_app/models/sentry.dart';
-import 'package:empylo_app/services/http_client.dart';
-import 'package:empylo_app/services/sentry_service.dart';
+import 'package:empylo_app/services/http/http_client.dart';
+import 'package:empylo_app/services/sentry/sentry_service.dart';
+
 import 'package:empylo_app/state_management/qr_code_provider.dart';
 import 'package:empylo_app/ui/molecules/dialogues/mfa_dialog.dart';
 import 'package:flutter/material.dart';

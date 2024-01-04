@@ -6,8 +6,7 @@ class TimePickerTextField extends StatelessWidget {
   final String labelText;
 
   const TimePickerTextField(
-      {Key? key, required this.controller, required this.labelText})
-      : super(key: key);
+      {super.key, required this.controller, required this.labelText});
 
   Future<void> _selectTime(BuildContext context) async {
     final MaterialLocalizations localizations =

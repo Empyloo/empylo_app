@@ -13,11 +13,11 @@ class TabletLayout extends StatelessWidget {
   final WidgetRef ref;
 
   const TabletLayout({
-    Key? key,
+    super.key,
     required this.id,
     required this.email,
     required this.ref,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

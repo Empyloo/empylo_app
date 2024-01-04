@@ -22,7 +22,7 @@ final questionBucketSelectedProvider =
     StateProvider<QuestionBucket?>((ref) => null);
 
 class QuestionBucketList extends ConsumerWidget {
-  const QuestionBucketList({Key? key}) : super(key: key);
+  const QuestionBucketList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -8,8 +8,7 @@ import 'package:empylo_app/state_management/company_list_provider.dart';
 class CompaniesDropDown extends ConsumerWidget {
   final Function(Company?) onCompanySelected;
 
-  const CompaniesDropDown({Key? key, required this.onCompanySelected})
-      : super(key: key);
+  const CompaniesDropDown({super.key, required this.onCompanySelected});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

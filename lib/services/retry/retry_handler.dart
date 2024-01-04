@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:empylo_app/constants/retryable_status_codes.dart';
-import 'package:empylo_app/services/sentry_service.dart';
+import 'package:empylo_app/services/sentry/sentry_service.dart';
 import 'package:empylo_app/utils/custom_exceptions/max_retries_exceeded_exception.dart';
 
 /// `RetryHandler` is a class that handles the retry logic for network requests.

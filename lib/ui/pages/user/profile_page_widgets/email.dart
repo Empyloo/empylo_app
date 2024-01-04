@@ -7,10 +7,10 @@ class EmailField extends StatelessWidget {
   final void Function(String) onChanged;
 
   const EmailField({
-    Key? key,
+    super.key,
     required this.controller,
     required this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

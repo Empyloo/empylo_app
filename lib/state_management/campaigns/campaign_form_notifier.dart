@@ -1,9 +1,7 @@
 // Path: lib/state_management/campaign_form_provider.dart
 import 'package:empylo_app/models/campaign.dart';
 import 'package:empylo_app/services/campaign_service.dart';
-import 'package:empylo_app/state_management/access_box_provider.dart';
 import 'package:empylo_app/state_management/campaigns/campaign_list_notifier.dart';
-import 'package:empylo_app/state_management/campaigns/campaign_service_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CampaignFormNotifier extends StateNotifier<Campaign> {

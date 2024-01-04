@@ -10,8 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class QuestionnaireMenu extends ConsumerWidget {
   final TextEditingController controller;
 
-  const QuestionnaireMenu({Key? key, required this.controller})
-      : super(key: key);
+  const QuestionnaireMenu({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

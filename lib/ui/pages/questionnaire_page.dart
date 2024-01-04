@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class QuestionnairePage extends ConsumerWidget {
-  const QuestionnairePage({Key? key}) : super(key: key);
+  const QuestionnairePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -1,5 +1,4 @@
 import 'package:empylo_app/models/company.dart';
-import 'package:empylo_app/ui/molecules/widgets/companies/company_selector.dart';
 import 'package:empylo_app/utils/company_fetcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,12 +12,12 @@ class CompanyMenuButton extends ConsumerWidget {
   final bool isEditMode;
 
   const CompanyMenuButton({
-    Key? key,
+    super.key,
     required this.companyList,
     required this.onCompanySelected,
     this.selectedCompanyId,
     this.isEditMode = false,
-  }) : super(key: key);
+  });
 
   String getCompanyName(String id) {
     for (var company in companyList) {

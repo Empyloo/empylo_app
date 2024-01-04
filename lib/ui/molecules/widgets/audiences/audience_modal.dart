@@ -20,11 +20,11 @@ class AudienceModal extends ConsumerWidget {
   final TextEditingController typeController = TextEditingController();
 
   AudienceModal({
-    Key? key,
+    super.key,
     required this.audience,
     required this.onAudienceEdited,
     required this.type,
-  }) : super(key: key) {
+  }) {
     if (audience != null) {
       nameController.text = audience!.name;
       descriptionController.text = audience!.description ?? '';

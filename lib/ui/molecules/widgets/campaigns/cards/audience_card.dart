@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AudienceCard extends ConsumerWidget {
-  const AudienceCard({Key? key}) : super(key: key);
+  const AudienceCard({super.key});
 
   Future<void> handleAudienceCreation(
       BuildContext context, WidgetRef ref, Audience audience) async {

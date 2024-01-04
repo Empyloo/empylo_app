@@ -10,7 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AudienceMenu extends ConsumerWidget {
   final TextEditingController controller;
 
-  const AudienceMenu({Key? key, required this.controller}) : super(key: key);
+  const AudienceMenu({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

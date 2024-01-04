@@ -97,10 +97,10 @@ class QuestionTab extends StatefulWidget {
   final void Function(Answer) onAnswer;
 
   const QuestionTab({
-    Key? key,
+    super.key,
     required this.question,
     required this.onAnswer,
-  }) : super(key: key);
+  });
 
   @override
   QuestionTabState createState() => QuestionTabState();

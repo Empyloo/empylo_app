@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CampaignCard extends ConsumerWidget {
-  const CampaignCard({Key? key}) : super(key: key);
+  const CampaignCard({super.key});
 
   Future<void> handleCampaignCreation(
       BuildContext context, WidgetRef ref, Campaign campaign) async {

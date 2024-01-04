@@ -4,7 +4,7 @@ import 'package:empylo_app/state_management/routing/router_provider.dart';
 import 'package:empylo_app/state_management/access_box_provider.dart';
 
 class CustomDrawer extends ConsumerWidget {
-  const CustomDrawer({Key? key}) : super(key: key);
+  const CustomDrawer({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

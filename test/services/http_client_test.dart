@@ -1,14 +1,14 @@
 // Path: test/http_client_test.dart
 import 'package:dio/dio.dart';
 import 'package:empylo_app/models/sentry.dart';
-import 'package:empylo_app/services/retry_handler.dart';
+import 'package:empylo_app/services/http/http_client.dart';
+import 'package:empylo_app/services/http/http_service.dart';
+import 'package:empylo_app/services/retry/retry_handler.dart';
+import 'package:empylo_app/services/sentry/sentry_service.dart';
 import 'package:empylo_app/utils/custom_exceptions/max_retries_exceeded_exception.dart';
 import 'package:empylo_app/utils/dio_http_exception.dart';
 import 'package:test/test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:empylo_app/services/http_service.dart';
-import 'package:empylo_app/services/sentry_service.dart';
-import 'package:empylo_app/services/http_client.dart';
 
 class MockDio extends Mock implements Dio {}
 
@@ -221,7 +221,7 @@ void main() {
         });
       } catch (e) {
         // Assert
-        expect(e, isA<DioHttpException>());
+        expect(e, isA<Exception>());
         verify(() => sentryService.sendErrorEvent(any())).called(1);
       }
     });
@@ -301,7 +301,7 @@ void main() {
             url: 'test', headers: {'test': 'test'}, data: {'test': 'test'});
       } catch (e) {
         // Assert
-        expect(e, isA<DioHttpException>());
+        expect(e, isA<MaxRetriesExceededException>());
         verify(() => sentryService.sendErrorEvent(any())).called(1);
       }
     });

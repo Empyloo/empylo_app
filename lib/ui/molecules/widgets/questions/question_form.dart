@@ -33,11 +33,11 @@ class QuestionForm extends ConsumerWidget {
   final _formKey = GlobalKey<FormState>();
 
   QuestionForm({
-    Key? key,
+    super.key,
     required this.question,
     required this.onQuestionCreateOrEdited,
     required this.formType,
-  }) : super(key: key) {
+  }) {
     if (question != null) {
       questionController.text = question!.question;
       descriptionController.text = question!.description ?? '';

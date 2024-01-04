@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SuperAdminCompanyList extends ConsumerWidget {
-  const SuperAdminCompanyList({Key? key}) : super(key: key);
+  const SuperAdminCompanyList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

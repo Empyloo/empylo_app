@@ -82,11 +82,11 @@ class CampaignDialog extends ConsumerWidget {
   }
 
   CampaignDialog({
-    Key? key,
+    super.key,
     required this.campaign,
     required this.onCampaignEdited,
     required this.type,
-  }) : super(key: key) {
+  }) {
     if (campaign != null) {
       nameController.text = campaign!.name;
       descriptionController.text = campaign!.description ?? '';

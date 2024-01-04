@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CampaignTab extends ConsumerWidget {
-  const CampaignTab({Key? key}) : super(key: key);
+  const CampaignTab({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
